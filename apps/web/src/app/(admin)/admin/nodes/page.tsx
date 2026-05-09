@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { HardDrive, MemoryStick, Database as DatabaseIcon, Server, Cpu, Globe } from "lucide-react";
-import { getNodes, getServers, type PelicanNode, type PelicanServer } from "@/lib/pelican";
+import { getNodes, type PelicanNode } from "@/lib/pelican";
 
 function ProgressBar({ used, total, color }: { used: number; total: number; color: string }) {
   const pct = total > 0 ? Math.min(Math.round((used / total) * 100), 100) : 0;
@@ -19,62 +19,78 @@ function ProgressBar({ used, total, color }: { used: number; total: number; colo
 }
 
 function formatMb(mb: number): string {
+  if (mb === 0) return "Unlimited";
   return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb} MB`;
 }
 
-interface NodeWithUsage extends PelicanNode {
-  usedRam: number;
-  usedDisk: number;
-  usedCpu: number;
+function formatMbValue(mb: number): string {
+  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb} MB`;
+}
+
+interface NodeDisplay {
+  id: number;
+  name: string;
+  fqdn: string;
+  maintenance_mode: boolean;
+  limitRam: number;
+  limitDisk: number;
+  limitCpu: number;
+  allocatedRam: number;
+  allocatedDisk: number;
+  allocatedCpu: number;
   serverCount: number;
 }
 
 export default async function AdminNodesPage() {
-  let nodesWithUsage: NodeWithUsage[] = [];
+  let nodes: NodeDisplay[] = [];
   let error = false;
 
   try {
-    const [nodesRes, serversRes] = await Promise.all([getNodes(), getServers()]);
-    const nodes = nodesRes.data.map((n: { attributes: PelicanNode }) => n.attributes);
-    const servers = serversRes.data.map((s: { attributes: PelicanServer }) => s.attributes);
-
-    nodesWithUsage = nodes.map((node: PelicanNode): NodeWithUsage => {
-      const nodeServers = servers.filter((s: PelicanServer) => s.node_id === node.id);
+    const nodesRes = await getNodes();
+    nodes = nodesRes.data.map((n: { attributes: PelicanNode }): NodeDisplay => {
+      const attr = n.attributes;
+      const alloc = attr.allocated_resources ?? { memory: 0, disk: 0, cpu: 0 };
+      const serverCount = attr.relationships?.servers?.data?.length ?? attr.servers_count ?? 0;
       return {
-        ...node,
-        usedRam: nodeServers.reduce((sum: number, s: PelicanServer) => sum + s.limits.memory, 0),
-        usedDisk: nodeServers.reduce((sum: number, s: PelicanServer) => sum + s.limits.disk, 0),
-        usedCpu: nodeServers.reduce((sum: number, s: PelicanServer) => sum + s.limits.cpu, 0),
-        serverCount: nodeServers.length,
+        id: attr.id,
+        name: attr.name,
+        fqdn: attr.fqdn,
+        maintenance_mode: attr.maintenance_mode,
+        limitRam: attr.memory,
+        limitDisk: attr.disk,
+        limitCpu: attr.cpu,
+        allocatedRam: alloc.memory,
+        allocatedDisk: alloc.disk,
+        allocatedCpu: alloc.cpu,
+        serverCount,
       };
     });
   } catch {
     error = true;
   }
 
-  const totalRam = nodesWithUsage.reduce((s, n) => s + n.memory, 0);
-  const totalDisk = nodesWithUsage.reduce((s, n) => s + n.disk, 0);
-  const totalUsedRam = nodesWithUsage.reduce((s, n) => s + n.usedRam, 0);
-  const totalUsedDisk = nodesWithUsage.reduce((s, n) => s + n.usedDisk, 0);
-  const totalServers = nodesWithUsage.reduce((s, n) => s + n.serverCount, 0);
+  const totalAllocRam = nodes.reduce((s, n) => s + n.allocatedRam, 0);
+  const totalAllocDisk = nodes.reduce((s, n) => s + n.allocatedDisk, 0);
+  const totalAllocCpu = nodes.reduce((s, n) => s + n.allocatedCpu, 0);
+  const totalServers = nodes.reduce((s, n) => s + n.serverCount, 0);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Node Management</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Monitor and manage game server nodes ({nodesWithUsage.length} total)
+          Monitor and manage game server nodes ({nodes.length} total)
         </p>
       </div>
 
       {/* Cluster summary */}
-      {nodesWithUsage.length > 0 && (
+      {nodes.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-4">
           {[
-            { label: "Nodes", value: nodesWithUsage.length.toString(), icon: HardDrive, color: "text-cyan-400", bg: "bg-cyan-400/10" },
+            { label: "Nodes", value: nodes.length.toString(), icon: HardDrive, color: "text-cyan-400", bg: "bg-cyan-400/10" },
             { label: "Servers", value: totalServers.toString(), icon: Server, color: "text-blue-400", bg: "bg-blue-400/10" },
-            { label: "RAM Used", value: `${formatMb(totalUsedRam)} / ${formatMb(totalRam)}`, icon: MemoryStick, color: "text-purple-400", bg: "bg-purple-400/10" },
-            { label: "Disk Used", value: `${formatMb(totalUsedDisk)} / ${formatMb(totalDisk)}`, icon: DatabaseIcon, color: "text-green-400", bg: "bg-green-400/10" },
+            { label: "RAM Allocated", value: formatMbValue(totalAllocRam), icon: MemoryStick, color: "text-purple-400", bg: "bg-purple-400/10" },
+            { label: "Disk Allocated", value: formatMbValue(totalAllocDisk), icon: DatabaseIcon, color: "text-green-400", bg: "bg-green-400/10" },
           ].map((s) => (
             <Card key={s.label} className="border-white/5 bg-white/[0.02]">
               <CardContent className="flex items-center gap-4 p-5">
@@ -101,7 +117,7 @@ export default async function AdminNodesPage() {
             </p>
           </CardContent>
         </Card>
-      ) : nodesWithUsage.length === 0 ? (
+      ) : nodes.length === 0 ? (
         <Card className="border-white/5 bg-white/[0.02]">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <HardDrive className="mb-4 h-12 w-12 text-slate-600" />
@@ -113,11 +129,14 @@ export default async function AdminNodesPage() {
         </Card>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-          {nodesWithUsage.map((node) => {
+          {nodes.map((node) => {
             const isUp = !node.maintenance_mode;
             const statusCfg = isUp
               ? { label: "Online", className: "bg-green-500/10 text-green-400 border-green-500/20" }
               : { label: "Maintenance", className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" };
+
+            const hasRamLimit = node.limitRam > 0;
+            const hasDiskLimit = node.limitDisk > 0;
 
             return (
               <Card key={node.id} className="border-white/5 bg-white/[0.02]">
@@ -145,9 +164,15 @@ export default async function AdminNodesPage() {
                       <span className="flex items-center gap-1.5 text-[#8b92a8]">
                         <MemoryStick className="h-3.5 w-3.5" /> RAM
                       </span>
-                      <span className="font-mono text-white">{formatMb(node.usedRam)} <span className="text-[#8b92a8]">/ {formatMb(node.memory)}</span></span>
+                      <span className="font-mono text-white">
+                        {formatMbValue(node.allocatedRam)}
+                        {hasRamLimit && <span className="text-[#8b92a8]"> / {formatMbValue(node.limitRam)}</span>}
+                        {!hasRamLimit && <span className="text-[#8b92a8]"> allocated</span>}
+                      </span>
                     </div>
-                    <ProgressBar used={node.usedRam} total={node.memory} color="bg-[#5b8cff]" />
+                    {hasRamLimit && (
+                      <ProgressBar used={node.allocatedRam} total={node.limitRam} color="bg-[#5b8cff]" />
+                    )}
                   </div>
                   {/* Disk */}
                   <div>
@@ -155,9 +180,15 @@ export default async function AdminNodesPage() {
                       <span className="flex items-center gap-1.5 text-[#8b92a8]">
                         <DatabaseIcon className="h-3.5 w-3.5" /> Disk
                       </span>
-                      <span className="font-mono text-white">{formatMb(node.usedDisk)} <span className="text-[#8b92a8]">/ {formatMb(node.disk)}</span></span>
+                      <span className="font-mono text-white">
+                        {formatMbValue(node.allocatedDisk)}
+                        {hasDiskLimit && <span className="text-[#8b92a8]"> / {formatMbValue(node.limitDisk)}</span>}
+                        {!hasDiskLimit && <span className="text-[#8b92a8]"> allocated</span>}
+                      </span>
                     </div>
-                    <ProgressBar used={node.usedDisk} total={node.disk} color="bg-purple-500" />
+                    {hasDiskLimit && (
+                      <ProgressBar used={node.allocatedDisk} total={node.limitDisk} color="bg-purple-500" />
+                    )}
                   </div>
                   {/* CPU */}
                   <div>
@@ -165,8 +196,14 @@ export default async function AdminNodesPage() {
                       <span className="flex items-center gap-1.5 text-[#8b92a8]">
                         <Cpu className="h-3.5 w-3.5" /> CPU Allocated
                       </span>
-                      <span className="font-mono text-white">{node.usedCpu}%</span>
+                      <span className="font-mono text-white">
+                        {node.allocatedCpu}%
+                        {node.limitCpu > 0 && <span className="text-[#8b92a8]"> / {node.limitCpu}%</span>}
+                      </span>
                     </div>
+                    {node.limitCpu > 0 && (
+                      <ProgressBar used={node.allocatedCpu} total={node.limitCpu} color="bg-green-500" />
+                    )}
                   </div>
                   {/* Servers */}
                   <div className="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2">

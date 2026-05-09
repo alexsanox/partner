@@ -82,10 +82,22 @@ export interface PelicanNode {
   memory_overallocate: number;
   disk: number;
   disk_overallocate: number;
+  cpu: number;
+  cpu_overallocate: number;
   daemon_listen: number;
   daemon_sftp: number;
   maintenance_mode: boolean;
   servers_count?: number;
+  allocated_resources?: {
+    memory: number;
+    disk: number;
+    cpu: number;
+  };
+  relationships?: {
+    servers?: {
+      data: unknown[];
+    };
+  };
 }
 
 export interface PelicanUser {
@@ -130,7 +142,7 @@ export async function getServer(id: number) {
 
 export async function getNodes(page = 1) {
   return pelicanFetch<PaginatedResponse<PelicanNode>>(
-    `/nodes?page=${page}`
+    `/nodes?include=servers&page=${page}`
   );
 }
 
