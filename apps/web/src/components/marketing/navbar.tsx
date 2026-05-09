@@ -8,7 +8,9 @@ import {
   Menu,
   Server,
   Zap,
+  LayoutDashboard,
 } from "lucide-react";
+import { useSession } from "@/lib/auth-client";
 
 const navLinks = [
   { href: "/#features", label: "Features" },
@@ -19,6 +21,7 @@ const navLinks = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/80 backdrop-blur-xl">
@@ -48,17 +51,28 @@ export function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link href="/login">
-            <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white hover:bg-white/5">
-              Sign In
-            </Button>
-          </Link>
-          <Link href="/register">
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20">
-              <Zap className="mr-1.5 h-3.5 w-3.5" />
-              Get Started
-            </Button>
-          </Link>
+          {session ? (
+            <Link href="/dashboard">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20">
+                <LayoutDashboard className="mr-1.5 h-3.5 w-3.5" />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white hover:bg-white/5">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20">
+                  <Zap className="mr-1.5 h-3.5 w-3.5" />
+                  Get Started
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -84,17 +98,28 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="mt-4 flex flex-col gap-2 px-4">
-                <Link href="/login" onClick={() => setOpen(false)}>
-                  <Button variant="outline" className="w-full border-white/10 text-slate-300">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/register" onClick={() => setOpen(false)}>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white">
-                    <Zap className="mr-1.5 h-3.5 w-3.5" />
-                    Get Started
-                  </Button>
-                </Link>
+                {session ? (
+                  <Link href="/dashboard" onClick={() => setOpen(false)}>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white">
+                      <LayoutDashboard className="mr-1.5 h-3.5 w-3.5" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={() => setOpen(false)}>
+                      <Button variant="outline" className="w-full border-white/10 text-slate-300">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link href="/register" onClick={() => setOpen(false)}>
+                      <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white">
+                        <Zap className="mr-1.5 h-3.5 w-3.5" />
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </SheetContent>
