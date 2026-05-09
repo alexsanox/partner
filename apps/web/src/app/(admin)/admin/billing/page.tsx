@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
+import { OrderActions } from "@/components/admin/order-actions";
 
 const orderStatusConfig: Record<string, { label: string; className: string }> = {
   PAID: { label: "Paid", className: "bg-green-500/10 text-green-400 border-green-500/20" },
@@ -43,6 +44,7 @@ async function getRecentOrders() {
     include: {
       user: { select: { email: true, name: true } },
       plan: { select: { name: true } },
+      service: { select: { id: true } },
     },
   });
 }
@@ -101,12 +103,13 @@ export default async function AdminBillingPage() {
                 <TableHead className="text-slate-400">Amount</TableHead>
                 <TableHead className="text-slate-400">Status</TableHead>
                 <TableHead className="text-slate-400">Date</TableHead>
+                <TableHead className="text-right text-slate-400">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders.length === 0 ? (
                 <TableRow className="border-white/5">
-                  <TableCell colSpan={7} className="py-12 text-center text-slate-500">
+                  <TableCell colSpan={8} className="py-12 text-center text-slate-500">
                     <ShoppingCart className="mx-auto mb-3 h-10 w-10 text-slate-600" />
                     No orders yet
                   </TableCell>
@@ -135,6 +138,13 @@ export default async function AdminBillingPage() {
                       </TableCell>
                       <TableCell className="text-xs text-slate-500">
                         {order.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <OrderActions
+                          orderId={order.id}
+                          currentStatus={order.status}
+                          hasService={!!order.service}
+                        />
                       </TableCell>
                     </TableRow>
                   );
