@@ -24,13 +24,20 @@ export default function LoginPage() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    const { error: authError } = await signIn.email({
+    const res = await signIn.email({
       email,
       password,
     });
 
-    if (authError) {
-      setError(authError.message ?? "Invalid email or password.");
+    // If 2FA is required, redirect to OTP page
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((res.data as any)?.twoFactorRedirect) {
+      window.location.href = "/login/two-factor";
+      return;
+    }
+
+    if (res.error) {
+      setError(res.error.message ?? "Invalid email or password.");
       setIsLoading(false);
       return;
     }

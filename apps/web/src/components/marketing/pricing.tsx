@@ -1,20 +1,26 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Zap } from "lucide-react";
+import { Check, Zap, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const plans = [
   {
-    name: "Starter",
-    slug: "starter",
+    name: "Dirt",
+    slug: "dirt",
     ram: "2 GB",
-    price: 2.99,
-    players: "10 Players",
+    price: 3,
+    players: "10",
     storage: "10 GB NVMe",
     cpu: "100%",
     popular: false,
+    accent: "from-amber-700 to-amber-500",
+    accentText: "text-amber-400",
+    accentBg: "bg-amber-500/10",
+    accentBorder: "border-amber-500/30",
+    accentGlow: "shadow-amber-500/10",
+    checkColor: "text-amber-400",
+    description: "A humble start — perfect for playing with a few friends",
     features: [
       "2 GB DDR5 RAM",
       "10 Player Slots",
@@ -25,63 +31,56 @@ const plans = [
     ],
   },
   {
-    name: "Essential",
-    slug: "essential",
+    name: "Iron",
+    slug: "iron",
     ram: "4 GB",
-    price: 5.99,
-    players: "25 Players",
+    price: 8,
+    players: "30",
     storage: "25 GB NVMe",
     cpu: "200%",
-    popular: false,
+    popular: true,
+    accent: "from-slate-400 to-slate-200",
+    accentText: "text-slate-300",
+    accentBg: "bg-slate-400/10",
+    accentBorder: "border-blue-500/40",
+    accentGlow: "shadow-blue-500/20",
+    checkColor: "text-blue-400",
+    description: "Solid and reliable — built for growing communities",
     features: [
       "4 GB DDR5 RAM",
-      "25 Player Slots",
+      "30 Player Slots",
       "25 GB NVMe SSD",
-      "2 Backup Slots",
-      "DDoS Protection",
-      "24/7 Priority Support",
-      "MySQL Database",
-    ],
-  },
-  {
-    name: "Pro",
-    slug: "pro",
-    ram: "8 GB",
-    price: 9.99,
-    players: "50 Players",
-    storage: "50 GB NVMe",
-    cpu: "350%",
-    popular: true,
-    features: [
-      "8 GB DDR5 RAM",
-      "50 Player Slots",
-      "50 GB NVMe SSD",
       "3 Backup Slots",
       "DDoS Protection",
-      "24/7 Priority Support",
-      "2 MySQL Databases",
-      "Custom JAR Support",
+      "Priority Support",
+      "1 MySQL Database",
     ],
   },
   {
-    name: "Enterprise",
-    slug: "enterprise",
-    ram: "16 GB",
-    price: 19.99,
-    players: "Unlimited",
-    storage: "100 GB NVMe",
-    cpu: "500%",
+    name: "Diamond",
+    slug: "diamond",
+    ram: "8 GB",
+    price: 20,
+    players: "100",
+    storage: "50 GB NVMe",
+    cpu: "400%",
     popular: false,
+    accent: "from-cyan-400 to-cyan-300",
+    accentText: "text-cyan-400",
+    accentBg: "bg-cyan-400/10",
+    accentBorder: "border-cyan-500/30",
+    accentGlow: "shadow-cyan-500/10",
+    checkColor: "text-cyan-400",
+    description: "Maximum power for large networks and serious players",
     features: [
-      "16 GB DDR5 RAM",
-      "Unlimited Player Slots",
-      "100 GB NVMe SSD",
+      "8 GB DDR5 RAM",
+      "100 Player Slots",
+      "50 GB NVMe SSD",
       "5 Backup Slots",
       "DDoS Protection",
-      "24/7 Dedicated Support",
-      "5 MySQL Databases",
-      "Custom JAR Support",
-      "Dedicated IP",
+      "Priority Support",
+      "3 MySQL Databases",
+      "Custom Domain",
     ],
   },
 ];
@@ -90,83 +89,125 @@ export function Pricing() {
   return (
     <section id="pricing" className="relative py-20 sm:py-28">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute right-1/4 top-0 h-[500px] w-[600px] rounded-full bg-blue-600/5 blur-3xl" />
+        <div className="absolute right-1/4 top-0 h-[500px] w-[600px] rounded-full bg-blue-600/5 blur-[100px]" />
+        <div className="absolute left-1/4 bottom-0 h-[400px] w-[500px] rounded-full bg-cyan-600/5 blur-[100px]" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Simple, Transparent{" "}
-            <span className="text-blue-400">Pricing</span>
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-blue-400">
+            Pricing
           </h2>
+          <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Choose Your{" "}
+            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              Tier
+            </span>
+          </p>
           <p className="mt-4 text-lg text-slate-400">
             No hidden fees. No surprise charges. Pick a plan and start playing
             in under 60 seconds.
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-4">
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
           {plans.map((plan) => (
-            <Card
+            <div
               key={plan.slug}
               className={cn(
-                "relative flex flex-col border-white/5 bg-white/[0.02] transition-all hover:border-white/10",
-                plan.popular &&
-                  "border-blue-500/40 bg-blue-500/[0.04] shadow-lg shadow-blue-500/5"
+                "group relative flex flex-col overflow-hidden rounded-2xl border bg-gradient-to-b from-white/[0.04] to-white/[0.01] backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]",
+                plan.popular
+                  ? `${plan.accentBorder} shadow-xl ${plan.accentGlow}`
+                  : "border-white/[0.06] hover:border-white/10"
               )}
             >
+              {/* Colored top accent bar */}
+              <div className={`h-1 w-full bg-gradient-to-r ${plan.accent}`} />
+
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-600">
+                <div className="absolute right-4 top-5">
+                  <Badge className="border-0 bg-blue-600 text-xs font-bold text-white shadow-lg shadow-blue-600/25 hover:bg-blue-600">
                     <Zap className="mr-1 h-3 w-3" />
                     Most Popular
                   </Badge>
                 </div>
               )}
-              <CardHeader className="p-6 pb-0">
-                <div className="text-sm font-medium text-slate-400">
-                  {plan.name}
+
+              {/* Header */}
+              <div className="p-6 pb-0">
+                {/* Plan name + RAM badge */}
+                <div className="flex items-center gap-3">
+                  <h3 className={`text-lg font-bold ${plan.accentText}`}>
+                    {plan.name}
+                  </h3>
+                  <span className={`rounded-md ${plan.accentBg} px-2 py-0.5 text-xs font-semibold ${plan.accentText}`}>
+                    {plan.ram} RAM
+                  </span>
                 </div>
-                <div className="mt-2 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">
+                <p className="mt-1.5 text-sm text-slate-500">
+                  {plan.description}
+                </p>
+
+                {/* Price */}
+                <div className="mt-5 flex items-baseline gap-1">
+                  <span className="text-5xl font-black tracking-tight text-white">
                     ${plan.price}
                   </span>
-                  <span className="text-sm text-slate-500">/mo</span>
+                  <span className="text-base text-slate-500">/mo</span>
                 </div>
-                <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
-                  <span>{plan.ram} RAM</span>
-                  <span>•</span>
-                  <span>{plan.players}</span>
-                  <span>•</span>
-                  <span>{plan.storage}</span>
+
+                {/* Quick stats */}
+                <div className="mt-4 grid grid-cols-3 gap-3">
+                  {[
+                    { label: "Players", value: plan.players },
+                    { label: "Storage", value: plan.storage.replace(" NVMe", "") },
+                    { label: "CPU", value: plan.cpu },
+                  ].map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="rounded-lg bg-white/[0.03] px-3 py-2 text-center"
+                    >
+                      <div className="text-sm font-bold text-white">{stat.value}</div>
+                      <div className="text-[10px] uppercase tracking-wider text-slate-600">
+                        {stat.label}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </CardHeader>
-              <CardContent className="flex flex-1 flex-col p-6">
-                <ul className="flex-1 space-y-3">
+              </div>
+
+              {/* Divider */}
+              <div className="mx-6 mt-5 border-t border-white/5" />
+
+              {/* Features */}
+              <div className="flex flex-1 flex-col p-6">
+                <ul className="flex-1 space-y-2.5">
                   {plan.features.map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-start gap-2.5 text-sm text-slate-300"
+                      className="flex items-center gap-2.5 text-sm text-slate-300"
                     >
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
+                      <Check className={`h-4 w-4 shrink-0 ${plan.checkColor}`} />
                       {feature}
                     </li>
                   ))}
                 </ul>
+
                 <Link href="/register" className="mt-6 block">
                   <Button
                     className={cn(
-                      "w-full",
+                      "w-full h-11 font-semibold transition-all",
                       plan.popular
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-500"
-                        : "bg-white/5 text-white hover:bg-white/10"
+                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-500 hover:shadow-blue-600/40"
+                        : "bg-white/[0.06] text-white hover:bg-white/10 border border-white/[0.08]"
                     )}
                   >
+                    {plan.popular && <Sparkles className="mr-2 h-4 w-4" />}
                     Get Started
                   </Button>
                 </Link>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>

@@ -12,8 +12,9 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Zap,
+  HelpCircle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/lib/auth-client";
@@ -34,26 +35,36 @@ export function DashboardSidebar() {
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col border-r border-white/5 bg-[#0f1219] transition-all duration-200",
-        collapsed ? "w-16" : "w-60"
+        "flex h-screen flex-col border-r border-white/[0.07] bg-[#171b29] transition-all duration-200",
+        collapsed ? "w-[52px]" : "w-[220px]"
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center border-b border-white/5 px-4">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-            <Server className="h-4 w-4 text-white" />
+      <div className="flex h-14 items-center justify-between px-3 border-b border-white/[0.07]">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center">
+            <Zap className="h-5 w-5 text-[#5b8cff]" />
           </div>
           {!collapsed && (
-            <span className="text-base font-bold text-white">
-              Partner<span className="text-blue-400">Hosting</span>
+            <span className="text-sm font-bold tracking-wide text-white uppercase">
+              Partner
             </span>
           )}
         </Link>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="rounded p-1 text-[#8b92a8] hover:text-white transition-colors"
+        >
+          {collapsed ? (
+            <ChevronRight className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronLeft className="h-3.5 w-3.5" />
+          )}
+        </button>
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="flex-1 py-3 px-2 space-y-0.5">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -64,13 +75,16 @@ export function DashboardSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "group relative flex items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium transition-all duration-150",
                 isActive
-                  ? "bg-blue-600/10 text-blue-400"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  ? "bg-[#232839] text-white"
+                  : "text-[#8b92a8] hover:bg-[#1e2336] hover:text-[#c8cdd8]"
               )}
             >
-              <item.icon className="h-4.5 w-4.5 shrink-0" />
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#5b8cff]" />
+              )}
+              <item.icon className={cn("h-[18px] w-[18px] shrink-0", isActive ? "text-[#5b8cff]" : "")} />
               {!collapsed && <span>{item.label}</span>}
             </Link>
           );
@@ -78,30 +92,25 @@ export function DashboardSidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="border-t border-white/5 p-3">
+      <div className="border-t border-white/[0.07] p-2 space-y-0.5">
         <button
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium text-[#8b92a8] transition-colors hover:bg-[#1e2336] hover:text-white"
           onClick={async () => {
             await signOut();
             router.push("/");
           }}
         >
-          <LogOut className="h-4.5 w-4.5 shrink-0" />
+          <LogOut className="h-[18px] w-[18px] shrink-0" />
           {!collapsed && <span>Sign Out</span>}
         </button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className="mt-1 w-full text-slate-500 hover:text-white"
+        <Link
+          href="/dashboard/support"
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium text-[#8b92a8] transition-colors hover:bg-[#1e2336] hover:text-white"
         >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </Button>
+          <HelpCircle className="h-[18px] w-[18px] shrink-0" />
+          {!collapsed && <span>Help & Feedback</span>}
+        </Link>
       </div>
     </aside>
   );

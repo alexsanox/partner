@@ -16,7 +16,14 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "prettier": "^3.4.2",
     "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@stripe/react-stripe-js": "^6.3.0",
+    "@stripe/stripe-js": "^9.4.0",
+    "canvas-confetti": "^1.9.4",
+    "stripe": "^22.1.1"
   }
 }

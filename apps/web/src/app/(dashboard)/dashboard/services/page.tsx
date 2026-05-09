@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Server, Plus } from "lucide-react";
 import Link from "next/link";
 import { getServers, type PelicanServer } from "@/lib/pelican";
+import { CheckoutSuccessBanner } from "@/components/checkout-success-banner";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   online: { label: "Online", className: "bg-green-500/10 text-green-400 border-green-500/20" },
@@ -30,6 +32,10 @@ export default async function ServicesPage() {
 
   return (
     <div className="space-y-6">
+      <Suspense>
+        <CheckoutSuccessBanner />
+      </Suspense>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">My Servers</h1>
@@ -37,7 +43,7 @@ export default async function ServicesPage() {
             Manage all your game servers ({servers.length})
           </p>
         </div>
-        <Link href="/#pricing">
+        <Link href="/dashboard/services/create">
           <Button className="bg-blue-600 text-white hover:bg-blue-500">
             <Plus className="mr-2 h-4 w-4" />
             New Server
@@ -53,7 +59,7 @@ export default async function ServicesPage() {
             <p className="mt-1 text-sm text-slate-500">
               Create your first server to get started
             </p>
-            <Link href="/#pricing" className="mt-4">
+            <Link href="/dashboard/services/create" className="mt-4">
               <Button className="bg-blue-600 text-white hover:bg-blue-500">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Server

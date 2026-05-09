@@ -57,7 +57,7 @@ export default async function DashboardPage() {
             Welcome back, {session.user.name}! Here&apos;s an overview of your servers.
           </p>
         </div>
-        <Link href="/#pricing">
+        <Link href="/dashboard/services/create">
           <Button className="bg-blue-600 text-white hover:bg-blue-500">
             <Plus className="mr-2 h-4 w-4" />
             New Server
@@ -99,7 +99,7 @@ export default async function DashboardPage() {
               <Server className="mb-4 h-12 w-12 text-slate-600" />
               <p className="text-lg font-medium text-slate-400">No servers yet</p>
               <p className="mt-1 text-sm text-slate-500">Create your first server to get started</p>
-              <Link href="/#pricing" className="mt-4">
+              <Link href="/dashboard/services/create" className="mt-4">
                 <Button className="bg-blue-600 text-white hover:bg-blue-500">
                   <Plus className="mr-2 h-4 w-4" />
                   Create Server
