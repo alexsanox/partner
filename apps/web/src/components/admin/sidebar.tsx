@@ -13,6 +13,8 @@ import {
   Settings,
   ArrowLeft,
   Shield,
+  MessageSquare,
+  PackageOpen,
 } from "lucide-react";
 
 const navItems = [
@@ -21,6 +23,8 @@ const navItems = [
   { href: "/admin/services", icon: Server, label: "Services" },
   { href: "/admin/nodes", icon: HardDrive, label: "Nodes" },
   { href: "/admin/billing", icon: CreditCard, label: "Billing" },
+  { href: "/admin/plans", icon: PackageOpen, label: "Plans" },
+  { href: "/admin/tickets", icon: MessageSquare, label: "Tickets" },
   { href: "/admin/provisioning", icon: Activity, label: "Provisioning" },
   { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];

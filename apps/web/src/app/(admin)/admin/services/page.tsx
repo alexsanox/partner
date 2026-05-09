@@ -1,8 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, MoreHorizontal, Server } from "lucide-react";
+import { Server } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -11,42 +9,67 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getServers, type PelicanServer } from "@/lib/pelican";
+import { prisma } from "@/lib/db";
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  running: { label: "Running", className: "bg-green-500/10 text-green-400 border-green-500/20" },
-  suspended: { label: "Suspended", className: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
-  installing: { label: "Installing", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  offline: { label: "Offline", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
+const dbStatusConfig: Record<string, { label: string; className: string }> = {
+  ACTIVE: { label: "Active", className: "bg-green-500/10 text-green-400 border-green-500/20" },
+  PENDING: { label: "Pending", className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
+  PROVISIONING: { label: "Provisioning", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  SUSPENDED: { label: "Suspended", className: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
+  CANCELLED: { label: "Cancelled", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
+  FAILED: { label: "Failed", className: "bg-red-500/10 text-red-400 border-red-500/20" },
 };
 
-const defaultStatus = { label: "Unknown", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" };
+async function getServiceStats() {
+  const [total, active, pending, suspended, failed] = await Promise.all([
+    prisma.service.count(),
+    prisma.service.count({ where: { status: "ACTIVE" } }),
+    prisma.service.count({ where: { status: { in: ["PENDING", "PROVISIONING"] } } }),
+    prisma.service.count({ where: { status: "SUSPENDED" } }),
+    prisma.service.count({ where: { status: "FAILED" } }),
+  ]);
+  return { total, active, pending, suspended, failed };
+}
+
+async function getServices() {
+  return prisma.service.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 30,
+    include: {
+      user: { select: { name: true, email: true } },
+      plan: { select: { name: true, ramMb: true } },
+      node: { select: { name: true } },
+    },
+  });
+}
 
 export default async function AdminServicesPage() {
-  let servers: PelicanServer[] = [];
-  try {
-    const res = await getServers();
-    servers = res.data.map((s: { attributes: PelicanServer }) => s.attributes);
-  } catch {
-    // Pelican unreachable
-  }
+  const [stats, services] = await Promise.all([getServiceStats(), getServices()]);
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Service Management</h1>
         <p className="mt-1 text-sm text-slate-400">
-          View and manage all provisioned services
+          View and manage all provisioned services ({stats.total} total)
         </p>
       </div>
 
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-          <Input
-            placeholder="Search by name, ID, or user..."
-            className="border-white/10 bg-white/5 pl-10 text-white placeholder:text-slate-500"
-          />
-        </div>
+      <div className="grid gap-4 sm:grid-cols-5">
+        {[
+          { label: "Total", value: stats.total, color: "text-white" },
+          { label: "Active", value: stats.active, color: "text-green-400" },
+          { label: "Pending", value: stats.pending, color: "text-yellow-400" },
+          { label: "Suspended", value: stats.suspended, color: "text-orange-400" },
+          { label: "Failed", value: stats.failed, color: "text-red-400" },
+        ].map((s) => (
+          <Card key={s.label} className="border-white/5 bg-white/[0.02]">
+            <CardContent className="p-5">
+              <p className="text-sm text-slate-400">{s.label}</p>
+              <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <Card className="border-white/5 bg-white/[0.02]">
@@ -58,44 +81,55 @@ export default async function AdminServicesPage() {
                 <TableHead className="text-slate-400">User</TableHead>
                 <TableHead className="text-slate-400">Plan</TableHead>
                 <TableHead className="text-slate-400">Node</TableHead>
+                <TableHead className="text-slate-400">IP</TableHead>
                 <TableHead className="text-slate-400">Status</TableHead>
                 <TableHead className="text-slate-400">Created</TableHead>
-                <TableHead className="text-right text-slate-400">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {servers.length === 0 ? (
+              {services.length === 0 ? (
                 <TableRow className="border-white/5">
-                  <TableCell colSpan={7} className="text-center text-slate-500 py-12">
+                  <TableCell colSpan={7} className="py-12 text-center text-slate-500">
                     <Server className="mx-auto mb-3 h-10 w-10 text-slate-600" />
-                    No servers found. Create one from the Pelican panel.
+                    No services yet. Users can create servers from the dashboard.
                   </TableCell>
                 </TableRow>
               ) : (
-                servers.map((svc: PelicanServer) => {
-                  const status = statusConfig[svc.status ?? "offline"] ?? defaultStatus;
+                services.map((svc) => {
+                  const statusCfg = dbStatusConfig[svc.status] ?? dbStatusConfig.PENDING;
                   return (
                     <TableRow key={svc.id} className="border-white/5 hover:bg-white/[0.02]">
                       <TableCell>
                         <div>
                           <p className="font-medium text-white">{svc.name}</p>
-                          <p className="font-mono text-xs text-slate-500">{svc.uuid.slice(0, 8)}</p>
+                          <p className="font-mono text-xs text-slate-600">{svc.id.slice(0, 10)}</p>
                         </div>
                       </TableCell>
-                      <TableCell className="text-slate-400">User #{svc.user_id}</TableCell>
                       <TableCell>
-                        <span className="text-sm text-white">{svc.limits.memory} MB</span>
-                        <span className="ml-1 text-xs text-slate-500">RAM</span>
+                        <div>
+                          <p className="text-sm text-white">{svc.user.name}</p>
+                          <p className="text-xs text-slate-500">{svc.user.email}</p>
+                        </div>
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-slate-400">Node #{svc.node_id}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={status.className}>{status.label}</Badge>
+                        <span className="text-sm text-white">{svc.plan.name}</span>
+                        <span className="ml-1 text-xs text-slate-500">
+                          ({svc.plan.ramMb >= 1024 ? `${(svc.plan.ramMb / 1024).toFixed(0)} GB` : `${svc.plan.ramMb} MB`})
+                        </span>
                       </TableCell>
-                      <TableCell className="text-slate-500 text-xs">{new Date(svc.created_at).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                      <TableCell className="text-xs text-slate-400">
+                        {svc.node?.name ?? "—"}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-slate-400">
+                        {svc.ipAddress ? `${svc.ipAddress}:${svc.port}` : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={statusCfg.className}>
+                          {statusCfg.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-slate-500">
+                        {svc.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                       </TableCell>
                     </TableRow>
                   );

@@ -127,12 +127,14 @@ export default async function AdminUsersPage() {
                       <Badge
                         variant="outline"
                         className={
-                          user.twoFactorEnabled
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          (user as any).twoFactorEnabled
                             ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
                             : "bg-slate-500/10 text-slate-500 border-slate-500/20"
                         }
                       >
-                        {user.twoFactorEnabled ? "On" : "Off"}
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {(user as any).twoFactorEnabled ? "On" : "Off"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs text-slate-500">

@@ -20,19 +20,28 @@ import { getServers, getNodes, getUsers } from "@/lib/pelican";
 import { prisma } from "@/lib/db";
 
 async function getStats() {
-  const [pelicanUsers, pelicanServers, pelicanNodes, dbUsers] = await Promise.allSettled([
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [pelicanUsers, pelicanServers, pelicanNodes, dbUsers, activeServices, revenueAgg, openTickets] = await Promise.allSettled([
     getUsers(),
     getServers(),
     getNodes(),
     prisma.user.count(),
+    prisma.service.count({ where: { status: "ACTIVE" } }),
+    prisma.order.aggregate({ where: { status: "PAID", createdAt: { gte: monthStart } }, _sum: { amountCents: true } }),
+    prisma.supportTicket.count({ where: { status: { in: ["OPEN", "IN_PROGRESS"] } } }),
   ]);
 
   const panelUsers = pelicanUsers.status === "fulfilled" ? pelicanUsers.value.meta.pagination.total : 0;
   const totalServers = pelicanServers.status === "fulfilled" ? pelicanServers.value.meta.pagination.total : 0;
   const totalNodes = pelicanNodes.status === "fulfilled" ? pelicanNodes.value.meta.pagination.total : 0;
   const siteUsers = dbUsers.status === "fulfilled" ? dbUsers.value : 0;
+  const dbActiveServices = activeServices.status === "fulfilled" ? activeServices.value : 0;
+  const monthlyRevenueCents = revenueAgg.status === "fulfilled" ? (revenueAgg.value._sum.amountCents ?? 0) : 0;
+  const tickets = openTickets.status === "fulfilled" ? openTickets.value : 0;
 
-  return { panelUsers, totalServers, totalNodes, siteUsers };
+  return { panelUsers, totalServers, totalNodes, siteUsers, dbActiveServices, monthlyRevenueCents, tickets };
 }
 
 interface ActivityItem {
@@ -67,8 +76,9 @@ const statusColors: Record<string, string> = {
 };
 
 export default async function AdminDashboard() {
-  const { panelUsers, totalServers, totalNodes, siteUsers } = await getStats();
+  const { panelUsers, totalServers, totalNodes, siteUsers, dbActiveServices, monthlyRevenueCents, tickets } = await getStats();
   const recentActivity = await getRecentActivity();
+  const monthlyRevenue = (monthlyRevenueCents / 100).toFixed(2);
 
   const stats = [
     {
@@ -81,24 +91,24 @@ export default async function AdminDashboard() {
     },
     {
       label: "Active Servers",
-      value: totalServers.toString(),
-      change: "Pelican",
+      value: (dbActiveServices || totalServers).toString(),
+      change: `${totalNodes} nodes`,
       icon: Server,
       color: "text-green-400",
       bg: "bg-green-400/10",
     },
     {
       label: "Monthly Revenue",
-      value: "$0",
-      change: "Stripe",
+      value: `$${monthlyRevenue}`,
+      change: "this month",
       icon: CreditCard,
       color: "text-purple-400",
       bg: "bg-purple-400/10",
     },
     {
-      label: "Active Nodes",
-      value: totalNodes.toString(),
-      change: "Pelican",
+      label: "Open Tickets",
+      value: tickets.toString(),
+      change: "need attention",
       icon: HardDrive,
       color: "text-cyan-400",
       bg: "bg-cyan-400/10",
