@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth-server";
 import { prisma } from "@/lib/db";
+import { sendTicketReplyEmail } from "@/lib/email";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -37,7 +38,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params;
   const isAdmin = session.user.role === "ADMIN";
 
-  const ticket = await prisma.supportTicket.findUnique({ where: { id } });
+  const ticket = await prisma.supportTicket.findUnique({
+    where: { id },
+    include: { user: { select: { email: true } } },
+  });
   if (!ticket) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (!isAdmin && ticket.userId !== session.user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -69,6 +73,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     where: { id },
     data: { status: newStatus },
   });
+
+  // Email the user when staff replies
+  if (isAdmin) {
+    sendTicketReplyEmail(ticket.user.email, {
+      ticketId: id,
+      subject: ticket.subject,
+      message: message.trim(),
+    }).catch((e) => console.error("[tickets] Reply email failed:", e));
+  }
 
   return NextResponse.json({ success: true });
 }

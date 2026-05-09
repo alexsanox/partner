@@ -244,6 +244,31 @@ export async function sendWelcomeEmail(email: string, name: string) {
   });
 }
 
+export async function sendTicketReplyEmail(email: string, data: { ticketId: string; subject: string; message: string }) {
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: `New reply on your ticket — ${data.subject}`,
+    html: `
+      <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
+        <h2 style="color: #ffffff; font-size: 24px; margin-bottom: 16px;">New Reply on Your Ticket</h2>
+        <p style="color: #8b92a8; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+          Our support team has replied to your ticket: <strong style="color: #ffffff;">${data.subject}</strong>
+        </p>
+        <div style="background-color: #1a1e2e; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+          <p style="color: #e2e8f0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; margin: 0;">${data.message}</p>
+        </div>
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/support/${data.ticketId}" style="display: inline-block; background-color: #5b8cff; color: #ffffff; font-weight: 700; font-size: 14px; padding: 12px 32px; border-radius: 8px; text-decoration: none;">
+          View Ticket
+        </a>
+        <p style="color: #8b92a8; font-size: 12px; margin-top: 24px;">
+          You can reply directly from your dashboard.
+        </p>
+      </div>
+    `,
+  });
+}
+
 export async function sendChangeEmailVerification(email: string, url: string) {
   await resend.emails.send({
     from: FROM,
