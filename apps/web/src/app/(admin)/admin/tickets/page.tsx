@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
 import { TicketActions } from "@/components/admin/ticket-actions";
+import Link from "next/link";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   OPEN: { label: "Open", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
@@ -105,8 +106,10 @@ export default async function AdminTicketsPage() {
                   return (
                     <TableRow key={ticket.id} className="border-white/5 hover:bg-white/[0.02]">
                       <TableCell>
-                        <p className="font-medium text-white">{ticket.subject}</p>
-                        <p className="font-mono text-xs text-slate-600">{ticket.id.slice(0, 10)}</p>
+                        <Link href={`/admin/tickets/${ticket.id}`} className="group">
+                          <p className="font-medium text-white group-hover:text-[#5b8cff] transition-colors">{ticket.subject}</p>
+                          <p className="font-mono text-xs text-slate-600">{ticket.id.slice(0, 10)}</p>
+                        </Link>
                       </TableCell>
                       <TableCell>
                         <div>
