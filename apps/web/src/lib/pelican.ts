@@ -31,13 +31,20 @@ async function pelicanFetch<T>(path: string, options: PelicanRequestOptions = {}
 
 export interface PelicanServer {
   id: number;
+  external_id: string | null;
   uuid: string;
+  identifier: string;
   name: string;
   description: string;
   status: string | null;
+  suspended: boolean;
+  node: number;
   node_id: number;
+  allocation: number;
   allocation_id: number;
+  user: number;
   user_id: number;
+  egg: number;
   limits: {
     memory: number;
     disk: number;
@@ -45,11 +52,19 @@ export interface PelicanServer {
     io: number;
     swap: number;
     threads: string | null;
+    oom_disabled: boolean;
+    oom_killer: boolean;
   };
   feature_limits: {
     databases: number;
     allocations: number;
     backups: number;
+  };
+  container: {
+    startup_command: string;
+    image: string;
+    installed: number;
+    environment: Record<string, string>;
   };
   created_at: string;
   updated_at: string;

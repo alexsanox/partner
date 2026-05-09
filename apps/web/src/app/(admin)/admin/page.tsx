@@ -17,9 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getServers, getNodes, getUsers } from "@/lib/pelican";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/db";
 
 async function getStats() {
   const [pelicanUsers, pelicanServers, pelicanNodes, dbUsers] = await Promise.allSettled([
