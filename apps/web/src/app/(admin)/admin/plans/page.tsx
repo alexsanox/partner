@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PackageOpen } from "lucide-react";
+import { PackageOpen, MemoryStick, Cpu, HardDrive, Users, Check } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -10,13 +10,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
+import { PlanActions } from "@/components/admin/plan-actions";
 
 function formatCents(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
 function formatMb(mb: number): string {
-  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb} MB`;
+  return mb >= 1024 ? `${(mb / 1024).toFixed(0)} GB` : `${mb} MB`;
 }
 
 async function getPlans() {
@@ -30,39 +31,56 @@ async function getPlans() {
 
 export default async function AdminPlansPage() {
   const plans = await getPlans();
+  const activePlans = plans.filter((p) => p.isActive);
+  const totalServices = plans.reduce((s, p) => s + p._count.services, 0);
+  const totalOrders = plans.reduce((s, p) => s + p._count.orders, 0);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Plan Management</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          View and manage hosting plans ({plans.length} total)
+        <p className="mt-1 text-sm text-[#8b92a8]">
+          Manage hosting plans and pricing
         </p>
       </div>
 
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-4">
+        {[
+          { label: "Total Plans", value: plans.length, color: "text-white" },
+          { label: "Active", value: activePlans.length, color: "text-green-400" },
+          { label: "Services", value: totalServices, color: "text-blue-400" },
+          { label: "Orders", value: totalOrders, color: "text-purple-400" },
+        ].map((s) => (
+          <Card key={s.label} className="border-white/5 bg-white/[0.02]">
+            <CardContent className="p-5">
+              <p className="text-xs text-[#8b92a8]">{s.label}</p>
+              <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Table */}
       <Card className="border-white/5 bg-white/[0.02]">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow className="border-white/5 hover:bg-transparent">
-                <TableHead className="text-slate-400">Plan</TableHead>
-                <TableHead className="text-slate-400">Type</TableHead>
-                <TableHead className="text-slate-400">RAM</TableHead>
-                <TableHead className="text-slate-400">CPU</TableHead>
-                <TableHead className="text-slate-400">Disk</TableHead>
-                <TableHead className="text-slate-400">Players</TableHead>
-                <TableHead className="text-slate-400">Monthly</TableHead>
-                <TableHead className="text-slate-400">Orders</TableHead>
-                <TableHead className="text-slate-400">Services</TableHead>
-                <TableHead className="text-slate-400">Status</TableHead>
+                <TableHead className="text-[#8b92a8]">Plan</TableHead>
+                <TableHead className="text-[#8b92a8]">Resources</TableHead>
+                <TableHead className="text-[#8b92a8]">Monthly</TableHead>
+                <TableHead className="text-[#8b92a8]">Usage</TableHead>
+                <TableHead className="text-[#8b92a8]">Status</TableHead>
+                <TableHead className="text-right text-[#8b92a8]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {plans.length === 0 ? (
                 <TableRow className="border-white/5">
-                  <TableCell colSpan={10} className="py-12 text-center text-slate-500">
+                  <TableCell colSpan={6} className="py-12 text-center text-[#8b92a8]">
                     <PackageOpen className="mx-auto mb-3 h-10 w-10 text-slate-600" />
-                    No plans configured. Run the seed script to create plans.
+                    No plans configured
                   </TableCell>
                 </TableRow>
               ) : (
@@ -71,21 +89,38 @@ export default async function AdminPlansPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium text-white">{plan.name}</p>
-                        <p className="text-xs text-slate-500">{plan.slug}</p>
+                        <p className="text-xs text-[#8b92a8]">{plan.slug} &middot; {plan.type}</p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20">
-                        {plan.type}
-                      </Badge>
+                      <div className="flex items-center gap-3 text-xs">
+                        <span className="flex items-center gap-1 text-[#8b92a8]">
+                          <MemoryStick className="h-3 w-3 text-[#5b8cff]" />
+                          <span className="text-white">{formatMb(plan.ramMb)}</span>
+                        </span>
+                        <span className="flex items-center gap-1 text-[#8b92a8]">
+                          <Cpu className="h-3 w-3 text-purple-400" />
+                          <span className="text-white">{plan.cpuPercent}%</span>
+                        </span>
+                        <span className="flex items-center gap-1 text-[#8b92a8]">
+                          <HardDrive className="h-3 w-3 text-green-400" />
+                          <span className="text-white">{formatMb(plan.diskMb)}</span>
+                        </span>
+                        <span className="flex items-center gap-1 text-[#8b92a8]">
+                          <Users className="h-3 w-3 text-cyan-400" />
+                          <span className="text-white">{plan.playerSlots}</span>
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell className="text-slate-300">{formatMb(plan.ramMb)}</TableCell>
-                    <TableCell className="text-slate-300">{plan.cpuPercent}%</TableCell>
-                    <TableCell className="text-slate-300">{formatMb(plan.diskMb)}</TableCell>
-                    <TableCell className="text-slate-300">{plan.playerSlots}</TableCell>
-                    <TableCell className="font-medium text-white">{formatCents(plan.priceMonthly)}</TableCell>
-                    <TableCell className="text-slate-400">{plan._count.orders}</TableCell>
-                    <TableCell className="text-slate-400">{plan._count.services}</TableCell>
+                    <TableCell>
+                      <span className="text-lg font-bold text-white">{formatCents(plan.priceMonthly)}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3 text-xs text-[#8b92a8]">
+                        <span><span className="font-medium text-white">{plan._count.services}</span> services</span>
+                        <span><span className="font-medium text-white">{plan._count.orders}</span> orders</span>
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant="outline"
@@ -98,6 +133,26 @@ export default async function AdminPlansPage() {
                         {plan.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </TableCell>
+                    <TableCell className="text-right">
+                      <PlanActions
+                        plan={{
+                          id: plan.id,
+                          name: plan.name,
+                          description: plan.description,
+                          ramMb: plan.ramMb,
+                          cpuPercent: plan.cpuPercent,
+                          diskMb: plan.diskMb,
+                          playerSlots: plan.playerSlots,
+                          backupSlots: plan.backupSlots,
+                          databaseLimit: plan.databaseLimit,
+                          priceMonthly: plan.priceMonthly,
+                          features: plan.features,
+                          isActive: plan.isActive,
+                          sortOrder: plan.sortOrder,
+                          hasServices: plan._count.services > 0,
+                        }}
+                      />
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -106,64 +161,75 @@ export default async function AdminPlansPage() {
         </CardContent>
       </Card>
 
-      {/* Features detail */}
-      {plans.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-3">
-          {plans.filter((p) => p.isActive).map((plan) => (
-            <Card key={plan.id} className="border-white/5 bg-white/[0.02]">
-              <CardHeader className="p-5 pb-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-white">{plan.name}</h3>
-                  <span className="text-lg font-bold text-white">{formatCents(plan.priceMonthly)}/mo</span>
-                </div>
-                {plan.description && (
-                  <p className="mt-1 text-xs text-slate-500">{plan.description}</p>
-                )}
-              </CardHeader>
-              <CardContent className="border-t border-white/5 p-5 pt-4">
-                <div className="grid grid-cols-2 gap-3 text-xs">
+      {/* Active plan cards */}
+      {activePlans.length > 0 && (
+        <>
+          <h2 className="text-lg font-semibold text-white">Active Plans</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {activePlans.map((plan) => (
+              <Card key={plan.id} className="overflow-hidden border-white/5 bg-white/[0.02]">
+                {/* Header with price */}
+                <div className="flex items-center justify-between border-b border-white/[0.07] p-5">
                   <div>
-                    <span className="text-slate-500">RAM</span>
-                    <p className="font-medium text-white">{formatMb(plan.ramMb)}</p>
+                    <h3 className="font-semibold text-white">{plan.name}</h3>
+                    {plan.description && (
+                      <p className="mt-0.5 text-xs text-[#8b92a8]">{plan.description}</p>
+                    )}
                   </div>
-                  <div>
-                    <span className="text-slate-500">Disk</span>
-                    <p className="font-medium text-white">{formatMb(plan.diskMb)}</p>
-                  </div>
-                  <div>
-                    <span className="text-slate-500">CPU</span>
-                    <p className="font-medium text-white">{plan.cpuPercent}%</p>
-                  </div>
-                  <div>
-                    <span className="text-slate-500">Players</span>
-                    <p className="font-medium text-white">{plan.playerSlots}</p>
-                  </div>
-                  <div>
-                    <span className="text-slate-500">Backups</span>
-                    <p className="font-medium text-white">{plan.backupSlots}</p>
-                  </div>
-                  <div>
-                    <span className="text-slate-500">Databases</span>
-                    <p className="font-medium text-white">{plan.databaseLimit}</p>
+                  <div className="text-right">
+                    <span className="text-2xl font-black text-white">{formatCents(plan.priceMonthly)}</span>
+                    <span className="text-xs text-[#8b92a8]">/mo</span>
                   </div>
                 </div>
-                {plan.features.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {plan.features.map((f) => (
-                      <Badge key={f} variant="outline" className="border-white/10 text-xs text-slate-400">
-                        {f}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-                <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-                  <span>{plan._count.services} active services</span>
-                  <span>{plan._count.orders} orders</span>
+
+                {/* Resources grid */}
+                <div className="grid grid-cols-3 gap-px bg-white/[0.03]">
+                  {[
+                    { label: "RAM", value: formatMb(plan.ramMb), icon: MemoryStick, color: "text-[#5b8cff]" },
+                    { label: "CPU", value: `${plan.cpuPercent}%`, icon: Cpu, color: "text-purple-400" },
+                    { label: "Disk", value: formatMb(plan.diskMb), icon: HardDrive, color: "text-green-400" },
+                  ].map((r) => (
+                    <div key={r.label} className="bg-[#1a1e2e] px-4 py-3 text-center">
+                      <r.icon className={`mx-auto h-4 w-4 ${r.color}`} />
+                      <p className="mt-1 text-sm font-bold text-white">{r.value}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-[#8b92a8]">{r.label}</p>
+                    </div>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+                {/* Features */}
+                <div className="p-5">
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex items-center gap-2 text-[#8b92a8]">
+                      <Users className="h-3 w-3 text-cyan-400" />
+                      <span className="text-white">{plan.playerSlots}</span> players
+                    </div>
+                    <div className="flex items-center gap-2 text-[#8b92a8]">
+                      <span className="text-white">{plan.backupSlots}</span> backups
+                    </div>
+                    <div className="flex items-center gap-2 text-[#8b92a8]">
+                      <span className="text-white">{plan.databaseLimit}</span> databases
+                    </div>
+                  </div>
+                  {plan.features.length > 0 && (
+                    <ul className="mt-3 space-y-1.5 border-t border-white/[0.05] pt-3">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-center gap-2 text-xs text-[#c8cdd8]">
+                          <Check className="h-3.5 w-3.5 text-green-400" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="mt-3 flex items-center justify-between border-t border-white/[0.05] pt-3 text-xs text-[#8b92a8]">
+                    <span>{plan._count.services} active services</span>
+                    <span>{plan._count.orders} orders</span>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
