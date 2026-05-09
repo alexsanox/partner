@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
+import { ServiceActions } from "@/components/admin/service-actions";
 
 const dbStatusConfig: Record<string, { label: string; className: string }> = {
   ACTIVE: { label: "Active", className: "bg-green-500/10 text-green-400 border-green-500/20" },
@@ -84,12 +85,13 @@ export default async function AdminServicesPage() {
                 <TableHead className="text-slate-400">IP</TableHead>
                 <TableHead className="text-slate-400">Status</TableHead>
                 <TableHead className="text-slate-400">Created</TableHead>
+                <TableHead className="text-right text-slate-400">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {services.length === 0 ? (
                 <TableRow className="border-white/5">
-                  <TableCell colSpan={7} className="py-12 text-center text-slate-500">
+                  <TableCell colSpan={8} className="py-12 text-center text-slate-500">
                     <Server className="mx-auto mb-3 h-10 w-10 text-slate-600" />
                     No services yet. Users can create servers from the dashboard.
                   </TableCell>
@@ -130,6 +132,13 @@ export default async function AdminServicesPage() {
                       </TableCell>
                       <TableCell className="text-xs text-slate-500">
                         {svc.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <ServiceActions
+                          serviceId={svc.id}
+                          serviceName={svc.name}
+                          currentStatus={svc.status}
+                        />
                       </TableCell>
                     </TableRow>
                   );

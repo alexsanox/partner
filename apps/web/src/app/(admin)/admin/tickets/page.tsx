@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
+import { TicketActions } from "@/components/admin/ticket-actions";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   OPEN: { label: "Open", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
@@ -86,12 +87,13 @@ export default async function AdminTicketsPage() {
                 <TableHead className="text-slate-400">Status</TableHead>
                 <TableHead className="text-slate-400">Messages</TableHead>
                 <TableHead className="text-slate-400">Created</TableHead>
+                <TableHead className="text-right text-slate-400">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {tickets.length === 0 ? (
                 <TableRow className="border-white/5">
-                  <TableCell colSpan={6} className="py-12 text-center text-slate-500">
+                  <TableCell colSpan={7} className="py-12 text-center text-slate-500">
                     <MessageSquare className="mx-auto mb-3 h-10 w-10 text-slate-600" />
                     No support tickets yet
                   </TableCell>
@@ -125,6 +127,12 @@ export default async function AdminTicketsPage() {
                       <TableCell className="text-slate-400">{ticket._count.messages}</TableCell>
                       <TableCell className="text-xs text-slate-500">
                         {ticket.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <TicketActions
+                          ticketId={ticket.id}
+                          currentStatus={ticket.status}
+                        />
                       </TableCell>
                     </TableRow>
                   );

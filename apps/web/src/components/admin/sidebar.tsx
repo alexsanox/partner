@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { signOut } from "@/lib/auth-client";
 import {
   Server,
   LayoutDashboard,
@@ -11,10 +13,13 @@ import {
   HardDrive,
   Activity,
   Settings,
-  ArrowLeft,
   Shield,
   MessageSquare,
   PackageOpen,
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+  ArrowLeft,
 } from "lucide-react";
 
 const navItems = [
@@ -31,23 +36,42 @@ const navItems = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <aside className="flex h-screen w-60 flex-col border-r border-white/5 bg-[#0f1219]">
+    <aside
+      className={cn(
+        "flex h-screen flex-col border-r border-white/[0.07] bg-[#171b29] transition-all duration-200",
+        collapsed ? "w-[52px]" : "w-[220px]"
+      )}
+    >
       {/* Logo */}
-      <div className="flex h-16 items-center border-b border-white/5 px-4">
-        <Link href="/admin" className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-orange-500">
-            <Shield className="h-4 w-4 text-white" />
+      <div className="flex h-14 items-center justify-between px-3 border-b border-white/[0.07]">
+        <Link href="/admin" className="flex items-center gap-2">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center">
+            <Shield className="h-5 w-5 text-[#5b8cff]" />
           </div>
-          <span className="text-base font-bold text-white">
-            Admin<span className="text-red-400">Panel</span>
-          </span>
+          {!collapsed && (
+            <span className="text-sm font-bold tracking-wide text-white uppercase">
+              Admin
+            </span>
+          )}
         </Link>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="rounded p-1 text-[#8b92a8] hover:text-white transition-colors"
+        >
+          {collapsed ? (
+            <ChevronRight className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronLeft className="h-3.5 w-3.5" />
+          )}
+        </button>
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="flex-1 py-3 px-2 space-y-0.5">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -58,28 +82,41 @@ export function AdminSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "group relative flex items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium transition-all duration-150",
                 isActive
-                  ? "bg-red-600/10 text-red-400"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  ? "bg-[#232839] text-white"
+                  : "text-[#8b92a8] hover:bg-[#1e2336] hover:text-[#c8cdd8]"
               )}
             >
-              <item.icon className="h-4.5 w-4.5 shrink-0" />
-              <span>{item.label}</span>
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#5b8cff]" />
+              )}
+              <item.icon className={cn("h-[18px] w-[18px] shrink-0", isActive ? "text-[#5b8cff]" : "")} />
+              {!collapsed && <span>{item.label}</span>}
             </Link>
           );
         })}
       </nav>
 
-      {/* Back to Dashboard */}
-      <div className="border-t border-white/5 p-3">
+      {/* Bottom */}
+      <div className="border-t border-white/[0.07] p-2 space-y-0.5">
         <Link
           href="/dashboard"
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium text-[#8b92a8] transition-colors hover:bg-[#1e2336] hover:text-white"
         >
-          <ArrowLeft className="h-4.5 w-4.5 shrink-0" />
-          <span>Back to Dashboard</span>
+          <ArrowLeft className="h-[18px] w-[18px] shrink-0" />
+          {!collapsed && <span>Back to Dashboard</span>}
         </Link>
+        <button
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium text-[#8b92a8] transition-colors hover:bg-[#1e2336] hover:text-white"
+          onClick={async () => {
+            await signOut();
+            router.push("/");
+          }}
+        >
+          <LogOut className="h-[18px] w-[18px] shrink-0" />
+          {!collapsed && <span>Sign Out</span>}
+        </button>
       </div>
     </aside>
   );

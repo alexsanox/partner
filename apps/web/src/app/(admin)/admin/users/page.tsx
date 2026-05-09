@@ -10,6 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
+import { getSession } from "@/lib/auth-server";
+import { UserActions } from "@/components/admin/user-actions";
 
 async function getUsers() {
   const users = await prisma.user.findMany({
@@ -34,7 +36,8 @@ async function getUserStats() {
 }
 
 export default async function AdminUsersPage() {
-  const [users, stats] = await Promise.all([getUsers(), getUserStats()]);
+  const [users, stats, session] = await Promise.all([getUsers(), getUserStats(), getSession()]);
+  const currentUserId = session?.user.id ?? "";
 
   return (
     <div className="space-y-6">
@@ -78,12 +81,13 @@ export default async function AdminUsersPage() {
                 <TableHead className="text-slate-400">Verified</TableHead>
                 <TableHead className="text-slate-400">2FA</TableHead>
                 <TableHead className="text-slate-400">Joined</TableHead>
+                <TableHead className="text-right text-slate-400">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.length === 0 ? (
                 <TableRow className="border-white/5">
-                  <TableCell colSpan={7} className="py-12 text-center text-slate-500">
+                  <TableCell colSpan={8} className="py-12 text-center text-slate-500">
                     <Users className="mx-auto mb-3 h-10 w-10 text-slate-600" />
                     No users yet
                   </TableCell>
@@ -139,6 +143,14 @@ export default async function AdminUsersPage() {
                     </TableCell>
                     <TableCell className="text-xs text-slate-500">
                       {user.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <UserActions
+                        userId={user.id}
+                        userName={user.name}
+                        currentRole={user.role}
+                        isSelf={user.id === currentUserId}
+                      />
                     </TableCell>
                   </TableRow>
                 ))

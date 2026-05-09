@@ -4,7 +4,7 @@ import {
   Server,
   Users,
   CreditCard,
-  HardDrive,
+  MessageSquare,
   Activity,
   TrendingUp,
 } from "lucide-react";
@@ -109,7 +109,7 @@ export default async function AdminDashboard() {
       label: "Open Tickets",
       value: tickets.toString(),
       change: "need attention",
-      icon: HardDrive,
+      icon: MessageSquare,
       color: "text-cyan-400",
       bg: "bg-cyan-400/10",
     },
