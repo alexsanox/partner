@@ -1,0 +1,310 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum PlanType {
+  MINECRAFT
+}
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum ServiceStatus {
+  PENDING
+  PROVISIONING
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+  FAILED
+}
+
+enum ProvisioningAction {
+  CREATE
+  SUSPEND
+  UNSUSPEND
+  DELETE
+  RETRY
+}
+
+enum ProvisioningLogStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_REPLY
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum NodeStatus {
+  ACTIVE
+  MAINTENANCE
+  OFFLINE
+}
+
+// ─── Models ─────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+  orders   Order[]
+  services Service[]
+  tickets  SupportTicket[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verifications")
+}
+
+model Plan {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  type        PlanType     @default(MINECRAFT)
+  description String?
+  ramMb       Int
+  cpuPercent  Int
+  diskMb      Int
+  playerSlots Int
+  backupSlots Int          @default(1)
+  databaseLimit Int        @default(0)
+  priceMonthly  Int        // cents
+  priceQuarterly Int?      // cents
+  priceAnnual   Int?       // cents
+  features    String[]     // JSON list of feature strings
+  sortOrder   Int          @default(0)
+  isActive    Boolean      @default(true)
+  stripePriceIdMonthly  String?
+  stripePriceIdQuarterly String?
+  stripePriceIdAnnual   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  orders   Order[]
+  services Service[]
+
+  @@index([slug])
+  @@index([isActive, sortOrder])
+  @@map("plans")
+}
+
+model Order {
+  id               String       @id @default(cuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId           String
+  plan             Plan         @relation(fields: [planId], references: [id])
+  status           OrderStatus  @default(PENDING)
+  billingCycle     BillingCycle @default(MONTHLY)
+  amountCents      Int
+  currency         String       @default("usd")
+  stripeSessionId  String?      @unique
+  stripeInvoiceId  String?
+  stripeSubscriptionId String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  service Service?
+
+  @@index([userId])
+  @@index([stripeSessionId])
+  @@index([stripeSubscriptionId])
+  @@map("orders")
+}
+
+model Service {
+  id                   String        @id @default(cuid())
+  userId               String
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId               String
+  plan                 Plan          @relation(fields: [planId], references: [id])
+  orderId              String        @unique
+  order                Order         @relation(fields: [orderId], references: [id])
+  nodeId               String?
+  node                 Node?         @relation(fields: [nodeId], references: [id])
+  status               ServiceStatus @default(PENDING)
+  name                 String
+  externalServerId     String?       // Pelican/Pterodactyl server ID
+  externalServerUuid   String?
+  ipAddress            String?
+  port                 Int?
+  stripeSubscriptionId String?
+  expiresAt            DateTime?
+  suspendedAt          DateTime?
+  cancelledAt          DateTime?
+  deletedAt            DateTime?     // soft delete
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  provisioningLogs ProvisioningLog[]
+
+  @@index([userId])
+  @@index([nodeId])
+  @@index([status])
+  @@index([externalServerId])
+  @@map("services")
+}
+
+model Node {
+  id          String     @id @default(cuid())
+  name        String
+  fqdn        String     // fully qualified domain name
+  scheme      String     @default("https")
+  daemonPort  Int        @default(8080)
+  status      NodeStatus @default(ACTIVE)
+  location    String
+  maxMemoryMb Int
+  maxDiskMb   Int
+  maxCpu      Int
+  usedMemoryMb Int       @default(0)
+  usedDiskMb   Int       @default(0)
+  usedCpu      Int       @default(0)
+  pelicanNodeId Int?     // external panel node ID
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  services Service[]
+
+  @@index([status])
+  @@map("nodes")
+}
+
+model ProvisioningLog {
+  id        String               @id @default(cuid())
+  serviceId String
+  service   Service              @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  action    ProvisioningAction
+  status    ProvisioningLogStatus @default(QUEUED)
+  attempt   Int                  @default(1)
+  maxRetries Int                 @default(3)
+  error     String?
+  metadata  Json?
+  startedAt DateTime?
+  completedAt DateTime?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@index([serviceId])
+  @@index([status])
+  @@map("provisioning_logs")
+}
+
+model SupportTicket {
+  id         String         @id @default(cuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject    String
+  status     TicketStatus   @default(OPEN)
+  priority   TicketPriority @default(MEDIUM)
+  closedAt   DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  messages TicketMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model TicketMessage {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId String
+  content  String
+  isStaff  Boolean       @default(false)
+  createdAt DateTime     @default(now())
+
+  @@index([ticketId])
+  @@map("ticket_messages")
+}
