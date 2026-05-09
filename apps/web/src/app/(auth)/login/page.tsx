@@ -1,21 +1,41 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { signIn } from "@/lib/auth-client";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Integrate Better Auth sign-in
-    setTimeout(() => setIsLoading(false), 1500);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    const { error: authError } = await signIn.email({
+      email,
+      password,
+    });
+
+    if (authError) {
+      setError(authError.message ?? "Invalid email or password.");
+      setIsLoading(false);
+      return;
+    }
+
+    router.push("/dashboard");
   }
 
   return (
@@ -27,6 +47,11 @@ export default function LoginPage() {
         </p>
       </CardHeader>
       <CardContent className="p-6">
+        {error && (
+          <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
+            {error}
+          </div>
+        )}
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-slate-300">
@@ -34,6 +59,7 @@ export default function LoginPage() {
             </Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="you@example.com"
               required
@@ -54,6 +80,7 @@ export default function LoginPage() {
             </div>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
               required

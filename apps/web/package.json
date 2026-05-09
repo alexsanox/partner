@@ -10,6 +10,10 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
+    "@partner/db": "workspace:*",
+    "@partner/shared": "workspace:*",
+    "@prisma/client": "6.19.3",
+    "better-auth": "^1.6.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -30,6 +34,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "prisma": "6.19.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

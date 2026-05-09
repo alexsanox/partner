@@ -1,21 +1,43 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { signUp } from "@/lib/auth-client";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Integrate Better Auth sign-up
-    setTimeout(() => setIsLoading(false), 1500);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    const { error: authError } = await signUp.email({
+      name,
+      email,
+      password,
+    });
+
+    if (authError) {
+      setError(authError.message ?? "Something went wrong. Please try again.");
+      setIsLoading(false);
+      return;
+    }
+
+    router.push("/dashboard");
   }
 
   return (
@@ -27,6 +49,11 @@ export default function RegisterPage() {
         </p>
       </CardHeader>
       <CardContent className="p-6">
+        {error && (
+          <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
+            {error}
+          </div>
+        )}
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="text-slate-300">
@@ -34,6 +61,7 @@ export default function RegisterPage() {
             </Label>
             <Input
               id="name"
+              name="name"
               type="text"
               placeholder="Your name"
               required
@@ -46,6 +74,7 @@ export default function RegisterPage() {
             </Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="you@example.com"
               required
@@ -58,6 +87,7 @@ export default function RegisterPage() {
             </Label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
               required
