@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MoreHorizontal } from "lucide-react";
+import { Search, MoreHorizontal, Server } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -11,25 +11,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const mockServices = [
-  { id: "srv_abc123", name: "Survival SMP", user: "alex@example.com", plan: "Pro", ram: "8 GB", status: "ACTIVE", node: "node-us-east-1", created: "Jan 20, 2026" },
-  { id: "srv_def456", name: "Creative Build", user: "sarah@example.com", plan: "Essential", ram: "4 GB", status: "ACTIVE", node: "node-eu-west-1", created: "Feb 15, 2026" },
-  { id: "srv_ghi789", name: "Modded Fabric", user: "mike@example.com", plan: "Enterprise", ram: "16 GB", status: "SUSPENDED", node: "node-us-east-1", created: "Mar 1, 2026" },
-  { id: "srv_jkl012", name: "Vanilla Server", user: "emma@example.com", plan: "Starter", ram: "2 GB", status: "FAILED", node: "node-us-west-1", created: "Apr 5, 2026" },
-  { id: "srv_mno345", name: "Pixelmon", user: "david@example.com", plan: "Pro", ram: "8 GB", status: "PROVISIONING", node: "node-eu-west-1", created: "May 9, 2026" },
-];
+import { getServers, type PelicanServer } from "@/lib/pelican";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  ACTIVE: { label: "Active", className: "bg-green-500/10 text-green-400 border-green-500/20" },
-  SUSPENDED: { label: "Suspended", className: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
-  PROVISIONING: { label: "Provisioning", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  FAILED: { label: "Failed", className: "bg-red-500/10 text-red-400 border-red-500/20" },
-  PENDING: { label: "Pending", className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
-  CANCELLED: { label: "Cancelled", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
+  running: { label: "Running", className: "bg-green-500/10 text-green-400 border-green-500/20" },
+  suspended: { label: "Suspended", className: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
+  installing: { label: "Installing", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  offline: { label: "Offline", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
 };
 
-export default function AdminServicesPage() {
+const defaultStatus = { label: "Unknown", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" };
+
+export default async function AdminServicesPage() {
+  let servers: PelicanServer[] = [];
+  try {
+    const res = await getServers();
+    servers = res.data.map((s: { attributes: PelicanServer }) => s.attributes);
+  } catch {
+    // Pelican unreachable
+  }
   return (
     <div className="space-y-6">
       <div>
@@ -64,34 +64,43 @@ export default function AdminServicesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockServices.map((svc) => {
-                const status = statusConfig[svc.status] ?? statusConfig.PENDING;
-                return (
-                  <TableRow key={svc.id} className="border-white/5 hover:bg-white/[0.02]">
-                    <TableCell>
-                      <div>
-                        <p className="font-medium text-white">{svc.name}</p>
-                        <p className="font-mono text-xs text-slate-500">{svc.id}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-slate-400">{svc.user}</TableCell>
-                    <TableCell>
-                      <span className="text-sm text-white">{svc.plan}</span>
-                      <span className="ml-1 text-xs text-slate-500">{svc.ram}</span>
-                    </TableCell>
-                    <TableCell className="font-mono text-xs text-slate-400">{svc.node}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={status.className}>{status.label}</Badge>
-                    </TableCell>
-                    <TableCell className="text-slate-500 text-xs">{svc.created}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {servers.length === 0 ? (
+                <TableRow className="border-white/5">
+                  <TableCell colSpan={7} className="text-center text-slate-500 py-12">
+                    <Server className="mx-auto mb-3 h-10 w-10 text-slate-600" />
+                    No servers found. Create one from the Pelican panel.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                servers.map((svc: PelicanServer) => {
+                  const status = statusConfig[svc.status ?? "offline"] ?? defaultStatus;
+                  return (
+                    <TableRow key={svc.id} className="border-white/5 hover:bg-white/[0.02]">
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-white">{svc.name}</p>
+                          <p className="font-mono text-xs text-slate-500">{svc.uuid.slice(0, 8)}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-slate-400">User #{svc.user_id}</TableCell>
+                      <TableCell>
+                        <span className="text-sm text-white">{svc.limits.memory} MB</span>
+                        <span className="ml-1 text-xs text-slate-500">RAM</span>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-slate-400">Node #{svc.node_id}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={status.className}>{status.label}</Badge>
+                      </TableCell>
+                      <TableCell className="text-slate-500 text-xs">{new Date(svc.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -16,79 +16,50 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getServers, getNodes, getUsers } from "@/lib/pelican";
+import { PrismaClient } from "@prisma/client";
 
-const stats = [
-  {
-    label: "Total Users",
-    value: "1,247",
-    change: "+12%",
-    icon: Users,
-    color: "text-blue-400",
-    bg: "bg-blue-400/10",
-  },
-  {
-    label: "Active Services",
-    value: "892",
-    change: "+8%",
-    icon: Server,
-    color: "text-green-400",
-    bg: "bg-green-400/10",
-  },
-  {
-    label: "Monthly Revenue",
-    value: "$8,934",
-    change: "+15%",
-    icon: CreditCard,
-    color: "text-purple-400",
-    bg: "bg-purple-400/10",
-  },
-  {
-    label: "Active Nodes",
-    value: "6",
-    change: "Healthy",
-    icon: HardDrive,
-    color: "text-cyan-400",
-    bg: "bg-cyan-400/10",
-  },
-];
+const prisma = new PrismaClient();
 
-const recentActivity = [
-  {
-    action: "Server Created",
-    user: "alex@example.com",
-    detail: "Survival SMP — Pro Plan",
-    time: "2 min ago",
-    status: "success",
-  },
-  {
-    action: "Payment Received",
-    user: "sarah@example.com",
-    detail: "$9.99 — Enterprise Plan",
-    time: "15 min ago",
-    status: "success",
-  },
-  {
-    action: "Server Suspended",
-    user: "mike@example.com",
-    detail: "Modded Server — Payment overdue",
-    time: "1 hour ago",
-    status: "warning",
-  },
-  {
-    action: "Provisioning Failed",
-    user: "emma@example.com",
-    detail: "No available allocations on node-3",
-    time: "2 hours ago",
-    status: "error",
-  },
-  {
-    action: "New User Registered",
-    user: "david@example.com",
-    detail: "Email verified",
-    time: "3 hours ago",
-    status: "info",
-  },
-];
+async function getStats() {
+  const [pelicanUsers, pelicanServers, pelicanNodes, dbUsers] = await Promise.allSettled([
+    getUsers(),
+    getServers(),
+    getNodes(),
+    prisma.user.count(),
+  ]);
+
+  const panelUsers = pelicanUsers.status === "fulfilled" ? pelicanUsers.value.meta.pagination.total : 0;
+  const totalServers = pelicanServers.status === "fulfilled" ? pelicanServers.value.meta.pagination.total : 0;
+  const totalNodes = pelicanNodes.status === "fulfilled" ? pelicanNodes.value.meta.pagination.total : 0;
+  const siteUsers = dbUsers.status === "fulfilled" ? dbUsers.value : 0;
+
+  return { panelUsers, totalServers, totalNodes, siteUsers };
+}
+
+interface ActivityItem {
+  action: string;
+  user: string;
+  detail: string;
+  time: string;
+  status: string;
+}
+
+async function getRecentActivity(): Promise<ActivityItem[]> {
+  const logs = await prisma.provisioningLog.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 5,
+    include: { service: { include: { user: true } } },
+  });
+
+  return logs.map((log: { action: string; service: { user: { email: string }; name: string }; createdAt: Date; status: string }) => ({
+    action: log.action,
+    user: log.service.user.email,
+    detail: log.service.name,
+    time: log.createdAt.toISOString(),
+    status: log.status === "COMPLETED" ? "success" : log.status === "FAILED" ? "error" : "info",
+  }));
+}
 
 const statusColors: Record<string, string> = {
   success: "bg-green-500/10 text-green-400 border-green-500/20",
@@ -97,7 +68,44 @@ const statusColors: Record<string, string> = {
   info: "bg-blue-500/10 text-blue-400 border-blue-500/20",
 };
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const { panelUsers, totalServers, totalNodes, siteUsers } = await getStats();
+  const recentActivity = await getRecentActivity();
+
+  const stats = [
+    {
+      label: "Site Users",
+      value: siteUsers.toString(),
+      change: `${panelUsers} panel`,
+      icon: Users,
+      color: "text-blue-400",
+      bg: "bg-blue-400/10",
+    },
+    {
+      label: "Active Servers",
+      value: totalServers.toString(),
+      change: "Pelican",
+      icon: Server,
+      color: "text-green-400",
+      bg: "bg-green-400/10",
+    },
+    {
+      label: "Monthly Revenue",
+      value: "$0",
+      change: "Stripe",
+      icon: CreditCard,
+      color: "text-purple-400",
+      bg: "bg-purple-400/10",
+    },
+    {
+      label: "Active Nodes",
+      value: totalNodes.toString(),
+      change: "Pelican",
+      icon: HardDrive,
+      color: "text-cyan-400",
+      bg: "bg-cyan-400/10",
+    },
+  ];
   return (
     <div className="space-y-8">
       <div>
@@ -154,29 +162,37 @@ export default function AdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentActivity.map((item, i) => (
-                <TableRow
-                  key={i}
-                  className="border-white/5 hover:bg-white/[0.02]"
-                >
-                  <TableCell className="font-medium text-white">
-                    {item.action}
-                  </TableCell>
-                  <TableCell className="text-slate-400">{item.user}</TableCell>
-                  <TableCell className="text-slate-300">
-                    {item.detail}
-                  </TableCell>
-                  <TableCell className="text-slate-500">{item.time}</TableCell>
-                  <TableCell className="text-right">
-                    <Badge
-                      variant="outline"
-                      className={statusColors[item.status]}
-                    >
-                      {item.status}
-                    </Badge>
+              {recentActivity.length === 0 ? (
+                <TableRow className="border-white/5">
+                  <TableCell colSpan={5} className="text-center text-slate-500 py-8">
+                    No activity yet. Provisioning logs will appear here.
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                recentActivity.map((item: ActivityItem, i: number) => (
+                  <TableRow
+                    key={i}
+                    className="border-white/5 hover:bg-white/[0.02]"
+                  >
+                    <TableCell className="font-medium text-white">
+                      {item.action}
+                    </TableCell>
+                    <TableCell className="text-slate-400">{item.user}</TableCell>
+                    <TableCell className="text-slate-300">
+                      {item.detail}
+                    </TableCell>
+                    <TableCell className="text-slate-500">{item.time}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant="outline"
+                        className={statusColors[item.status]}
+                      >
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
