@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, CheckCircle, RotateCcw, XCircle, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 
 interface OrderActionsProps {
   orderId: string;
@@ -20,11 +22,17 @@ interface OrderActionsProps {
 export function OrderActions({ orderId, currentStatus, hasService }: OrderActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { confirm } = useConfirm();
 
   async function handleAction(action: string) {
-    const destructive = action === "delete";
-    if (destructive && !confirm("Delete this order? This cannot be undone.")) return;
-    if (action === "refund" && !confirm("Mark this order as refunded?")) return;
+    if (action === "delete") {
+      const ok = await confirm({ title: "Delete Order", description: "Delete this order? This cannot be undone.", confirmLabel: "Delete", variant: "destructive" });
+      if (!ok) return;
+    }
+    if (action === "refund") {
+      const ok = await confirm({ title: "Refund Order", description: "Mark this order as refunded?", confirmLabel: "Refund", variant: "destructive" });
+      if (!ok) return;
+    }
 
     setLoading(true);
     try {
@@ -35,11 +43,11 @@ export function OrderActions({ orderId, currentStatus, hasService }: OrderAction
       });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Action failed");
+        toast.error(data.error || "Action failed");
       }
       router.refresh();
     } catch {
-      alert("Action failed");
+      toast.error("Action failed");
     } finally {
       setLoading(false);
     }

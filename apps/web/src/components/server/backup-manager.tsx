@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef, type MouseEvent as ReactMouseEvent } from "react";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import {
   Archive,
   Plus,
@@ -70,6 +71,7 @@ function timeAgo(iso: string): string {
 }
 
 export function BackupManager({ serverId, backupLimit }: BackupManagerProps) {
+  const { confirm } = useConfirm();
   const [backups, setBackups] = useState<Backup[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -166,13 +168,15 @@ export function BackupManager({ serverId, backupLimit }: BackupManagerProps) {
     }
   };
 
-  const handleRestore = (uuid: string, name: string) => {
-    if (!confirm(`Restore backup "${name}"? This will overwrite current server files.`)) return;
+  const handleRestore = async (uuid: string, name: string) => {
+    const ok = await confirm({ title: "Restore Backup", description: `Restore backup "${name}"? This will overwrite current server files.`, confirmLabel: "Restore", variant: "destructive" });
+    if (!ok) return;
     doAction("restore", uuid);
   };
 
-  const handleDelete = (uuid: string, name: string) => {
-    if (!confirm(`Delete backup "${name}"? This cannot be undone.`)) return;
+  const handleDelete = async (uuid: string, name: string) => {
+    const ok = await confirm({ title: "Delete Backup", description: `Delete backup "${name}"? This cannot be undone.`, confirmLabel: "Delete", variant: "destructive" });
+    if (!ok) return;
     doAction("delete", uuid);
   };
 

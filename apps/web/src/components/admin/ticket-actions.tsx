@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, CheckCircle, XCircle, RotateCcw, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface TicketActionsProps {
   ticketId: string;
@@ -30,11 +31,11 @@ export function TicketActions({ ticketId, currentStatus }: TicketActionsProps) {
       });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Action failed");
+        toast.error(data.error || "Action failed");
       }
       router.refresh();
     } catch {
-      alert("Action failed");
+      toast.error("Action failed");
     } finally {
       setLoading(false);
     }

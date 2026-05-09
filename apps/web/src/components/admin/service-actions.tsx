@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Pause, Play, XCircle, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 
 interface ServiceActionsProps {
   serviceId: string;
@@ -20,11 +22,13 @@ interface ServiceActionsProps {
 export function ServiceActions({ serviceId, serviceName, currentStatus }: ServiceActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { confirm } = useConfirm();
 
   async function handleAction(action: string) {
-    const destructive = action === "delete" || action === "cancel";
-    if (destructive && !confirm(`${action === "delete" ? "Delete" : "Cancel"} service "${serviceName}"?`)) {
-      return;
+    if (action === "delete" || action === "cancel") {
+      const label = action === "delete" ? "Delete" : "Cancel";
+      const ok = await confirm({ title: `${label} Service`, description: `${label} service "${serviceName}"?`, confirmLabel: label, variant: "destructive" });
+      if (!ok) return;
     }
 
     setLoading(true);
@@ -36,11 +40,11 @@ export function ServiceActions({ serviceId, serviceName, currentStatus }: Servic
       });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Action failed");
+        toast.error(data.error || "Action failed");
       }
       router.refresh();
     } catch {
-      alert("Action failed");
+      toast.error("Action failed");
     } finally {
       setLoading(false);
     }

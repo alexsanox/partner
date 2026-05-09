@@ -10,6 +10,7 @@ import {
   ArrowLeft, Loader2, Send, User, Headphones,
   CheckCircle, XCircle, RotateCcw,
 } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 
 interface Message {
@@ -86,10 +87,10 @@ export default function AdminTicketDetailPage() {
         await fetchTicket();
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to send reply");
+        toast.error(data.error || "Failed to send reply");
       }
     } catch {
-      alert("Failed to send reply");
+      toast.error("Failed to send reply");
     }
     setSending(false);
   }
@@ -106,10 +107,10 @@ export default function AdminTicketDetailPage() {
         await fetchTicket();
       } else {
         const data = await res.json();
-        alert(data.error || "Action failed");
+        toast.error(data.error || "Action failed");
       }
     } catch {
-      alert("Action failed");
+      toast.error("Action failed");
     }
     setActionLoading(false);
   }

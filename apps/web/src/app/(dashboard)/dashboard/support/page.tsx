@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Info, Plus, MessageSquare, Loader2, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 
@@ -70,10 +71,10 @@ export default function SupportPage() {
         await fetchTickets();
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to create ticket");
+        toast.error(data.error || "Failed to create ticket");
       }
     } catch {
-      alert("Failed to create ticket");
+      toast.error("Failed to create ticket");
     }
     setCreating(false);
   }

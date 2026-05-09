@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Loader2, Send, User, Headphones } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 
 interface Message {
@@ -82,10 +83,10 @@ export default function TicketDetailPage() {
         await fetchTicket();
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to send reply");
+        toast.error(data.error || "Failed to send reply");
       }
     } catch {
-      alert("Failed to send reply");
+      toast.error("Failed to send reply");
     }
     setSending(false);
   }

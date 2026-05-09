@@ -20,6 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MoreHorizontal, Pencil, Power, Trash2, Loader2, Save } from "lucide-react";
+import { toast } from "sonner";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 
 interface PlanData {
   id: string;
@@ -41,6 +43,7 @@ interface PlanData {
 export function PlanActions({ plan }: { plan: PlanData }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { confirm } = useConfirm();
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState({
     name: plan.name,
@@ -57,7 +60,10 @@ export function PlanActions({ plan }: { plan: PlanData }) {
   });
 
   async function handleAction(action: string) {
-    if (action === "delete" && !confirm(`Delete plan "${plan.name}"? This cannot be undone.`)) return;
+    if (action === "delete") {
+      const ok = await confirm({ title: "Delete Plan", description: `Delete plan "${plan.name}"? This cannot be undone.`, confirmLabel: "Delete", variant: "destructive" });
+      if (!ok) return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/admin/plans", {
@@ -67,11 +73,11 @@ export function PlanActions({ plan }: { plan: PlanData }) {
       });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Action failed");
+        toast.error(data.error || "Action failed");
       }
       router.refresh();
     } catch {
-      alert("Action failed");
+      toast.error("Action failed");
     } finally {
       setLoading(false);
     }
@@ -104,13 +110,13 @@ export function PlanActions({ plan }: { plan: PlanData }) {
       });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Save failed");
+        toast.error(data.error || "Save failed");
       } else {
         setEditOpen(false);
         router.refresh();
       }
     } catch {
-      alert("Save failed");
+      toast.error("Save failed");
     } finally {
       setLoading(false);
     }

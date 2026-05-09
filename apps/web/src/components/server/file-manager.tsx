@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import {
   Folder,
   FileText,
@@ -50,6 +51,7 @@ function formatDate(iso: string): string {
 }
 
 export function FileManager({ serverId }: FileManagerProps) {
+  const { confirm } = useConfirm();
   const [cwd, setCwd] = useState("/");
   const [files, setFiles] = useState<FileObject[]>([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +113,8 @@ export function FileManager({ serverId }: FileManagerProps) {
   };
 
   const deleteItems = async (names: string[]) => {
-    if (!confirm(`Delete ${names.length} item${names.length > 1 ? "s" : ""}?`)) return;
+    const ok = await confirm({ title: "Delete Items", description: `Delete ${names.length} item${names.length > 1 ? "s" : ""}? This cannot be undone.`, confirmLabel: "Delete", variant: "destructive" });
+    if (!ok) return;
     try {
       await fetch(`/api/pelican/servers/${serverId}/files`, {
         method: "POST", headers: { "Content-Type": "application/json" },

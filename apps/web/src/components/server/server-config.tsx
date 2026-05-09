@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import { Save, Loader2, RotateCcw, Copy, Check } from "lucide-react";
 
 interface StartupVariable {
@@ -30,6 +31,7 @@ export function ServerConfig({
   sftpDetails,
   allocation,
 }: ServerConfigProps) {
+  const { confirm } = useConfirm();
   const safeVars = variables ?? [];
   const [vars, setVars] = useState<Record<string, string>>(() => {
     const map: Record<string, string> = {};
@@ -117,7 +119,8 @@ export function ServerConfig({
   };
 
   const handleReinstall = async () => {
-    if (!confirm("Are you sure you want to reinstall? This will erase all server data!")) return;
+    const ok = await confirm({ title: "Reinstall Server", description: "Are you sure you want to reinstall? This will erase all server data!", confirmLabel: "Reinstall", variant: "destructive" });
+    if (!ok) return;
     setReinstalling(true);
     try {
       await fetch(`/api/pelican/servers/${serverId}/settings`, {
