@@ -14,9 +14,235 @@ import {
 } from "@/components/ui/table";
 import {
   Loader2, Egg, ChevronDown, ChevronRight, Variable, Container,
-  Terminal, Eye, EyeOff, Pencil, Lock,
+  Terminal, Eye, EyeOff, Pencil, Lock, Plus, X, Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+
+// ── Default docker images for quick-fill ──────────────────────────────────────
+const JAVA_IMAGES: Record<string, string> = {
+  "Java 8":  "ghcr.io/pelican-eggs/yolks:java_8",
+  "Java 11": "ghcr.io/pelican-eggs/yolks:java_11",
+  "Java 16": "ghcr.io/pelican-eggs/yolks:java_16",
+  "Java 17": "ghcr.io/pelican-eggs/yolks:java_17",
+  "Java 21": "ghcr.io/pelican-eggs/yolks:java_21",
+  "Java 25": "ghcr.io/pelican-eggs/yolks:java_25",
+};
+
+interface NewVariable {
+  name: string;
+  env_variable: string;
+  default_value: string;
+  description: string;
+  user_viewable: boolean;
+  user_editable: boolean;
+  rules: string;
+}
+
+interface DockerImageRow {
+  label: string;
+  image: string;
+}
+
+const EMPTY_VAR = (): NewVariable => ({
+  name: "", env_variable: "", default_value: "", description: "",
+  user_viewable: true, user_editable: true, rules: "nullable|string",
+});
+
+// ── Create Egg Modal ──────────────────────────────────────────────────────────
+function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [startup, setStartup] = useState("java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}");
+  const [dockerRows, setDockerRows] = useState<DockerImageRow[]>([
+    { label: "Java 21", image: JAVA_IMAGES["Java 21"] },
+    { label: "Java 25", image: JAVA_IMAGES["Java 25"] },
+  ]);
+  const [variables, setVariables] = useState<NewVariable[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  const addDockerRow = () => setDockerRows((r) => [...r, { label: "", image: "" }]);
+  const removeDockerRow = (i: number) => setDockerRows((r) => r.filter((_, idx) => idx !== i));
+  const updateDockerRow = (i: number, field: "label" | "image", val: string) =>
+    setDockerRows((r) => r.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
+
+  const addVariable = () => setVariables((v) => [...v, EMPTY_VAR()]);
+  const removeVariable = (i: number) => setVariables((v) => v.filter((_, idx) => idx !== i));
+  const updateVariable = (i: number, field: keyof NewVariable, val: string | boolean) =>
+    setVariables((v) => v.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
+
+  const handleSubmit = async () => {
+    if (!name.trim() || !startup.trim() || dockerRows.some((r) => !r.label || !r.image)) {
+      toast.error("Fill in all required fields (name, startup, docker images)");
+      return;
+    }
+    setSaving(true);
+    const docker_images: Record<string, string> = {};
+    dockerRows.forEach((r) => { docker_images[r.label] = r.image; });
+
+    try {
+      const res = await fetch("/api/admin/eggs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description, startup, docker_images, variables }),
+      });
+      const data = await res.json();
+      if (!res.ok) { toast.error(data.error || "Failed to create egg"); return; }
+      toast.success(`Egg "${name}" created successfully`);
+      onCreated();
+      onClose();
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-16">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-2xl rounded-2xl border border-white/10 bg-[#13161f] shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-white/[0.07] px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#5b8cff]/10">
+              <Egg className="h-4 w-4 text-[#5b8cff]" />
+            </div>
+            <h2 className="text-[15px] font-bold text-white">Create New Egg</h2>
+          </div>
+          <button onClick={onClose} className="text-[#8b92a8] hover:text-white transition-colors">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-5">
+          {/* Name + Description */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#8b92a8] uppercase tracking-wider">Name *</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Paper"
+                className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#8b92a8] uppercase tracking-wider">Description</label>
+              <input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Short description"
+                className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+              />
+            </div>
+          </div>
+
+          {/* Startup */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[#8b92a8] uppercase tracking-wider flex items-center gap-1.5">
+              <Terminal className="h-3 w-3" /> Startup Command *
+            </label>
+            <input
+              value={startup}
+              onChange={(e) => setStartup(e.target.value)}
+              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-[#5b8cff] font-mono placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+            />
+          </div>
+
+          {/* Docker Images */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-[#8b92a8] uppercase tracking-wider flex items-center gap-1.5">
+                <Container className="h-3 w-3" /> Docker Images *
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setDockerRows(Object.entries(JAVA_IMAGES).map(([label, image]) => ({ label, image })))}
+                  className="text-[11px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors"
+                >
+                  Fill all Java
+                </button>
+                <button onClick={addDockerRow} className="flex items-center gap-1 text-[11px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors">
+                  <Plus className="h-3 w-3" /> Add
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {dockerRows.map((row, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <input
+                    value={row.label}
+                    onChange={(e) => updateDockerRow(i, "label", e.target.value)}
+                    placeholder="Label (e.g. Java 21)"
+                    className="w-32 shrink-0 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+                  />
+                  <input
+                    value={row.image}
+                    onChange={(e) => updateDockerRow(i, "image", e.target.value)}
+                    placeholder="ghcr.io/pelican-eggs/yolks:java_21"
+                    className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-[#8b92a8] font-mono placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+                  />
+                  <button onClick={() => removeDockerRow(i)} className="text-red-400/60 hover:text-red-400 transition-colors shrink-0">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Variables */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-[#8b92a8] uppercase tracking-wider flex items-center gap-1.5">
+                <Variable className="h-3 w-3" /> Environment Variables
+              </label>
+              <button onClick={addVariable} className="flex items-center gap-1 text-[11px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors">
+                <Plus className="h-3 w-3" /> Add Variable
+              </button>
+            </div>
+            {variables.length === 0 && (
+              <p className="text-[12px] text-[#4a5068] italic">No variables. Click &quot;Add Variable&quot; to add one.</p>
+            )}
+            {variables.map((v, i) => (
+              <div key={i} className="rounded-lg border border-white/[0.07] bg-[#1a1e2e] p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#8b92a8] uppercase tracking-wider">Variable {i + 1}</span>
+                  <button onClick={() => removeVariable(i)} className="text-red-400/60 hover:text-red-400 transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input value={v.name} onChange={(e) => updateVariable(i, "name", e.target.value)} placeholder="Display name" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40" />
+                  <input value={v.env_variable} onChange={(e) => updateVariable(i, "env_variable", e.target.value.toUpperCase())} placeholder="ENV_VARIABLE" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white font-mono placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40" />
+                  <input value={v.default_value} onChange={(e) => updateVariable(i, "default_value", e.target.value)} placeholder="Default value" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40" />
+                  <input value={v.description} onChange={(e) => updateVariable(i, "description", e.target.value)} placeholder="Description" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40" />
+                </div>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked={v.user_viewable} onChange={(e) => updateVariable(i, "user_viewable", e.target.checked)} className="rounded" />
+                    <span className="text-[11px] text-[#8b92a8]">User Viewable</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input type="checkbox" checked={v.user_editable} onChange={(e) => updateVariable(i, "user_editable", e.target.checked)} className="rounded" />
+                    <span className="text-[11px] text-[#8b92a8]">User Editable</span>
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 border-t border-white/[0.07] px-6 py-4">
+          <Button variant="outline" onClick={onClose} className="border-white/10 text-[#8b92a8] hover:text-white">Cancel</Button>
+          <Button onClick={handleSubmit} disabled={saving} className="bg-[#5b8cff] hover:bg-[#4a7bef] text-white">
+            {saving ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />Creating...</> : <><Plus className="h-4 w-4 mr-2" />Create Egg</>}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface EggVariable {
   name: string;
@@ -41,6 +267,7 @@ export default function AdminEggsPage() {
   const [eggs, setEggs] = useState<EggData[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   const fetchEggs = useCallback(async () => {
     try {
@@ -69,12 +296,21 @@ export default function AdminEggsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Eggs</h1>
-        <p className="mt-1 text-sm text-[#8b92a8]">
-          Pelican server eggs available for plan configuration. These are synced from your panel.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Eggs</h1>
+          <p className="mt-1 text-sm text-[#8b92a8]">
+            Pelican server eggs available for plan configuration. These are synced from your panel.
+          </p>
+        </div>
+        <Button onClick={() => setShowCreate(true)} className="bg-[#5b8cff] hover:bg-[#4a7bef] text-white shrink-0">
+          <Plus className="h-4 w-4 mr-2" /> Create Egg
+        </Button>
       </div>
+
+      {showCreate && (
+        <CreateEggModal onClose={() => setShowCreate(false)} onCreated={fetchEggs} />
+      )}
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-3">

@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth-server";
-import { getEggs, getEgg } from "@/lib/pelican";
+import { getEggs, getEgg, createEgg } from "@/lib/pelican";
 
 async function requireAdmin() {
   const session = await getSession();
@@ -71,6 +71,33 @@ export async function GET() {
   } catch (err) {
     console.error("[admin/eggs] Failed to fetch eggs:", err);
     const message = err instanceof Error ? err.message : "Failed to fetch eggs";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const session = await requireAdmin();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+
+  try {
+    const body = await req.json();
+    const { name, description, startup, docker_images, variables } = body as {
+      name: string;
+      description?: string;
+      startup: string;
+      docker_images: Record<string, string>;
+      variables?: { name: string; description?: string; env_variable: string; default_value?: string; user_viewable?: boolean; user_editable?: boolean; rules?: string }[];
+    };
+
+    if (!name || !startup || !docker_images || Object.keys(docker_images).length === 0) {
+      return NextResponse.json({ error: "name, startup, and at least one docker_image are required" }, { status: 400 });
+    }
+
+    const result = await createEgg({ name, description, startup, docker_images, variables });
+    return NextResponse.json(result, { status: 201 });
+  } catch (err) {
+    console.error("[admin/eggs POST]", err);
+    const message = err instanceof Error ? err.message : "Failed to create egg";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -259,6 +259,24 @@ export async function getEgg(id: number) {
   return res.attributes;
 }
 
+export async function createEgg(data: {
+  name: string;
+  description?: string;
+  startup: string;
+  docker_images: Record<string, string>;
+  variables?: {
+    name: string;
+    description?: string;
+    env_variable: string;
+    default_value?: string;
+    user_viewable?: boolean;
+    user_editable?: boolean;
+    rules?: string;
+  }[];
+}) {
+  return pelicanFetch<{ attributes: PelicanEgg }>("/eggs", { method: "POST", body: data });
+}
+
 // ─── Client API ──────────────────────────────────────────────────────────────
 
 async function clientFetch<T>(path: string, options: PelicanRequestOptions = {}): Promise<T> {
