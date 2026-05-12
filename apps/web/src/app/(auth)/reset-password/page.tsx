@@ -164,7 +164,7 @@ function ResetPasswordForm() {
           </div>
           <Button
             type="submit"
-            className="w-full bg-[#00c98d] text-white hover:bg-[#00b07d]"
+            className="w-full bg-[#00c98d] text-white hover:bg-[#00e0a0]"
             disabled={loading}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

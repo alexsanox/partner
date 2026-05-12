@@ -330,7 +330,7 @@ function ProjectDetail({
                         </Button>
                         <Button
                           size="sm"
-                          className="bg-[#00c98d] hover:bg-[#00b07d] text-white text-xs gap-1.5 min-w-[110px]"
+                          className="bg-[#00c98d] hover:bg-[#00e0a0] text-white text-xs gap-1.5 min-w-[110px]"
                           onClick={() => installToServer(ver)}
                           disabled={isInstalling}
                         >
@@ -469,7 +469,7 @@ export function ServerStore({ serverId }: { serverId: string }) {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search plugins, mods..." className="pl-9 border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]" />
         </div>
-        <Button type="submit" className="bg-[#00c98d] hover:bg-[#00b07d] text-white">Search</Button>
+        <Button type="submit" className="bg-[#00c98d] hover:bg-[#00e0a0] text-white">Search</Button>
       </form>
 
       {/* Category tabs */}

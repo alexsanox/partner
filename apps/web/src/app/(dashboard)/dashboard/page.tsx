@@ -65,7 +65,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <Link href="/dashboard/services/create">
-          <Button className="bg-[#00c98d] text-white hover:bg-[#00b07d]">
+          <Button className="bg-[#00c98d] text-white hover:bg-[#00e0a0]">
             <Plus className="mr-2 h-4 w-4" />
             New Server
           </Button>
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
               <p className="text-lg font-medium text-slate-400">No servers yet</p>
               <p className="mt-1 text-sm text-slate-500">Create your first server to get started</p>
               <Link href="/dashboard/services/create" className="mt-4">
-                <Button className="bg-[#00c98d] text-white hover:bg-[#00b07d]">
+                <Button className="bg-[#00c98d] text-white hover:bg-[#00e0a0]">
                   <Plus className="mr-2 h-4 w-4" />
                   Create Server
                 </Button>

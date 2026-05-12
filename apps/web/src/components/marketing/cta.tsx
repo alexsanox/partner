@@ -25,7 +25,7 @@ export function CTA() {
           <Link href="/register">
             <Button
               size="lg"
-              className="h-12 bg-[#00c98d] px-8 text-base font-semibold text-white shadow-lg shadow-blue-600/25 hover:bg-[#00b07d] hover:shadow-blue-600/40 transition-all"
+              className="h-12 bg-[#00c98d] px-8 text-base font-semibold text-white shadow-lg shadow-blue-600/25 hover:bg-[#00e0a0] hover:shadow-blue-600/40 transition-all"
             >
               <Zap className="mr-2 h-4 w-4" />
               Get Started Now

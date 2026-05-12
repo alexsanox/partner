@@ -94,7 +94,7 @@ export default function StorePage() {
               className="pl-9 border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
-          <Button type="submit" className="bg-[#00c98d] hover:bg-[#00b07d] text-white">
+          <Button type="submit" className="bg-[#00c98d] hover:bg-[#00e0a0] text-white">
             Search
           </Button>
         </form>

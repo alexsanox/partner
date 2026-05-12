@@ -264,7 +264,7 @@ export default function AdminTicketDetailPage() {
           )}
           {isClosed && (
             <Button size="sm" variant="outline" onClick={() => handleStatusAction("reopen")} disabled={actionLoading}
-              className="border-[#00c98d]/20 text-[#00c98d] hover:bg-[#00b07d]/10">
+              className="border-[#00c98d]/20 text-[#00c98d] hover:bg-[#00e0a0]/10">
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reopen
             </Button>
           )}
@@ -312,7 +312,7 @@ export default function AdminTicketDetailPage() {
                 {ticket.status === "RESOLVED" ? "Ticket is resolved." : "Ticket is closed."} Reopen to continue the conversation.
               </p>
               <Button size="sm" variant="outline" onClick={() => handleStatusAction("reopen")} disabled={actionLoading}
-                className="ml-auto shrink-0 border-[#00c98d]/20 text-[#00c98d] hover:bg-[#00b07d]/10 text-xs">
+                className="ml-auto shrink-0 border-[#00c98d]/20 text-[#00c98d] hover:bg-[#00e0a0]/10 text-xs">
                 <RotateCcw className="mr-1.5 h-3 w-3" /> Reopen
               </Button>
             </div>

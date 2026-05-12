@@ -175,7 +175,7 @@ export function ServerConfig({
             <button
               onClick={doReinstall}
               disabled={reinstalling}
-              className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-2 text-[12px] font-bold text-white transition-colors hover:bg-[#00b07d] disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-2 text-[12px] font-bold text-white transition-colors hover:bg-[#00e0a0] disabled:opacity-50"
             >
               {reinstalling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
               Rebuild Now

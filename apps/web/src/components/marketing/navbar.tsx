@@ -51,7 +51,7 @@ export function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           {session ? (
             <Link href="/dashboard">
-              <Button size="sm" className="bg-[#00c98d] hover:bg-[#00b07d] text-white shadow-lg shadow-[#00c98d]/20">
+              <Button size="sm" className="bg-[#00c98d] hover:bg-[#00e0a0] text-white shadow-lg shadow-[#00c98d]/20">
                 <LayoutDashboard className="mr-1.5 h-3.5 w-3.5" />
                 Dashboard
               </Button>
@@ -64,7 +64,7 @@ export function Navbar() {
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="sm" className="bg-[#00c98d] hover:bg-[#00b07d] text-white shadow-lg shadow-[#00c98d]/20">
+                <Button size="sm" className="bg-[#00c98d] hover:bg-[#00e0a0] text-white shadow-lg shadow-[#00c98d]/20">
                   <Zap className="mr-1.5 h-3.5 w-3.5" />
                   Get Started
                 </Button>
@@ -98,7 +98,7 @@ export function Navbar() {
               <div className="mt-4 flex flex-col gap-2 px-4">
                 {session ? (
                   <Link href="/dashboard" onClick={() => setOpen(false)}>
-                    <Button className="w-full bg-[#00c98d] hover:bg-[#00b07d] text-white">
+                    <Button className="w-full bg-[#00c98d] hover:bg-[#00e0a0] text-white">
                       <LayoutDashboard className="mr-1.5 h-3.5 w-3.5" />
                       Dashboard
                     </Button>
@@ -111,7 +111,7 @@ export function Navbar() {
                       </Button>
                     </Link>
                     <Link href="/register" onClick={() => setOpen(false)}>
-                      <Button className="w-full bg-[#00c98d] hover:bg-[#00b07d] text-white">
+                      <Button className="w-full bg-[#00c98d] hover:bg-[#00e0a0] text-white">
                         <Zap className="mr-1.5 h-3.5 w-3.5" />
                         Get Started
                       </Button>

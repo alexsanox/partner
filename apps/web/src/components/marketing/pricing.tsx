@@ -198,7 +198,7 @@ export function Pricing() {
                     className={cn(
                       "w-full h-11 font-semibold transition-all",
                       plan.popular
-                        ? "bg-[#00c98d] text-white shadow-lg shadow-blue-600/25 hover:bg-[#00b07d] hover:shadow-blue-600/40"
+                        ? "bg-[#00c98d] text-white shadow-lg shadow-blue-600/25 hover:bg-[#00e0a0] hover:shadow-blue-600/40"
                         : "bg-white/[0.06] text-white hover:bg-white/10 border border-white/[0.08]"
                     )}
                   >

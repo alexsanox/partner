@@ -29,6 +29,7 @@ foreach ($f in $files) {
   $c = $c.Replace('blue-500/10','[#00c98d]/10')
   $c = $c.Replace('hover:text-blue-400','hover:text-[#00c98d]')
   $c = $c.Replace('hover:border-blue-500','hover:border-[#00c98d]')
+  $c = $c.Replace('hover:bg-[#00b07d]','hover:bg-[#00e0a0]')
   [System.IO.File]::WriteAllText($f.FullName, $c)
 }
 Write-Host "Done"

@@ -279,7 +279,7 @@ export function ServerConsole({ serverId, onStats, onOutput, onStatus }: ServerC
               setAutoScroll(true);
               consoleRef.current?.scrollTo({ top: consoleRef.current.scrollHeight, behavior: "smooth" });
             }}
-            className="rounded-full bg-[#00c98d]/90 px-3 py-1 text-[11px] font-medium text-white shadow-lg backdrop-blur transition-colors hover:bg-[#00b07d]"
+            className="rounded-full bg-[#00c98d]/90 px-3 py-1 text-[11px] font-medium text-white shadow-lg backdrop-blur transition-colors hover:bg-[#00e0a0]"
           >
             ↓ New output
           </button>

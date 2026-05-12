@@ -202,7 +202,7 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
                   </a>
                   {latestFile && (
                     <a href={latestFile.url} download={latestFile.filename}>
-                      <Button size="sm" className="bg-[#00c98d] hover:bg-[#00b07d] text-white gap-1.5 text-xs h-8 font-semibold">
+                      <Button size="sm" className="bg-[#00c98d] hover:bg-[#00e0a0] text-white gap-1.5 text-xs h-8 font-semibold">
                         <Download className="h-3.5 w-3.5" />Latest Version
                       </Button>
                     </a>
@@ -275,7 +275,7 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
                                 : <><Copy className="h-3.5 w-3.5" />Copy URL</>}
                             </Button>
                             <a href={primaryFile.url} download={primaryFile.filename}>
-                              <Button size="sm" className="bg-[#00c98d] hover:bg-[#00b07d] text-white gap-1.5 text-xs h-8">
+                              <Button size="sm" className="bg-[#00c98d] hover:bg-[#00e0a0] text-white gap-1.5 text-xs h-8">
                                 <Download className="h-3.5 w-3.5" />Download
                               </Button>
                             </a>
