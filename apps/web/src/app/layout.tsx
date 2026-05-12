@@ -17,8 +17,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Partner Hosting — Premium Minecraft Server Hosting",
-    template: "%s | Partner Hosting",
+    default: "PobbleHost — Premium Minecraft Server Hosting",
+    template: "%s | PobbleHost",
   },
   description:
     "Premium Minecraft server hosting with instant setup, DDoS protection, and 24/7 support. Start your server in under 60 seconds.",

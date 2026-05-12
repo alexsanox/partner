@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Server } from "lucide-react";
+import Image from "next/image";
 
 const footerSections = [
   {
@@ -43,12 +43,10 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-                <Server className="h-4 w-4 text-white" />
-              </div>
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/logo.webp" alt="Pobble" width={32} height={32} className="rounded-lg" />
               <span className="text-base font-bold text-white">
-                Partner<span className="text-blue-400">Hosting</span>
+                Pobble<span className="text-[#00c98d]">Host</span>
               </span>
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-slate-400">
@@ -81,8 +79,7 @@ export function Footer() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 sm:flex-row">
           <p className="text-sm text-slate-500">
-            &copy; {new Date().getFullYear()} Partner Hosting. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} PobbleHost. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link

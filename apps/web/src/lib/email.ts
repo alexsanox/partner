@@ -8,7 +8,7 @@ function getResend() {
 
 const FROM = process.env.EMAIL_FROM || "noreply@example.com";
 const APP_URL = () => process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || "";
-const BRAND = "Partner Hosting";
+const BRAND = "PobbleHost";
 
 // ── Shared Layout ──────────────────────────────────────────────────
 
@@ -98,10 +98,10 @@ ${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden;font-s
   <!-- Logo -->
   <tr><td style="padding-bottom:36px;">
     <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-      <td style="width:36px;height:36px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:9px;text-align:center;vertical-align:middle;">
+      <td style="width:36px;height:36px;background:linear-gradient(135deg,#00c98d,#00a86b);border-radius:9px;text-align:center;vertical-align:middle;">
         <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjgiIHg9IjIiIHk9IjIiIHJ4PSIyIiByeT0iMiIvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSI4IiB4PSIyIiB5PSIxNCIgcng9IjIiIHJ5PSIyIi8+PGxpbmUgeDE9IjYiIHgyPSI2LjAxIiB5MT0iNiIgeTI9IjYiLz48bGluZSB4MT0iNiIgeDI9IjYuMDEiIHkxPSIxOCIgeTI9IjE4Ii8+PC9zdmc+" width="20" height="20" alt="" style="display:block;margin:8px auto 0;" />
       </td>
-      <td style="padding-left:10px;font-size:15px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Partner<span style="color:#60a5fa;">Hosting</span></td>
+      <td style="padding-left:10px;font-size:15px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Pobble<span style="color:#00c98d;">Host</span></td>
     </tr></table>
   </td></tr>
 

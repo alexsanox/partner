@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -42,12 +43,10 @@ export function DashboardSidebar() {
       {/* Logo */}
       <div className="flex h-14 items-center justify-between px-3 border-b border-white/[0.07]">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center">
-            <Zap className="h-5 w-5 text-[#5b8cff]" />
-          </div>
+          <Image src="/logo.webp" alt="Pobble" width={28} height={28} className="rounded-md shrink-0" />
           {!collapsed && (
-            <span className="text-sm font-bold tracking-wide text-white uppercase">
-              Partner
+            <span className="text-sm font-bold tracking-wide text-white">
+              Pobble<span className="text-[#00c98d]">Host</span>
             </span>
           )}
         </Link>
@@ -82,9 +81,9 @@ export function DashboardSidebar() {
               )}
             >
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#5b8cff]" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00c98d]" />
               )}
-              <item.icon className={cn("h-[18px] w-[18px] shrink-0", isActive ? "text-[#5b8cff]" : "")} />
+              <item.icon className={cn("h-[18px] w-[18px] shrink-0", isActive ? "text-[#00c98d]" : "")} />
               {!collapsed && <span>{item.label}</span>}
             </Link>
           );
