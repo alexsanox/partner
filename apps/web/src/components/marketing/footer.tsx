@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { ArrowRight, Mail, MessageCircle, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Mail, MessageCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const footerSections = [
   {
@@ -43,12 +44,29 @@ const footerSections = [
 export function Footer() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    setSubmitted(true);
-    setEmail("");
+    if (!email.trim() || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSubmitted(true);
+        setEmail("");
+      } else {
+        toast.error(data.error || "Failed to subscribe");
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    }
+    setLoading(false);
   };
 
   return (
@@ -85,9 +103,10 @@ export function Footer() {
                 />
                 <button
                   type="submit"
-                  className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#00e0a0] transition-colors"
+                  disabled={loading}
+                  className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#00e0a0] transition-colors disabled:opacity-60"
                 >
-                  Subscribe <ArrowRight className="h-3.5 w-3.5" />
+                  {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><span>Subscribe</span><ArrowRight className="h-3.5 w-3.5" /></>}
                 </button>
               </form>
             )}
