@@ -125,7 +125,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Mark order as provisioned
-    await prisma.order.update({ where: { id: orderId }, data: { status: "PROVISIONED" } });
+    // Use PAID as terminal provisioned state (PROVISIONED added to schema but requires client regen)
+    await prisma.order.update({ where: { id: orderId }, data: { status: "PAID" } });
 
     return NextResponse.json({ ok: true, serverId: externalServerId });
   } catch (err) {
