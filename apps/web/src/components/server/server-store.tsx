@@ -187,6 +187,7 @@ function ProjectDetail({
         const res = await fetch("/api/server/install-mrpack", { method: "POST", body: form });
         const data = await res.json();
         if (!res.ok) toast.error(data.error ?? "Modpack install failed");
+        else if (data.installing) toast.success(`${data.modpack}: installing ${data.total} mods in background — check your files in ~1 min`);
         else toast.success(`${data.modpack}: ${data.installed} mods installed${data.failed > 0 ? `, ${data.failed} failed` : ""}`);
         return;
       }
@@ -209,6 +210,7 @@ function ProjectDetail({
       setInstalling(null);
     }
   }
+
 
   if (loading) return <div className="flex justify-center py-16"><RefreshCw className="h-5 w-5 animate-spin text-slate-500" /></div>;
   if (!project) return (
@@ -374,7 +376,8 @@ export function ServerStore({ serverId }: { serverId: string }) {
       const res = await fetch("/api/server/install-mrpack", { method: "POST", body: form });
       const data = await res.json();
       if (res.ok) {
-        toast.success(`${data.modpack}: ${data.installed} mods installed${data.failed > 0 ? `, ${data.failed} failed` : ""}`);
+        if (data.installing) toast.success(`${data.modpack}: installing ${data.total} mods in background — check your files in ~1 min`);
+        else toast.success(`${data.modpack}: ${data.installed} mods installed${data.failed > 0 ? `, ${data.failed} failed` : ""}`);
       } else {
         toast.error(data.error ?? "Modpack install failed");
       }

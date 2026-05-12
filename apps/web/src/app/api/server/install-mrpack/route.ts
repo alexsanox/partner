@@ -127,48 +127,56 @@ export async function POST(req: NextRequest) {
         }
       });
 
-    await runConcurrent(modTasks, 8);
-
-    // Extract override files from the mrpack (overrides/ folder)
+    // Fire and forget — run installs in background so we don't time out the HTTP request
     const overrideEntries = zip.getEntries().filter(
       (e) => (e.entryName.startsWith("overrides/") || e.entryName.startsWith("server-overrides/")) && !e.isDirectory
     );
+    const overrideBuffers = overrideEntries.map((e) => ({
+      path: e.entryName,
+      data: new Uint8Array(e.getData()).buffer as ArrayBuffer,
+    }));
 
-    const overrideTasks = overrideEntries.map((entry) => async () => {
-      const relativePath = entry.entryName.replace(/^(server-)?overrides\//, "");
-      const fileName = relativePath.split("/").pop()!;
-      const dirParts = relativePath.split("/").slice(0, -1);
-      const dir = dirParts.length > 0 ? "/" + dirParts.join("/") : "/";
-
-      try {
-        if (dir !== "/") {
-          try { await createDirectory(serverId, "/", dirParts.join("/")); } catch { /* exists */ }
-        }
-        await writeFileToPelican(serverId, `${dir}/${fileName}`, new Uint8Array(entry.getData()).buffer as ArrayBuffer);
-        results.push({ name: `overrides/${relativePath}`, ok: true });
-      } catch (err) {
-        results.push({ name: `overrides/${relativePath}`, ok: false, error: err instanceof Error ? err.message : "Unknown" });
-      }
-    });
-
-    await runConcurrent(overrideTasks, 6);
-
-    // Restart the server so it picks up the new mods
-    try { await sendPowerAction(serverId, "restart"); } catch { /* server may not be running yet */ }
-
-    const failed = results.filter((r) => !r.ok);
-    const succeeded = results.filter((r) => r.ok);
-
-    return NextResponse.json({
+    // Respond immediately with mod count so UI unblocks
+    const response = NextResponse.json({
       ok: true,
       modpack: index.name,
       mcVersion: index.dependencies?.minecraft ?? null,
       loaderVersion: index.dependencies?.["fabric-loader"] ?? index.dependencies?.forge ?? null,
-      total: results.length,
-      installed: succeeded.length,
-      failed: failed.length,
-      failures: failed,
+      total: serverFiles.length + overrideEntries.length,
+      installed: serverFiles.length,
+      failed: 0,
+      failures: [],
+      installing: true,
     });
+
+    // Run actual installs after response is sent
+    (async () => {
+      try {
+        await runConcurrent(modTasks, 8);
+
+        const overrideTasks = overrideBuffers.map(({ path, data }) => async () => {
+          const relativePath = path.replace(/^(server-)?overrides\//, "");
+          const fileName = relativePath.split("/").pop()!;
+          const dirParts = relativePath.split("/").slice(0, -1);
+          const dir = dirParts.length > 0 ? "/" + dirParts.join("/") : "/";
+          try {
+            if (dir !== "/") {
+              try { await createDirectory(serverId, "/", dirParts.join("/")); } catch { /* exists */ }
+            }
+            await writeFileToPelican(serverId, `${dir}/${fileName}`, data);
+          } catch (err) {
+            console.error(`[install-mrpack] override failed ${relativePath}:`, err);
+          }
+        });
+        await runConcurrent(overrideTasks, 6);
+        try { await sendPowerAction(serverId, "restart"); } catch { /* not running yet */ }
+        console.log(`[install-mrpack] done for ${serverId}: ${serverFiles.length} mods + ${overrideEntries.length} overrides`);
+      } catch (err) {
+        console.error("[install-mrpack] background error:", err);
+      }
+    })();
+
+    return response;
   } catch (err) {
     console.error("[install-mrpack]", err);
     return NextResponse.json(
