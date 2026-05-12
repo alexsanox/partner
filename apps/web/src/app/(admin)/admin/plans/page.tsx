@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PackageOpen, MemoryStick, Cpu, HardDrive, Users, Check } from "lucide-react";
+import { PackageOpen, MemoryStick, Cpu, HardDrive, Users, Check, Egg } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
 import { PlanActions } from "@/components/admin/plan-actions";
+import { CreatePlanButton } from "@/components/admin/create-plan";
 
 function formatCents(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
@@ -19,6 +20,12 @@ function formatCents(cents: number) {
 function formatMb(mb: number): string {
   return mb >= 1024 ? `${(mb / 1024).toFixed(0)} GB` : `${mb} MB`;
 }
+
+const planTypeConfig: Record<string, { label: string; className: string }> = {
+  MINECRAFT: { label: "Minecraft", className: "bg-green-500/10 text-green-400 border-green-500/20" },
+  DISCORD_BOT: { label: "Discord Bot", className: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" },
+  CUSTOM: { label: "Custom", className: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" },
+};
 
 async function getPlans() {
   return prisma.plan.findMany({
@@ -37,11 +44,14 @@ export default async function AdminPlansPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Plan Management</h1>
-        <p className="mt-1 text-sm text-[#8b92a8]">
-          Manage hosting plans and pricing
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Plan Management</h1>
+          <p className="mt-1 text-sm text-[#8b92a8]">
+            Manage hosting plans and pricing
+          </p>
+        </div>
+        <CreatePlanButton />
       </div>
 
       {/* Stats */}
@@ -68,6 +78,7 @@ export default async function AdminPlansPage() {
             <TableHeader>
               <TableRow className="border-white/5 hover:bg-transparent">
                 <TableHead className="text-[#8b92a8]">Plan</TableHead>
+                <TableHead className="text-[#8b92a8]">Type</TableHead>
                 <TableHead className="text-[#8b92a8]">Resources</TableHead>
                 <TableHead className="text-[#8b92a8]">Monthly</TableHead>
                 <TableHead className="text-[#8b92a8]">Usage</TableHead>
@@ -78,7 +89,7 @@ export default async function AdminPlansPage() {
             <TableBody>
               {plans.length === 0 ? (
                 <TableRow className="border-white/5">
-                  <TableCell colSpan={6} className="py-12 text-center text-[#8b92a8]">
+                  <TableCell colSpan={7} className="py-12 text-center text-[#8b92a8]">
                     <PackageOpen className="mx-auto mb-3 h-10 w-10 text-slate-600" />
                     No plans configured
                   </TableCell>
@@ -89,8 +100,17 @@ export default async function AdminPlansPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium text-white">{plan.name}</p>
-                        <p className="text-xs text-[#8b92a8]">{plan.slug} &middot; {plan.type}</p>
+                        <p className="text-xs text-[#8b92a8]">
+                          {plan.slug}
+                          {plan.eggId && <span> &middot; Egg #{plan.eggId}</span>}
+                        </p>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const tc = planTypeConfig[plan.type] ?? planTypeConfig.CUSTOM;
+                        return <Badge variant="outline" className={tc.className}>{tc.label}</Badge>;
+                      })()}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3 text-xs">
@@ -138,6 +158,8 @@ export default async function AdminPlansPage() {
                         plan={{
                           id: plan.id,
                           name: plan.name,
+                          type: plan.type,
+                          eggId: plan.eggId,
                           description: plan.description,
                           ramMb: plan.ramMb,
                           cpuPercent: plan.cpuPercent,

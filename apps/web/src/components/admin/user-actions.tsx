@@ -9,9 +9,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, ShieldCheck, ShieldOff, Trash2, Loader2 } from "lucide-react";
+import { MoreHorizontal, ShieldCheck, ShieldOff, Trash2, Loader2, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/ui/confirm-dialog";
+import { authClient } from "@/lib/auth-client";
 
 interface UserActionsProps {
   userId: string;
@@ -31,6 +32,32 @@ export function UserActions({ userId, userName, currentRole, isSelf }: UserActio
       if (!ok) return;
     }
 
+    if (action === "impersonate") {
+      const ok = await confirm({
+        title: `Impersonate ${userName}?`,
+        description: "You will be signed in as this user. You can stop impersonating from the dashboard.",
+        confirmLabel: "Impersonate",
+        variant: "default",
+      });
+      if (!ok) return;
+
+      setLoading(true);
+      try {
+        const { error } = await authClient.admin.impersonateUser({ userId });
+        if (error) {
+          toast.error(error.message ?? "Impersonation failed");
+          return;
+        }
+        toast.success(`Now impersonating ${userName}`);
+        router.push("/dashboard");
+      } catch {
+        toast.error("Impersonation failed");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/admin/users", {
@@ -38,7 +65,9 @@ export function UserActions({ userId, userName, currentRole, isSelf }: UserActio
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, action }),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        toast.success(action === "deleteUser" ? "User deleted" : "Role updated");
+      } else {
         const data = await res.json();
         toast.error(data.error || "Action failed");
       }
@@ -54,31 +83,38 @@ export function UserActions({ userId, userName, currentRole, isSelf }: UserActio
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#8b92a8] hover:text-white hover:bg-[#232839] transition-colors">
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
+      <DropdownMenuTrigger
+        disabled={loading}
+        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[#8b92a8] hover:text-white hover:bg-white/[0.06] transition-colors disabled:opacity-50"
+      >
+        {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MoreHorizontal className="h-3.5 w-3.5" />}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-[#232839]">
+      <DropdownMenuContent align="end" className="w-44 border-white/[0.08] bg-[#1a1f2e] shadow-xl">
+        <DropdownMenuItem
+          onClick={() => handleAction("impersonate")}
+          className="text-xs text-blue-400 focus:text-blue-300 focus:bg-blue-500/10"
+        >
+          <UserRound className="mr-2 h-3.5 w-3.5" />
+          Impersonate
+        </DropdownMenuItem>
+        <DropdownMenuSeparator className="bg-white/[0.06]" />
         <DropdownMenuItem
           onClick={() => handleAction("toggleRole")}
+          className="text-xs"
         >
           {currentRole === "ADMIN" ? (
-            <>
-              <ShieldOff className="mr-2 h-4 w-4" />
-              Remove Admin
-            </>
+            <><ShieldOff className="mr-2 h-3.5 w-3.5" />Remove Admin</>
           ) : (
-            <>
-              <ShieldCheck className="mr-2 h-4 w-4" />
-              Make Admin
-            </>
+            <><ShieldCheck className="mr-2 h-3.5 w-3.5" />Make Admin</>
           )}
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-white/[0.06]" />
         <DropdownMenuItem
           variant="destructive"
           onClick={() => handleAction("deleteUser")}
+          className="text-xs"
         >
-          <Trash2 className="mr-2 h-4 w-4" />
+          <Trash2 className="mr-2 h-3.5 w-3.5" />
           Delete User
         </DropdownMenuItem>
       </DropdownMenuContent>

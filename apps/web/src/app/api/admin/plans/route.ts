@@ -1,11 +1,68 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth-server";
 import { prisma } from "@/lib/db";
+import type { PlanType } from "@prisma/client";
 
 async function requireAdmin() {
   const session = await getSession();
   if (!session || session.user.role !== "ADMIN") return null;
   return session;
+}
+
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+const VALID_PLAN_TYPES: PlanType[] = ["MINECRAFT", "DISCORD_BOT", "CUSTOM"];
+
+export async function POST(req: NextRequest) {
+  const session = await requireAdmin();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+
+  try {
+    const body = await req.json();
+    const {
+      name, type, eggId, description, ramMb, cpuPercent, diskMb,
+      playerSlots, backupSlots, databaseLimit, priceMonthly, features, sortOrder,
+    } = body;
+
+    if (!name || !priceMonthly || !ramMb || !cpuPercent || !diskMb) {
+      return NextResponse.json({ error: "Name, price, RAM, CPU, and Disk are required" }, { status: 400 });
+    }
+
+    if (type && !VALID_PLAN_TYPES.includes(type)) {
+      return NextResponse.json({ error: `Invalid type. Must be one of: ${VALID_PLAN_TYPES.join(", ")}` }, { status: 400 });
+    }
+
+    // Generate unique slug
+    let slug = slugify(name);
+    const existing = await prisma.plan.findUnique({ where: { slug } });
+    if (existing) slug = `${slug}-${Date.now()}`;
+
+    const plan = await prisma.plan.create({
+      data: {
+        name,
+        slug,
+        type: type || "MINECRAFT",
+        eggId: eggId ? Number(eggId) : null,
+        description: description || null,
+        ramMb: Number(ramMb),
+        cpuPercent: Number(cpuPercent),
+        diskMb: Number(diskMb),
+        playerSlots: Number(playerSlots || 0),
+        backupSlots: Number(backupSlots || 1),
+        databaseLimit: Number(databaseLimit || 0),
+        priceMonthly: Number(priceMonthly),
+        features: features || [],
+        sortOrder: Number(sortOrder || 0),
+      },
+    });
+
+    return NextResponse.json({ success: true, plan });
+  } catch (error) {
+    console.error("Admin plan create failed:", error);
+    return NextResponse.json({ error: "Failed to create plan" }, { status: 500 });
+  }
 }
 
 export async function PATCH(req: NextRequest) {
@@ -30,7 +87,8 @@ export async function PATCH(req: NextRequest) {
       case "update": {
         if (!data) return NextResponse.json({ error: "Missing data" }, { status: 400 });
         const allowed: Record<string, boolean> = {
-          name: true, description: true, ramMb: true, cpuPercent: true,
+          name: true, description: true, type: true, eggId: true,
+          ramMb: true, cpuPercent: true,
           diskMb: true, playerSlots: true, backupSlots: true, databaseLimit: true,
           priceMonthly: true, priceQuarterly: true, priceAnnual: true,
           features: true, sortOrder: true, isActive: true,

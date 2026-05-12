@@ -40,7 +40,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const ticket = await prisma.supportTicket.findUnique({
     where: { id },
-    include: { user: { select: { email: true } } },
+    include: { user: { select: { email: true, name: true } } },
   });
   if (!ticket) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (!isAdmin && ticket.userId !== session.user.id) {
@@ -80,6 +80,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       ticketId: id,
       subject: ticket.subject,
       message: message.trim(),
+      userName: ticket.user.name,
     }).catch((e) => console.error("[tickets] Reply email failed:", e));
   }
 

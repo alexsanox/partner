@@ -44,6 +44,13 @@ export async function PATCH(req: NextRequest) {
         });
         return NextResponse.json({ success: true });
       }
+      case "in_progress": {
+        await prisma.supportTicket.update({
+          where: { id: ticketId },
+          data: { status: "IN_PROGRESS" },
+        });
+        return NextResponse.json({ success: true });
+      }
       case "reply": {
         if (!message) {
           return NextResponse.json({ error: "Message required" }, { status: 400 });

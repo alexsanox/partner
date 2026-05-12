@@ -23,9 +23,10 @@ function formatDate(ts: number) {
 // ── Provision server on Pelican ──────────────────────────────────────
 async function provisionServer(
   serverName: string,
-  plan: { ramMb: number; diskMb: number; cpuPercent: number; databaseLimit: number; backupSlots: number },
+  plan: { eggId: number | null; ramMb: number; diskMb: number; cpuPercent: number; databaseLimit: number; backupSlots: number },
 ) {
-  const egg = await getEgg(1);
+  const eggId = plan.eggId ?? 1; // Fall back to egg 1 (Minecraft) if not set
+  const egg = await getEgg(eggId);
   const dockerImages = Object.values(egg.docker_images);
   const dockerImage = dockerImages[dockerImages.length - 1] || dockerImages[0];
 
@@ -58,7 +59,7 @@ async function provisionServer(
   const result = await createServer({
     name: serverName,
     user: 1,
-    egg: 1,
+    egg: eggId,
     docker_image: dockerImage,
     startup: egg.startup,
     environment,

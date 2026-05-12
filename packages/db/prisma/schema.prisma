@@ -17,6 +17,8 @@ enum UserRole {
 
 enum PlanType {
   MINECRAFT
+  DISCORD_BOT
+  CUSTOM
 }
 
 enum BillingCycle {
@@ -165,11 +167,12 @@ model Plan {
   name        String
   slug        String       @unique
   type        PlanType     @default(MINECRAFT)
+  eggId       Int?         // Pelican egg ID (null = use default per type)
   description String?
   ramMb       Int
   cpuPercent  Int
   diskMb      Int
-  playerSlots Int
+  playerSlots Int          @default(0)
   backupSlots Int          @default(1)
   databaseLimit Int        @default(0)
   priceMonthly  Int        // cents

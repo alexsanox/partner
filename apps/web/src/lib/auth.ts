@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { twoFactor } from "better-auth/plugins/two-factor";
+import { admin } from "better-auth/plugins";
 import { prisma } from "./db";
 import {
   sendVerificationEmail,
@@ -17,7 +18,9 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
-      await sendPasswordResetEmail(user.email, url);
+      sendPasswordResetEmail(user.email, url).catch((e) =>
+        console.error("[auth] Password reset email failed:", e)
+      );
     },
   },
   emailVerification: {
@@ -27,6 +30,7 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    admin(),
     twoFactor({
       skipVerificationOnEnable: true,
       otpOptions: {

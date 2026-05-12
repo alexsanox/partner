@@ -1,6 +1,10 @@
 import { Resend } from "resend";
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+function getResend() {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
+  return _resend;
+}
 
 const FROM = process.env.EMAIL_FROM || "noreply@example.com";
 const APP_URL = () => process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || "";
@@ -74,6 +78,60 @@ function p(text: string) {
   return `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#b0b8cd;">${text}</p>`;
 }
 
+// Clean, minimal layout — no icons, no banners, just readable content
+function simpleLayout(opts: {
+  preheader?: string;
+  body: string;
+  cta?: { label: string; url: string };
+  footer?: string;
+}) {
+  const accent = "#5b8cff";
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#0c0f16;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden;font-size:1px;">${opts.preheader}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>` : ""}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0c0f16;">
+<tr><td align="center" style="padding:48px 16px 40px;">
+<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
+
+  <!-- Logo -->
+  <tr><td style="padding-bottom:36px;">
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="width:36px;height:36px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:9px;text-align:center;vertical-align:middle;">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjgiIHg9IjIiIHk9IjIiIHJ4PSIyIiByeT0iMiIvPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSI4IiB4PSIyIiB5PSIxNCIgcng9IjIiIHJ5PSIyIi8+PGxpbmUgeDE9IjYiIHgyPSI2LjAxIiB5MT0iNiIgeTI9IjYiLz48bGluZSB4MT0iNiIgeDI9IjYuMDEiIHkxPSIxOCIgeTI9IjE4Ii8+PC9zdmc+" width="20" height="20" alt="" style="display:block;margin:8px auto 0;" />
+      </td>
+      <td style="padding-left:10px;font-size:15px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Partner<span style="color:#60a5fa;">Hosting</span></td>
+    </tr></table>
+  </td></tr>
+
+  <!-- Body -->
+  <tr><td style="padding-bottom:32px;">
+    ${opts.body}
+  </td></tr>
+
+  <!-- CTA -->
+  ${opts.cta ? `<tr><td style="padding-bottom:40px;">
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="border-radius:8px;background-color:${accent};">
+        <a href="${opts.cta.url}" style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:0.1px;">${opts.cta.label}</a>
+      </td>
+    </tr></table>
+  </td></tr>` : ""}
+
+  <!-- Divider + footer -->
+  <tr><td style="border-top:1px solid rgba(255,255,255,0.06);padding-top:24px;">
+    <p style="margin:0 0 4px;font-size:12px;color:#3d4460;">${opts.footer ?? "You received this email because you have an account with us."}</p>
+    <p style="margin:0;font-size:12px;color:#3d4460;">&copy; ${new Date().getFullYear()} ${BRAND}</p>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
 function infoCard(rows: [string, string, string?][]) {
   const trs = rows.map(([label, value, color]) =>
     `<tr>
@@ -107,7 +165,7 @@ function quoteBlock(text: string) {
 // ── Auth Emails ────────────────────────────────────────────────────
 
 export async function sendVerificationEmail(email: string, url: string) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: "Verify your email address",
@@ -124,21 +182,18 @@ export async function sendVerificationEmail(email: string, url: string) {
 }
 
 export async function sendPasswordResetEmail(email: string, url: string) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: "Reset your password",
-    html: layout({
-      preheader: "Reset your password — link expires in 1 hour.",
-      icon: "&#128274;",
-      heading: "Reset Your Password",
-      body:
-        p("We received a request to reset your password. Click below to choose a new one.") +
-        `<div style="background-color:#0f1219;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px 20px;margin:0 0 20px;">
-          <p style="margin:0;font-size:13px;color:#6b7490;">&#9200; This link expires in <strong style="color:#e2e8f0;">1 hour</strong></p>
-        </div>` +
-        p(`<span style="color:#6b7490;font-size:13px;">If you didn't request this, no action is needed — your password will remain unchanged.</span>`),
-      cta: { label: "Reset Password &rarr;", url },
+    html: simpleLayout({
+      preheader: "Reset your password — this link expires in 1 hour.",
+      body: `
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#b0b8cd;">Someone requested a password reset for your account. If that was you, click below to choose a new password.</p>
+        <p style="margin:0 0 32px;font-size:15px;line-height:1.7;color:#b0b8cd;">This link expires in <strong style="color:#e2e8f0;">1 hour</strong>. If you didn't request this, you can ignore this email — nothing will change.</p>
+      `,
+      cta: { label: "Reset password", url },
+      footer: "If you didn't request a password reset, no action is needed.",
     }),
   });
 }
@@ -148,7 +203,7 @@ export async function sendTwoFactorOTP(email: string, otp: string) {
     `<td style="width:44px;height:52px;background-color:#0f1219;border:1px solid rgba(255,255,255,0.08);border-radius:10px;text-align:center;font-size:24px;font-weight:800;color:#5b8cff;font-family:'SF Mono',monospace;letter-spacing:0;">${d}</td>`
   ).join('<td style="width:8px;"></td>');
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Your login code: ${otp}`,
@@ -166,7 +221,7 @@ export async function sendTwoFactorOTP(email: string, otp: string) {
 }
 
 export async function sendChangeEmailVerification(email: string, url: string) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: "Confirm your new email address",
@@ -183,7 +238,7 @@ export async function sendChangeEmailVerification(email: string, url: string) {
 }
 
 export async function sendWelcomeEmail(email: string, name: string) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Welcome to ${BRAND}!`,
@@ -230,7 +285,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
 // ── Billing & Server Emails ────────────────────────────────────────
 
 export async function sendPaymentSuccessEmail(email: string, data: { serverName: string; planName: string; amount: string }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Payment received — ${data.serverName}`,
@@ -251,7 +306,7 @@ export async function sendPaymentSuccessEmail(email: string, data: { serverName:
 }
 
 export async function sendServerReadyEmail(email: string, data: { serverName: string; planName: string; ip: string; port: number }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Your server is ready — ${data.serverName}`,
@@ -275,7 +330,7 @@ export async function sendServerReadyEmail(email: string, data: { serverName: st
 }
 
 export async function sendPaymentFailedEmail(email: string, data: { serverName: string; planName: string; amount: string }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Payment failed — ${data.serverName}`,
@@ -300,7 +355,7 @@ export async function sendPaymentFailedEmail(email: string, data: { serverName: 
 }
 
 export async function sendSubscriptionCancelledEmail(email: string, data: { serverName: string; planName: string }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Subscription cancelled — ${data.serverName}`,
@@ -320,7 +375,7 @@ export async function sendSubscriptionCancelledEmail(email: string, data: { serv
 }
 
 export async function sendUpcomingRenewalEmail(email: string, data: { serverName: string; planName: string; amount: string; renewalDate: string }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Upcoming renewal — ${data.serverName}`,
@@ -345,7 +400,7 @@ export async function sendUpcomingRenewalEmail(email: string, data: { serverName
 }
 
 export async function sendInvoiceEmail(email: string, data: { invoiceNumber: string; serverName: string; amount: string; date: string; pdfUrl: string | null }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Invoice ${data.invoiceNumber} — ${data.amount}`,
@@ -369,20 +424,29 @@ export async function sendInvoiceEmail(email: string, data: { invoiceNumber: str
 
 // ── Support Emails ─────────────────────────────────────────────────
 
-export async function sendTicketReplyEmail(email: string, data: { ticketId: string; subject: string; message: string }) {
-  await resend.emails.send({
+export async function sendTicketReplyEmail(
+  email: string,
+  data: { ticketId: string; subject: string; message: string; userName?: string },
+) {
+  const ticketUrl = `${APP_URL()}/dashboard/support/${data.ticketId}`;
+  const firstName = data.userName?.split(" ")[0] ?? "there";
+
+  await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: `New reply on your ticket — ${data.subject}`,
-    html: layout({
-      preheader: "Our support team has replied to your ticket.",
-      icon: "&#128172;",
-      heading: "New Reply on Your Ticket",
-      body:
-        p(`Our support team has replied to: <strong style="color:#ffffff;">${data.subject}</strong>`) +
-        quoteBlock(data.message) +
-        p(`<span style="color:#6b7490;font-size:13px;">Reply directly from your dashboard to continue the conversation.</span>`),
-      cta: { label: "View Ticket &rarr;", url: `${APP_URL()}/dashboard/support/${data.ticketId}` },
+    subject: `Re: ${data.subject}`,
+    html: simpleLayout({
+      preheader: `You got a reply on your support ticket: ${data.subject}`,
+      body: `
+        <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#b0b8cd;">Hey ${firstName},</p>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#b0b8cd;">We replied to your support ticket <strong style="color:#e2e8f0;">${data.subject}</strong>.</p>
+        <div style="border-left:3px solid #5b8cff;padding:14px 20px;margin:0 0 28px;background-color:#0d1117;border-radius:0 8px 8px 0;">
+          <p style="margin:0;font-size:14px;line-height:1.75;color:#c8cdd8;white-space:pre-wrap;">${data.message}</p>
+        </div>
+        <p style="margin:0 0 32px;font-size:14px;line-height:1.7;color:#6b7490;">Click the button below to view the full conversation and reply.</p>
+      `,
+      cta: { label: "View ticket", url: ticketUrl },
+      footer: "You're receiving this because you opened a support ticket with us.",
     }),
   });
 }

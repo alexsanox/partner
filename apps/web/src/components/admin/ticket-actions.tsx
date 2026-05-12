@@ -9,13 +9,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, CheckCircle, XCircle, RotateCcw, Loader2 } from "lucide-react";
+import {
+  MoreHorizontal, CheckCircle, XCircle, RotateCcw, Loader2,
+  Clock, ExternalLink,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface TicketActionsProps {
   ticketId: string;
   currentStatus: string;
 }
+
+const actionLabels: Record<string, string> = {
+  resolve:     "Ticket resolved",
+  close:       "Ticket closed",
+  reopen:      "Ticket reopened",
+  in_progress: "Marked as in progress",
+};
 
 export function TicketActions({ ticketId, currentStatus }: TicketActionsProps) {
   const router = useRouter();
@@ -29,11 +39,13 @@ export function TicketActions({ ticketId, currentStatus }: TicketActionsProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ticketId, action }),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        toast.success(actionLabels[action] ?? "Done");
+        router.refresh();
+      } else {
         const data = await res.json();
         toast.error(data.error || "Action failed");
       }
-      router.refresh();
     } catch {
       toast.error("Action failed");
     } finally {
@@ -41,30 +53,66 @@ export function TicketActions({ ticketId, currentStatus }: TicketActionsProps) {
     }
   }
 
+  const isActive = !["RESOLVED", "CLOSED"].includes(currentStatus);
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#8b92a8] hover:text-white hover:bg-[#232839] transition-colors">
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
+      <DropdownMenuTrigger
+        disabled={loading}
+        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[#8b92a8] hover:text-white hover:bg-white/[0.06] transition-colors disabled:opacity-50"
+      >
+        {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MoreHorizontal className="h-3.5 w-3.5" />}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-[#232839]">
-        {(currentStatus === "OPEN" || currentStatus === "IN_PROGRESS" || currentStatus === "WAITING_REPLY") && (
-          <DropdownMenuItem onClick={() => handleAction("resolve")}>
-            <CheckCircle className="mr-2 h-4 w-4" />
+      <DropdownMenuContent align="end" className="w-44 border-white/[0.08] bg-[#1a1f2e] shadow-xl">
+        <DropdownMenuItem
+          onClick={() => router.push(`/admin/tickets/${ticketId}`)}
+          className="text-xs"
+        >
+          <ExternalLink className="mr-2 h-3.5 w-3.5" />
+          View Ticket
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator className="bg-white/[0.06]" />
+
+        {isActive && currentStatus !== "IN_PROGRESS" && (
+          <DropdownMenuItem
+            onClick={() => handleAction("in_progress")}
+            className="text-xs text-yellow-400 focus:text-yellow-300 focus:bg-yellow-500/10"
+          >
+            <Clock className="mr-2 h-3.5 w-3.5" />
+            Mark In Progress
+          </DropdownMenuItem>
+        )}
+
+        {isActive && (
+          <DropdownMenuItem
+            onClick={() => handleAction("resolve")}
+            className="text-xs text-green-400 focus:text-green-300 focus:bg-green-500/10"
+          >
+            <CheckCircle className="mr-2 h-3.5 w-3.5" />
             Resolve
           </DropdownMenuItem>
         )}
-        {(currentStatus === "CLOSED" || currentStatus === "RESOLVED") && (
-          <DropdownMenuItem onClick={() => handleAction("reopen")}>
-            <RotateCcw className="mr-2 h-4 w-4" />
+
+        {!isActive && (
+          <DropdownMenuItem
+            onClick={() => handleAction("reopen")}
+            className="text-xs text-blue-400 focus:text-blue-300 focus:bg-blue-500/10"
+          >
+            <RotateCcw className="mr-2 h-3.5 w-3.5" />
             Reopen
           </DropdownMenuItem>
         )}
-        {currentStatus !== "CLOSED" && (
+
+        {isActive && (
           <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={() => handleAction("close")}>
-              <XCircle className="mr-2 h-4 w-4" />
-              Close
+            <DropdownMenuSeparator className="bg-white/[0.06]" />
+            <DropdownMenuItem
+              onClick={() => handleAction("close")}
+              className="text-xs text-red-400 focus:text-red-300 focus:bg-red-500/10"
+            >
+              <XCircle className="mr-2 h-3.5 w-3.5" />
+              Close Ticket
             </DropdownMenuItem>
           </>
         )}
