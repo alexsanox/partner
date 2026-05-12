@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import {
   Loader2, Egg, ChevronDown, ChevronRight, Variable, Container,
-  Terminal, Eye, EyeOff, Pencil, Lock, Plus, X, Trash2, Upload,
+  Terminal, Eye, EyeOff, Pencil, Lock, Plus, X, Trash2, Upload, Download, ExternalLink,
 } from "lucide-react";
 import yaml from "js-yaml";
 import { toast } from "sonner";
@@ -109,31 +109,52 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
   const updateVariable = (i: number, field: keyof NewVariable, val: string | boolean) =>
     setVariables((v) => v.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
 
-  const handleSubmit = async () => {
+  const handleDownloadJson = () => {
     if (!name.trim() || !startup.trim() || dockerRows.some((r) => !r.label || !r.image)) {
       toast.error("Fill in all required fields (name, startup, docker images)");
       return;
     }
-    setSaving(true);
     const docker_images: Record<string, string> = {};
     dockerRows.forEach((r) => { docker_images[r.label] = r.image; });
 
-    try {
-      const res = await fetch("/api/admin/eggs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description, startup, docker_images, variables }),
-      });
-      const data = await res.json();
-      if (!res.ok) { toast.error(data.error || "Failed to create egg"); return; }
-      toast.success(`Egg "${name}" created successfully`);
-      onCreated();
-      onClose();
-    } catch {
-      toast.error("Network error");
-    } finally {
-      setSaving(false);
-    }
+    const eggJson = {
+      _comment: "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL",
+      meta: { version: "PLCN_v3" },
+      exported_at: new Date().toISOString(),
+      name,
+      description,
+      tags: [],
+      features: ["eula", "java_version", "pid_limit"],
+      docker_images,
+      file_denylist: {},
+      startup,
+      config: {
+        files: {},
+        startup: { done: ")! For help, type " },
+        logs: {},
+        stop: "stop",
+      },
+      scripts: { installation: { script: "#!/bin/ash\necho 'No install script'", container: "ghcr.io/pelican-eggs/installers:alpine", entrypoint: "ash" } },
+      variables: variables.map((v, i) => ({
+        name: v.name,
+        description: v.description,
+        env_variable: v.env_variable,
+        default_value: v.default_value,
+        user_viewable: v.user_viewable,
+        user_editable: v.user_editable,
+        rules: v.rules,
+        sort: i + 1,
+      })),
+    };
+
+    const blob = new Blob([JSON.stringify(eggJson, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `egg-${name.toLowerCase().replace(/\s+/g, "-")}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded egg-${name.toLowerCase().replace(/\s+/g, "-")}.json — import it in your Pelican panel`);
   };
 
   return (
@@ -278,11 +299,25 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
           </div>
         </div>
 
+        {/* Import instructions */}
+        <div className="mx-6 mb-4 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 text-[12px] text-yellow-300 space-y-1">
+          <p className="font-semibold">Pelican does not support creating eggs via API.</p>
+          <p className="text-yellow-300/70">Click <strong>Download JSON</strong> to get the egg file, then import it in your Pelican panel under <strong>Admin → Eggs → Import Egg</strong>.</p>
+          <a
+            href={`${typeof window !== "undefined" ? window.location.origin.replace(/:3000$/, "") : ""}/admin/eggs`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-yellow-400 hover:text-yellow-300 underline"
+          >
+            Open Pelican Admin <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
+
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 border-t border-white/[0.07] px-6 py-4">
           <Button variant="outline" onClick={onClose} className="border-white/10 text-[#8b92a8] hover:text-white">Cancel</Button>
-          <Button onClick={handleSubmit} disabled={saving} className="bg-[#5b8cff] hover:bg-[#4a7bef] text-white">
-            {saving ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />Creating...</> : <><Plus className="h-4 w-4 mr-2" />Create Egg</>}
+          <Button onClick={handleDownloadJson} className="bg-[#5b8cff] hover:bg-[#4a7bef] text-white">
+            <Download className="h-4 w-4 mr-2" />Download JSON
           </Button>
         </div>
       </div>
