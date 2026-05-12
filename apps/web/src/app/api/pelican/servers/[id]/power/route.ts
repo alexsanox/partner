@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendPowerAction, type PowerSignal } from "@/lib/pelican";
+import { sendPowerAction, writeFileContent, type PowerSignal } from "@/lib/pelican";
 
 export async function POST(
   req: NextRequest,
@@ -11,6 +11,15 @@ export async function POST(
 
     if (!["start", "stop", "restart", "kill"].includes(signal)) {
       return NextResponse.json({ error: "Invalid signal" }, { status: 400 });
+    }
+
+    // Auto-accept EULA before starting
+    if (signal === "start" || signal === "restart") {
+      try {
+        await writeFileContent(id, "/eula.txt", "eula=true\n");
+      } catch {
+        // Non-fatal — server may not have generated eula.txt yet, ignore
+      }
     }
 
     await sendPowerAction(id, signal);

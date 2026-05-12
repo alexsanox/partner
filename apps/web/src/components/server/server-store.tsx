@@ -128,11 +128,12 @@ function fmt(n: number | undefined | null) {
 
 // ── Project Detail View ───────────────────────────────────────────────────────
 function ProjectDetail({
-  slug, serverId, serverLoaders, onBack,
+  slug, serverId, serverLoaders, gameVersion, onBack,
 }: {
   slug: string;
   serverId: string;
   serverLoaders: string[];
+  gameVersion: string | null;
   onBack: () => void;
 }) {
   const [project, setProject] = useState<ModrinthDetail | null>(null);
@@ -177,17 +178,13 @@ function ProjectDetail({
       const res = await fetch(`/api/server/${serverId}/install-mod`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileUrl: file.url, filename: file.filename }),
+        body: JSON.stringify({ fileUrl: file.url, filename: file.filename, loaders: ver.loaders }),
       });
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.error ?? "Installation failed");
       } else {
-        toast.success(
-          data.warning
-            ? `Installed to ${data.path} (${data.warning})`
-            : `✓ Installed ${file.filename} → ${data.path}`,
-        );
+        toast.success(data.warning ? `Installed (${data.warning})` : "Installed");
       }
     } catch {
       toast.error("Network error during installation");
@@ -204,7 +201,12 @@ function ProjectDetail({
     </div>
   );
 
-  const compatibleVersions = versions.filter((v) => showAll || versionCompatible(v.loaders, serverLoaders));
+  const compatibleVersions = versions.filter((v) => {
+    if (showAll) return true;
+    const loaderOk = versionCompatible(v.loaders, serverLoaders);
+    const versionOk = !gameVersion || v.game_versions.length === 0 || v.game_versions.some((gv) => gv === gameVersion || gv.startsWith(gameVersion.split(".").slice(0, 2).join(".")));
+    return loaderOk && versionOk;
+  });
   const incompatibleCount = versions.length - versions.filter((v) => versionCompatible(v.loaders, serverLoaders)).length;
 
   return (
@@ -240,7 +242,7 @@ function ProjectDetail({
         <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 px-3 py-2">
           <Zap className="h-3.5 w-3.5 text-blue-400 shrink-0" />
           <span className="text-xs text-blue-300">
-            Your server runs <span className="font-semibold capitalize">{serverLoaders.join(", ")}</span> — showing compatible versions
+            Your server runs <span className="font-semibold capitalize">{serverLoaders.join(", ")}</span>{gameVersion ? <> on <span className="font-semibold">{gameVersion}</span></> : null} — showing compatible versions
           </span>
           {incompatibleCount > 0 && !showAll && (
             <button onClick={() => setShowAll(true)} className="ml-auto text-xs text-slate-500 hover:text-slate-300 transition-colors underline">
@@ -333,6 +335,7 @@ export function ServerStore({ serverId }: { serverId: string }) {
   const [loading, setLoading] = useState(false);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [serverLoaders, setServerLoaders] = useState<string[]>([]);
+  const [gameVersion, setGameVersion] = useState<string | null>(null);
 
   // Detect server loader from Pelican variables
   useEffect(() => {
@@ -344,6 +347,7 @@ export function ServerStore({ serverId }: { serverId: string }) {
         const vars: PelicanVariable[] = data.variables ?? [];
         const loaders = detectLoaderFromVariables(vars);
         setServerLoaders(loaders);
+        if (data.gameVersion) setGameVersion(data.gameVersion);
         // Auto-select best category
         if (loaders.some((l) => ["fabric","forge","neoforge","quilt","liteloader"].includes(l))) {
           setCategory("mod");
@@ -377,6 +381,7 @@ export function ServerStore({ serverId }: { serverId: string }) {
       slug={selectedSlug}
       serverId={serverId}
       serverLoaders={serverLoaders}
+      gameVersion={gameVersion}
       onBack={() => setSelectedSlug(null)}
     />
   );

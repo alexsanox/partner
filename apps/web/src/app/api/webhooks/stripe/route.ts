@@ -36,6 +36,7 @@ async function provisionServer(
       environment[v.attributes.env_variable] = v.attributes.default_value;
     }
   }
+  environment["EULA"] = "TRUE";
 
   const nodesRes = await getNodes();
   const nodes = nodesRes.data.map((n) => n.attributes);

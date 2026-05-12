@@ -6,7 +6,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const session = await requireAuth();
     const { id: serverId } = await params;
-    const { fileUrl, filename } = (await req.json()) as { fileUrl: string; filename: string };
+    const { fileUrl, filename, loaders = [] } = (await req.json()) as { fileUrl: string; filename: string; loaders?: string[] };
 
     if (!fileUrl || !filename) {
       return NextResponse.json({ error: "Missing fileUrl or filename" }, { status: 400 });
@@ -23,9 +23,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const PELICAN_URL = process.env.PELICAN_URL!;
     const PELICAN_CLIENT_KEY = process.env.PELICAN_CLIENT_KEY!;
 
-    // Determine destination folder based on file extension
-    const ext = filename.split(".").pop()?.toLowerCase();
-    const folder = ext === "jar" ? "/plugins" : ext === "zip" ? "/mods" : "/plugins";
+    // Determine destination folder based on loaders, then fall back to extension
+    const MOD_LOADERS = ["fabric", "forge", "neoforge", "quilt", "liteloader", "rift"];
+    const lowerLoaders = loaders.map((l) => l.toLowerCase());
+    const isMod = lowerLoaders.some((l) => MOD_LOADERS.includes(l));
+    const folder = isMod ? "/mods" : "/plugins";
 
     // Download the file from Modrinth
     const fileRes = await fetch(fileUrl, { headers: { "User-Agent": "PartnerHosting/1.0" } });

@@ -42,7 +42,15 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       }),
     );
 
-    return NextResponse.json({ variables });
+    // Try to extract the MC game version from known variable names
+    const versionVar = variables.find((v: { env_variable: string }) =>
+      ["MC_VERSION", "VERSION", "MINECRAFT_VERSION", "GAME_VERSION", "SERVER_VERSION"].includes(v.env_variable)
+    ) as { env_variable: string; server_value?: string; default_value: string } | undefined;
+    const gameVersion = versionVar
+      ? (versionVar.server_value || versionVar.default_value || null)
+      : null;
+
+    return NextResponse.json({ variables, gameVersion });
   } catch (err) {
     console.error("[startup]", err);
     return NextResponse.json({ variables: [] });
