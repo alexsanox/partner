@@ -76,8 +76,11 @@ export async function POST(req: NextRequest) {
       customer: customerId,
       items: [{ price: price.id }],
       payment_behavior: "default_incomplete",
-      payment_settings: { save_default_payment_method: "on_subscription" },
-      expand: ["latest_invoice.payment_intent"],
+      payment_settings: {
+        save_default_payment_method: "on_subscription",
+        payment_method_types: ["card"],
+      },
+      expand: ["latest_invoice", "latest_invoice.payment_intent", "pending_setup_intent"],
       metadata: {
         userId: session.user.id,
         planId: plan.id,
@@ -86,27 +89,29 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Extract client secret from the pending invoice's payment intent
-    const invoice = subscription.latest_invoice as {
-      payment_intent?: { client_secret?: string | null } | string | null;
-      confirmation_secret?: string | null;
-    } | string | null;
+    // Extract client secret — try payment_intent first, then pending_setup_intent
+    type ExpandedInvoice = { payment_intent?: { client_secret?: string | null } | string | null } | string | null;
+    type ExpandedSetupIntent = { client_secret?: string | null } | string | null;
+
+    const invoice = subscription.latest_invoice as ExpandedInvoice;
+    const setupIntent = (subscription as unknown as { pending_setup_intent?: ExpandedSetupIntent }).pending_setup_intent;
 
     let clientSecret: string | null | undefined;
+
     if (invoice && typeof invoice === "object") {
       const pi = invoice.payment_intent;
       if (pi && typeof pi === "object") {
         clientSecret = pi.client_secret;
-      } else if (invoice.confirmation_secret) {
-        clientSecret = invoice.confirmation_secret;
       }
     }
 
-    console.log("[checkout] subscription status:", subscription.status, "clientSecret present:", !!clientSecret);
+    if (!clientSecret && setupIntent && typeof setupIntent === "object") {
+      clientSecret = setupIntent.client_secret;
+    }
 
     if (!clientSecret) {
-      console.error("[checkout] invoice data:", JSON.stringify(subscription.latest_invoice, null, 2));
-      throw new Error(`No client secret returned. Subscription status: ${subscription.status}`);
+      console.error("[checkout] No client secret. Status:", subscription.status, "invoice:", JSON.stringify(subscription.latest_invoice));
+      throw new Error(`Payment setup failed. Please try again.`);
     }
 
     // Create pending order in DB
