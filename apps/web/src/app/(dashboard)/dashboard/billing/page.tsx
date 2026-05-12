@@ -77,11 +77,15 @@ export default async function BillingPage() {
       const sub = await stripe.subscriptions.retrieve(subId);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const raw = sub as any;
+      // current_period_end moved to items.data[0] in newer Stripe API versions
+      const item0 = raw.items?.data?.[0];
+      const periodEnd = raw.current_period_end ?? item0?.current_period_end ?? null;
+      const periodStart = raw.current_period_start ?? item0?.current_period_start ?? null;
       subInfoMap[subId] = {
         cancelling: raw.cancel_at_period_end ?? false,
         cancelAt: raw.cancel_at ?? null,
-        currentPeriodEnd: raw.current_period_end ?? null,
-        currentPeriodStart: raw.current_period_start ?? null,
+        currentPeriodEnd: periodEnd,
+        currentPeriodStart: periodStart,
         status: raw.status ?? "unknown",
         created: raw.created ?? null,
       };
