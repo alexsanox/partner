@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { RefreshCcw, MoreHorizontal } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 
 interface ServerConsoleProps {
   serverId: string;
@@ -243,12 +243,6 @@ export function ServerConsole({ serverId, onStats, onOutput, onStatus }: ServerC
               Reconnect
             </button>
           )}
-          <button className="text-[12px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors">
-            Full Server Log
-          </button>
-          <button className="text-[#8b92a8] hover:text-[#c8cdd8] transition-colors">
-            <MoreHorizontal className="h-4 w-4" />
-          </button>
         </div>
       </div>
 
