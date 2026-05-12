@@ -7,7 +7,7 @@ const footerSections = [
     links: [
       { label: "Minecraft Hosting", href: "/#pricing" },
       { label: "Features", href: "/#features" },
-      { label: "Server Locations", href: "/#features" },
+      { label: "Server Locations", href: "/locations" },
     ],
   },
   {
@@ -49,7 +49,7 @@ export function Footer() {
                 Pobble<span className="text-[#00c98d]">Host</span>
               </span>
             </Link>
-            <p className="mt-3 text-sm leading-relaxed text-slate-400">
+            <p className="mt-3 text-sm leading-relaxed text-[#a8b0c4]">
               Premium Minecraft server hosting with instant deployment and 24/7
               support.
             </p>
