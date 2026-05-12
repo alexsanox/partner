@@ -369,7 +369,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
         {/* Import instructions */}
         <div className="mx-6 mb-4 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 text-[12px] text-yellow-300 space-y-2">
           <p className="font-semibold">Pelican does not support creating eggs via API.</p>
-          <p className="text-yellow-300/70">Download the egg file below, then import it in your Pelican panel under <strong>Admin → Eggs → Import Egg</strong>. If you get a <strong>413 error</strong>, increase your nginx limit: <code className="bg-black/30 px-1 rounded">client_max_body_size 100m;</code></p>
+          <p className="text-yellow-300/70">Download the egg file below, then import it in your Pelican panel under <strong>Admin → Eggs → Import Egg</strong>. If you get a <strong>413 error</strong>, add this to your Caddyfile inside the site block: <code className="bg-black/30 px-1 rounded">request_body &#123; max_size 100MB &#125;</code>, then <code className="bg-black/30 px-1 rounded">caddy reload</code>.</p>
         </div>
 
         {/* Footer */}
