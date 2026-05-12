@@ -65,11 +65,29 @@ function SetupWizard() {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [serverName, setServerName] = useState("");
   const [mrpackFile, setMrpackFile] = useState<File | null>(null);
+  const [mrpackMcVersion, setMrpackMcVersion] = useState<string | null>(null);
   const [installingMods, setInstallingMods] = useState(false);
   const [modResult, setModResult] = useState<{ installed: number; failed: number; modpack: string } | null>(null);
   const mrpackInputRef = useRef<HTMLInputElement>(null);
 
   const supportsMrpack = ["fabric", "forge"].includes(selectedType);
+
+  const handleMrpackSelect = async (f: File) => {
+    setMrpackFile(f);
+    try {
+      const { default: JSZip } = await import("jszip");
+      const zip = await JSZip.loadAsync(await f.arrayBuffer());
+      const indexFile = zip.file("modrinth.index.json");
+      if (indexFile) {
+        const index = JSON.parse(await indexFile.async("string"));
+        const mcVer = index.dependencies?.minecraft;
+        if (mcVer) {
+          setMrpackMcVersion(mcVer);
+          setSelectedVersion(mcVer);
+        }
+      }
+    } catch { /* ignore parse errors */ }
+  };
 
   // Fetch MC versions
   useEffect(() => {
@@ -254,8 +272,11 @@ function SetupWizard() {
           {mrpackFile ? (
             <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
               <Package className="h-4 w-4 text-green-400 shrink-0" />
-              <span className="text-[13px] text-green-300 flex-1 truncate">{mrpackFile.name}</span>
-              <button onClick={() => setMrpackFile(null)} className="text-[#8b92a8] hover:text-white transition-colors">
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] text-green-300 truncate">{mrpackFile.name}</p>
+                {mrpackMcVersion && <p className="text-[11px] text-green-400/70">MC {mrpackMcVersion} detected — version auto-set</p>}
+              </div>
+              <button onClick={() => { setMrpackFile(null); setMrpackMcVersion(null); }} className="text-[#8b92a8] hover:text-white transition-colors">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -268,7 +289,7 @@ function SetupWizard() {
                 type="file"
                 accept=".mrpack"
                 className="hidden"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) setMrpackFile(f); }}
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleMrpackSelect(f); }}
               />
             </label>
           )}

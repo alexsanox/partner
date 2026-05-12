@@ -4,6 +4,12 @@ import { prisma } from "@/lib/db";
 import { createDirectory, getFileUploadUrl } from "@/lib/pelican";
 import AdmZip from "adm-zip";
 
+export const config = {
+  api: { bodyParser: false },
+};
+
+export const maxDuration = 300;
+
 interface MrpackFile {
   path: string;
   downloads: string[];
@@ -17,7 +23,12 @@ interface MrpackIndex {
   versionId: string;
   name: string;
   files: MrpackFile[];
-  dependencies: Record<string, string>;
+  dependencies: Record<string, string> & {
+    minecraft?: string;
+    "fabric-loader"?: string;
+    forge?: string;
+    quilt?: string;
+  };
 }
 
 export async function POST(req: NextRequest) {
@@ -135,6 +146,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       modpack: index.name,
+      mcVersion: index.dependencies?.minecraft ?? null,
+      loaderVersion: index.dependencies?.["fabric-loader"] ?? index.dependencies?.forge ?? null,
       total: results.length,
       installed: succeeded.length,
       failed: failed.length,
