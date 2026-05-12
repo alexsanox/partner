@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { getServers, type PelicanServer } from "@/lib/pelican";
 import { requireAuth } from "@/lib/auth-server";
+import { prisma } from "@/lib/db";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   online: { label: "Online", className: "bg-green-500/10 text-green-400 border-green-500/20" },
@@ -31,8 +32,14 @@ export default async function DashboardPage() {
   let servers: PelicanServer[] = [];
 
   try {
+    const userServices = await prisma.service.findMany({
+      where: { userId: session.user.id, deletedAt: null, externalServerId: { not: null } },
+      select: { externalServerId: true },
+    });
+    const userServerIds = new Set(userServices.map((s: { externalServerId: string | null }) => String(s.externalServerId)));
     const res = await getServers();
-    servers = res.data.map((s: { attributes: PelicanServer }) => s.attributes);
+    const all = res.data.map((s: { attributes: PelicanServer }) => s.attributes);
+    servers = all.filter((s: PelicanServer) => userServerIds.has(String(s.id)));
   } catch {
     // Pelican unreachable
   }

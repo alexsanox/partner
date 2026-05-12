@@ -30,7 +30,10 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    admin(),
+    admin({
+      adminRole: "ADMIN",
+      defaultRole: "USER",
+    }),
     twoFactor({
       skipVerificationOnEnable: true,
       otpOptions: {
@@ -60,13 +63,6 @@ export const auth = betterAuth({
       enabled: true,
       sendChangeEmailVerification: async ({ user, newEmail, url }: { user: { email: string }; newEmail: string; url: string }) => {
         await sendChangeEmailVerification(newEmail, url);
-      },
-    },
-    additionalFields: {
-      role: {
-        type: "string",
-        defaultValue: "USER",
-        input: false,
       },
     },
   },
