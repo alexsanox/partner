@@ -59,12 +59,14 @@ export function ResourceUsage({ serverId, memoryLimit, diskLimit, cpuLimit, live
   const memMb = r?.memory_bytes ? r.memory_bytes / (1024 * 1024) : 0;
   const diskGb = r?.disk_bytes ? r.disk_bytes / (1024 * 1024 * 1024) : 0;
   const diskLimitDisplay = diskLimit === 0 ? "∞" : `${Math.round(diskLimit / 1024)} GB`;
+  // cpuLimit=0 means unlimited in Pelican; use the actual value as a soft ceiling for display
+  const effectiveCpuLimit = cpuLimit > 0 ? cpuLimit : Math.max(100, Math.ceil(cpuPct / 100) * 100);
 
   const rows = [
     {
       label: "CPU",
-      value: r ? `${cpuPct.toFixed(1)}%` : "—",
-      pct: cpuLimit > 0 ? Math.min(100, (cpuPct / cpuLimit) * 100) : 0,
+      value: r ? (cpuLimit > 0 ? `${cpuPct.toFixed(1)}% / ${cpuLimit}%` : `${cpuPct.toFixed(1)}% / ∞`) : "—",
+      pct: Math.min(100, (cpuPct / effectiveCpuLimit) * 100),
       dotColor: "bg-green-400",
       barColor: "bg-green-500",
     },
