@@ -231,8 +231,8 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/[0.07] px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#5b8cff]/10">
-              <Egg className="h-4 w-4 text-[#5b8cff]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#00c98d]/10">
+              <Egg className="h-4 w-4 text-[#00c98d]" />
             </div>
             <h2 className="text-[15px] font-bold text-white">Create New Egg</h2>
           </div>
@@ -257,7 +257,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Paper"
-                className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+                className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40"
               />
             </div>
             <div className="space-y-1.5">
@@ -266,7 +266,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Short description"
-                className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+                className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40"
               />
             </div>
           </div>
@@ -279,7 +279,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
             <input
               value={startup}
               onChange={(e) => setStartup(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-[#5b8cff] font-mono placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-[#00c98d] font-mono placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40"
             />
           </div>
 
@@ -292,11 +292,11 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
               <div className="flex gap-2">
                 <button
                   onClick={() => setDockerRows(Object.entries(JAVA_IMAGES).map(([label, image]) => ({ label, image })))}
-                  className="text-[11px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors"
+                  className="text-[11px] text-[#00c98d] hover:text-[#7da8ff] transition-colors"
                 >
                   Fill all Java
                 </button>
-                <button onClick={addDockerRow} className="flex items-center gap-1 text-[11px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors">
+                <button onClick={addDockerRow} className="flex items-center gap-1 text-[11px] text-[#00c98d] hover:text-[#7da8ff] transition-colors">
                   <Plus className="h-3 w-3" /> Add
                 </button>
               </div>
@@ -308,13 +308,13 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
                     value={row.label}
                     onChange={(e) => updateDockerRow(i, "label", e.target.value)}
                     placeholder="Label (e.g. Java 21)"
-                    className="w-32 shrink-0 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+                    className="w-32 shrink-0 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-white placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40"
                   />
                   <input
                     value={row.image}
                     onChange={(e) => updateDockerRow(i, "image", e.target.value)}
                     placeholder="ghcr.io/pelican-eggs/yolks:java_21"
-                    className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-[#8b92a8] font-mono placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40"
+                    className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-sm text-[#8b92a8] font-mono placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40"
                   />
                   <button onClick={() => removeDockerRow(i)} className="text-red-400/60 hover:text-red-400 transition-colors shrink-0">
                     <Trash2 className="h-4 w-4" />
@@ -330,7 +330,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
               <label className="text-xs font-semibold text-[#8b92a8] uppercase tracking-wider flex items-center gap-1.5">
                 <Variable className="h-3 w-3" /> Environment Variables
               </label>
-              <button onClick={addVariable} className="flex items-center gap-1 text-[11px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors">
+              <button onClick={addVariable} className="flex items-center gap-1 text-[11px] text-[#00c98d] hover:text-[#7da8ff] transition-colors">
                 <Plus className="h-3 w-3" /> Add Variable
               </button>
             </div>
@@ -346,10 +346,10 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
                   </button>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <input value={v.name} onChange={(e) => updateVariable(i, "name", e.target.value)} placeholder="Display name" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40" />
-                  <input value={v.env_variable} onChange={(e) => updateVariable(i, "env_variable", e.target.value.toUpperCase())} placeholder="ENV_VARIABLE" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white font-mono placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40" />
-                  <input value={v.default_value} onChange={(e) => updateVariable(i, "default_value", e.target.value)} placeholder="Default value" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40" />
-                  <input value={v.description} onChange={(e) => updateVariable(i, "description", e.target.value)} placeholder="Description" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#5b8cff]/40" />
+                  <input value={v.name} onChange={(e) => updateVariable(i, "name", e.target.value)} placeholder="Display name" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40" />
+                  <input value={v.env_variable} onChange={(e) => updateVariable(i, "env_variable", e.target.value.toUpperCase())} placeholder="ENV_VARIABLE" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white font-mono placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40" />
+                  <input value={v.default_value} onChange={(e) => updateVariable(i, "default_value", e.target.value)} placeholder="Default value" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40" />
+                  <input value={v.description} onChange={(e) => updateVariable(i, "description", e.target.value)} placeholder="Description" className="rounded border border-white/[0.07] bg-[#13161f] px-2.5 py-1.5 text-xs text-white placeholder-[#4a5068] outline-none focus:border-[#00c98d]/40" />
                 </div>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-1.5 cursor-pointer">
@@ -378,7 +378,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
           <Button variant="outline" onClick={handleDownloadYaml} className="border-white/10 text-[#8b92a8] hover:text-white">
             <Download className="h-4 w-4 mr-2" />YAML
           </Button>
-          <Button onClick={handleDownloadJson} className="bg-[#5b8cff] hover:bg-[#4a7bef] text-white">
+          <Button onClick={handleDownloadJson} className="bg-[#00c98d] hover:bg-[#4a7bef] text-white">
             <Download className="h-4 w-4 mr-2" />JSON
           </Button>
         </div>
@@ -446,7 +446,7 @@ export default function AdminEggsPage() {
             Pelican server eggs available for plan configuration. These are synced from your panel.
           </p>
         </div>
-        <Button onClick={() => setShowCreate(true)} className="bg-[#5b8cff] hover:bg-[#4a7bef] text-white shrink-0">
+        <Button onClick={() => setShowCreate(true)} className="bg-[#00c98d] hover:bg-[#4a7bef] text-white shrink-0">
           <Plus className="h-4 w-4 mr-2" /> Create Egg
         </Button>
       </div>
@@ -459,7 +459,7 @@ export default function AdminEggsPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         {[
           { label: "Total Eggs", value: eggs.length, color: "text-white" },
-          { label: "Total Variables", value: eggs.reduce((s, e) => s + e.variables.length, 0), color: "text-blue-400" },
+          { label: "Total Variables", value: eggs.reduce((s, e) => s + e.variables.length, 0), color: "text-[#00c98d]" },
           { label: "Docker Images", value: eggs.reduce((s, e) => s + Object.keys(e.dockerImages).length, 0), color: "text-purple-400" },
         ].map((s) => (
           <Card key={s.label} className="border-white/5 bg-white/[0.02]">
@@ -552,7 +552,7 @@ export default function AdminEggsPage() {
                                 Startup Command
                               </h4>
                               <div className="rounded-lg border border-white/[0.07] bg-[#0f1219] p-3">
-                                <code className="text-xs text-[#5b8cff] break-all font-mono">{egg.startup}</code>
+                                <code className="text-xs text-[#00c98d] break-all font-mono">{egg.startup}</code>
                               </div>
                             </div>
 
@@ -598,7 +598,7 @@ export default function AdminEggsPage() {
                                             </Badge>
                                           )}
                                           {v.userEditable ? (
-                                            <Badge variant="outline" className="text-[9px] py-0 px-1 bg-blue-500/10 text-blue-400 border-blue-500/20">
+                                            <Badge variant="outline" className="text-[9px] py-0 px-1 bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20">
                                               <Pencil className="h-2.5 w-2.5 mr-0.5" /> Editable
                                             </Badge>
                                           ) : (
@@ -612,7 +612,7 @@ export default function AdminEggsPage() {
                                         <p className="text-[11px] text-[#8b92a8] mb-1">{v.description}</p>
                                       )}
                                       <p className="text-[11px] text-[#8b92a8]">
-                                        Default: <code className="text-[#5b8cff] font-mono">{v.defaultValue || "(empty)"}</code>
+                                        Default: <code className="text-[#00c98d] font-mono">{v.defaultValue || "(empty)"}</code>
                                       </p>
                                     </div>
                                   ))}

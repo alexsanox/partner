@@ -119,7 +119,7 @@ function PaymentForm({ plan, billingCycle, getPrice, getSavings, onSuccess, setu
       {/* Stripe Payment Element */}
       <div className="rounded-xl border border-white/[0.07] bg-[#1a1e2e] p-5">
         <h4 className="text-sm font-semibold text-[#e2e8f0] mb-4 flex items-center gap-2">
-          <CreditCard className="h-4 w-4 text-[#5b8cff]" />
+          <CreditCard className="h-4 w-4 text-[#00c98d]" />
           Payment Details
         </h4>
         <PaymentElement
@@ -138,7 +138,7 @@ function PaymentForm({ plan, billingCycle, getPrice, getSavings, onSuccess, setu
       <button
         type="submit"
         disabled={!stripe || processing}
-        className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#5b8cff] px-6 py-3 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
+        className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00c98d] px-6 py-3 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
       >
         {processing ? (
           <>
@@ -281,7 +281,7 @@ export default function CreateServerPage() {
                 i < currentStep
                   ? "bg-green-500/10 text-green-400"
                   : i === currentStep
-                    ? "bg-[#5b8cff]/10 text-[#5b8cff]"
+                    ? "bg-[#00c98d]/10 text-[#00c98d]"
                     : "bg-white/5 text-[#8b92a8]"
               }`}
             >
@@ -307,7 +307,7 @@ export default function CreateServerPage() {
                 onClick={() => setBillingCycle(cycle)}
                 className={`rounded-md px-4 py-2 text-[13px] font-semibold transition-all ${
                   billingCycle === cycle
-                    ? "bg-[#5b8cff] text-white shadow-sm"
+                    ? "bg-[#00c98d] text-white shadow-sm"
                     : "text-[#8b92a8] hover:text-white"
                 }`}
               >
@@ -323,7 +323,7 @@ export default function CreateServerPage() {
 
           {loadingPlans ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-6 w-6 animate-spin text-[#5b8cff]" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#00c98d]" />
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -337,16 +337,16 @@ export default function CreateServerPage() {
                     key={plan.id}
                     className={`relative rounded-xl border p-6 transition-all cursor-pointer ${
                       selectedPlan?.id === plan.id
-                        ? "border-[#5b8cff] bg-[#5b8cff]/5 ring-1 ring-[#5b8cff]/30"
+                        ? "border-[#00c98d] bg-[#00c98d]/5 ring-1 ring-[#00c98d]/30"
                         : isPopular
-                          ? "border-[#5b8cff]/30 bg-[#232839]"
+                          ? "border-[#00c98d]/30 bg-[#232839]"
                           : "border-white/[0.07] bg-white/[0.02] hover:border-white/20"
                     }`}
                     onClick={() => setSelectedPlan(plan)}
                   >
                     {isPopular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="rounded-full bg-[#5b8cff] px-3 py-1 text-[11px] font-bold text-white">
+                        <span className="rounded-full bg-[#00c98d] px-3 py-1 text-[11px] font-bold text-white">
                           BEST VALUE
                         </span>
                       </div>
@@ -354,7 +354,7 @@ export default function CreateServerPage() {
 
                     {selectedPlan?.id === plan.id && (
                       <div className="absolute top-4 right-4">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b8cff]">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00c98d]">
                           <Check className="h-3.5 w-3.5 text-white" />
                         </div>
                       </div>
@@ -382,28 +382,28 @@ export default function CreateServerPage() {
 
                     <div className="mt-5 space-y-2.5">
                       <div className="flex items-center gap-2 text-sm text-[#e2e8f0]">
-                        <MemoryStick className="h-3.5 w-3.5 text-[#5b8cff]" />
+                        <MemoryStick className="h-3.5 w-3.5 text-[#00c98d]" />
                         {formatMemory(plan.ramMb)} RAM
                       </div>
                       <div className="flex items-center gap-2 text-sm text-[#e2e8f0]">
-                        <HardDrive className="h-3.5 w-3.5 text-[#5b8cff]" />
+                        <HardDrive className="h-3.5 w-3.5 text-[#00c98d]" />
                         {formatMemory(plan.diskMb)} Disk
                       </div>
                       <div className="flex items-center gap-2 text-sm text-[#e2e8f0]">
-                        <Cpu className="h-3.5 w-3.5 text-[#5b8cff]" />
+                        <Cpu className="h-3.5 w-3.5 text-[#00c98d]" />
                         {plan.cpuPercent}% CPU
                       </div>
                       <div className="flex items-center gap-2 text-sm text-[#e2e8f0]">
-                        <Users className="h-3.5 w-3.5 text-[#5b8cff]" />
+                        <Users className="h-3.5 w-3.5 text-[#00c98d]" />
                         {plan.playerSlots} Player Slots
                       </div>
                       <div className="flex items-center gap-2 text-sm text-[#e2e8f0]">
-                        <Archive className="h-3.5 w-3.5 text-[#5b8cff]" />
+                        <Archive className="h-3.5 w-3.5 text-[#00c98d]" />
                         {plan.backupSlots} Backup{plan.backupSlots !== 1 ? "s" : ""}
                       </div>
                       {plan.databaseLimit > 0 && (
                         <div className="flex items-center gap-2 text-sm text-[#e2e8f0]">
-                          <Database className="h-3.5 w-3.5 text-[#5b8cff]" />
+                          <Database className="h-3.5 w-3.5 text-[#00c98d]" />
                           {plan.databaseLimit} Database{plan.databaseLimit !== 1 ? "s" : ""}
                         </div>
                       )}
@@ -421,7 +421,7 @@ export default function CreateServerPage() {
                       }}
                       className={`mt-6 w-full rounded-lg py-2.5 text-sm font-bold transition-colors ${
                         isPopular || selectedPlan?.id === plan.id
-                          ? "bg-[#5b8cff] text-white hover:bg-[#4a7bef]"
+                          ? "bg-[#00c98d] text-white hover:bg-[#4a7bef]"
                           : "bg-white/5 text-white hover:bg-white/10"
                       }`}
                     >
@@ -440,8 +440,8 @@ export default function CreateServerPage() {
         <div className="max-w-xl space-y-6">
           {/* Selected plan summary */}
           <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-4 flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5b8cff]/10">
-              <Zap className="h-5 w-5 text-[#5b8cff]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#00c98d]/10">
+              <Zap className="h-5 w-5 text-[#00c98d]" />
             </div>
             <div className="flex-1">
               <p className="text-sm font-semibold text-white">{selectedPlan.name} Server</p>
@@ -459,7 +459,7 @@ export default function CreateServerPage() {
             </div>
             <button
               onClick={() => setStep("plan")}
-              className="text-xs text-[#5b8cff] hover:underline"
+              className="text-xs text-[#00c98d] hover:underline"
             >
               Change
             </button>
@@ -473,7 +473,7 @@ export default function CreateServerPage() {
               value={serverName}
               onChange={(e) => setServerName(e.target.value)}
               placeholder="My Minecraft Server"
-              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-2.5 text-sm text-white placeholder:text-[#8b92a8]/50 focus:border-[#5b8cff]/40 focus:outline-none focus:ring-1 focus:ring-[#5b8cff]/20"
+              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-2.5 text-sm text-white placeholder:text-[#8b92a8]/50 focus:border-[#00c98d]/40 focus:outline-none focus:ring-1 focus:ring-[#00c98d]/20"
               autoFocus
             />
           </div>
@@ -496,7 +496,7 @@ export default function CreateServerPage() {
             <button
               onClick={handleContinueToPayment}
               disabled={!serverName.trim() || creatingSubscription}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#5b8cff] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#00c98d] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
             >
               {creatingSubscription ? (
                 <>
@@ -519,8 +519,8 @@ export default function CreateServerPage() {
         <div className="max-w-xl space-y-6">
           {/* Selected plan + server summary */}
           <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-4 flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5b8cff]/10">
-              <Zap className="h-5 w-5 text-[#5b8cff]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#00c98d]/10">
+              <Zap className="h-5 w-5 text-[#00c98d]" />
             </div>
             <div className="flex-1">
               <p className="text-sm font-semibold text-white">{serverName}</p>
@@ -543,7 +543,7 @@ export default function CreateServerPage() {
               appearance: {
                 theme: "night",
                 variables: {
-                  colorPrimary: "#5b8cff",
+                  colorPrimary: "#00c98d",
                   colorBackground: "#1a1e2e",
                   colorText: "#e2e8f0",
                   colorTextSecondary: "#8b92a8",

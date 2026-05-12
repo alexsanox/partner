@@ -218,7 +218,7 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5b8cff]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#00c98d]" />
       </div>
     );
   }
@@ -267,11 +267,11 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
     const changed = original[p.key] !== p.value;
 
     return (
-      <div key={p.key} className={`flex items-start gap-4 py-3.5 px-4 -mx-4 rounded-lg transition-colors ${changed ? "bg-[#5b8cff]/5" : "hover:bg-white/[0.02]"}`}>
+      <div key={p.key} className={`flex items-start gap-4 py-3.5 px-4 -mx-4 rounded-lg transition-colors ${changed ? "bg-[#00c98d]/5" : "hover:bg-white/[0.02]"}`}>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
             <span className="text-[13px] font-semibold text-[#e2e8f0]">{label}</span>
-            {changed && <span className="text-[10px] font-medium text-[#5b8cff] bg-[#5b8cff]/10 px-1.5 py-0.5 rounded">Modified</span>}
+            {changed && <span className="text-[10px] font-medium text-[#00c98d] bg-[#00c98d]/10 px-1.5 py-0.5 rounded">Modified</span>}
           </div>
           <p className="text-[12px] text-[#8b92a8] mb-2">{desc}</p>
           <div className="flex items-center gap-2">
@@ -286,7 +286,7 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
               <button
                 onClick={() => handleChange(p.key, p.value === "true" ? "false" : "true")}
                 className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
-                  isOn ? "bg-[#5b8cff]" : "bg-[#364052]"
+                  isOn ? "bg-[#00c98d]" : "bg-[#364052]"
                 }`}
               >
                 <span
@@ -300,7 +300,7 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
             <select
               value={p.value}
               onChange={(e) => handleChange(p.key, e.target.value)}
-              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-[13px] text-[#e2e8f0] outline-none focus:border-[#5b8cff]/40 transition-colors"
+              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-[13px] text-[#e2e8f0] outline-none focus:border-[#00c98d]/40 transition-colors"
             >
               {meta.options.map((o) => (
                 <option key={o} value={o}>{o}</option>
@@ -311,7 +311,7 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
             <input
               value={p.value}
               onChange={(e) => handleChange(p.key, e.target.value)}
-              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-[13px] text-[#e2e8f0] outline-none focus:border-[#5b8cff]/40 transition-colors font-mono"
+              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-[13px] text-[#e2e8f0] outline-none focus:border-[#00c98d]/40 transition-colors font-mono"
               type={meta?.type === "number" ? "number" : "text"}
             />
           )}
@@ -344,7 +344,7 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
             </p>
             <button
               onClick={fetchProps}
-              className="mt-5 rounded-lg bg-[#5b8cff] px-5 py-2 text-sm font-semibold text-white hover:bg-[#4a7bef] transition-colors"
+              className="mt-5 rounded-lg bg-[#00c98d] px-5 py-2 text-sm font-semibold text-white hover:bg-[#4a7bef] transition-colors"
             >
               Try Again
             </button>
@@ -380,7 +380,7 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
             <button
               onClick={handleSave}
               disabled={saving || !isDirty}
-              className="flex items-center gap-1.5 rounded-lg bg-[#5b8cff] px-4 py-2 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-2 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -402,7 +402,7 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search properties..."
-              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] pl-9 pr-3 py-2 text-[13px] text-[#e2e8f0] outline-none placeholder:text-[#6b7280] focus:border-[#5b8cff]/40 transition-colors"
+              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] pl-9 pr-3 py-2 text-[13px] text-[#e2e8f0] outline-none placeholder:text-[#6b7280] focus:border-[#00c98d]/40 transition-colors"
             />
           </div>
         </div>
@@ -419,14 +419,14 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
                   onClick={() => { setActiveCategory(cat.label); setShowAll(false); }}
                   className={`relative px-3 py-2.5 text-[12px] font-semibold whitespace-nowrap transition-colors ${
                     activeCategory === cat.label && !showAll
-                      ? "text-[#5b8cff]"
+                      ? "text-[#00c98d]"
                       : "text-[#8b92a8] hover:text-[#c8cdd8]"
                   }`}
                 >
                   {cat.label}
                   <span className="ml-1 text-[10px] text-[#8b92a8]/50">{count}</span>
                   {activeCategory === cat.label && !showAll && (
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#5b8cff] rounded-t-full" />
+                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00c98d] rounded-t-full" />
                   )}
                 </button>
               );
@@ -435,13 +435,13 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
               <button
                 onClick={() => setShowAll(true)}
                 className={`relative px-3 py-2.5 text-[12px] font-semibold whitespace-nowrap transition-colors ${
-                  showAll ? "text-[#5b8cff]" : "text-[#8b92a8] hover:text-[#c8cdd8]"
+                  showAll ? "text-[#00c98d]" : "text-[#8b92a8] hover:text-[#c8cdd8]"
                 }`}
               >
                 Other
                 <span className="ml-1 text-[10px] text-[#8b92a8]/50">{uncategorizedProps.length}</span>
                 {showAll && (
-                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#5b8cff] rounded-t-full" />
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00c98d] rounded-t-full" />
                 )}
               </button>
             )}

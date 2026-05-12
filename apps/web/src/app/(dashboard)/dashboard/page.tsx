@@ -18,7 +18,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   online: { label: "Online", className: "bg-green-500/10 text-green-400 border-green-500/20" },
   offline: { label: "Offline", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
   suspended: { label: "Suspended", className: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
-  installing: { label: "Installing", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  installing: { label: "Installing", className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20" },
 };
 
 const defaultStatus = { label: "Unknown", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" };
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
   const totalDisk = servers.reduce((sum: number, s: PelicanServer) => sum + s.limits.disk, 0);
 
   const stats = [
-    { label: "Active Servers", value: servers.length.toString(), icon: Server, color: "text-blue-400", bg: "bg-blue-400/10" },
+    { label: "Active Servers", value: servers.length.toString(), icon: Server, color: "text-[#00c98d]", bg: "bg-blue-400/10" },
     { label: "Total RAM", value: formatMemory(totalRam), icon: MemoryStick, color: "text-purple-400", bg: "bg-purple-400/10" },
     { label: "Total Disk", value: formatMemory(totalDisk), icon: HardDrive, color: "text-cyan-400", bg: "bg-cyan-400/10" },
     { label: "CPU Limit", value: `${servers.reduce((sum: number, s: PelicanServer) => sum + s.limits.cpu, 0)}%`, icon: Cpu, color: "text-green-400", bg: "bg-green-400/10" },
@@ -65,7 +65,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <Link href="/dashboard/services/create">
-          <Button className="bg-blue-600 text-white hover:bg-blue-500">
+          <Button className="bg-[#00c98d] text-white hover:bg-[#00b07d]">
             <Plus className="mr-2 h-4 w-4" />
             New Server
           </Button>
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
               <p className="text-lg font-medium text-slate-400">No servers yet</p>
               <p className="mt-1 text-sm text-slate-500">Create your first server to get started</p>
               <Link href="/dashboard/services/create" className="mt-4">
-                <Button className="bg-blue-600 text-white hover:bg-blue-500">
+                <Button className="bg-[#00c98d] text-white hover:bg-[#00b07d]">
                   <Plus className="mr-2 h-4 w-4" />
                   Create Server
                 </Button>
@@ -125,8 +125,8 @@ export default async function DashboardPage() {
                     className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-4 transition-colors hover:border-white/10 hover:bg-white/[0.04]"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                        <Server className="h-5 w-5 text-blue-400" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#00b07d]/10">
+                        <Server className="h-5 w-5 text-[#00c98d]" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-white">{server.name}</p>

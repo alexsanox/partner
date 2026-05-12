@@ -75,7 +75,7 @@ export function ResourceUsage({ serverId, memoryLimit, diskLimit, cpuLimit, live
       value: r ? `${Math.round(memMb)} / ${memoryLimit} MB` : "—",
       pct: memoryLimit > 0 ? Math.min(100, (memMb / memoryLimit) * 100) : 0,
       dotColor: "bg-blue-400",
-      barColor: "bg-blue-500",
+      barColor: "bg-[#00b07d]",
     },
     {
       label: "Storage",
@@ -90,7 +90,7 @@ export function ResourceUsage({ serverId, memoryLimit, diskLimit, cpuLimit, live
     <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-5">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-[15px] font-bold text-[#e2e8f0]">Usage</h3>
-        <button onClick={() => setShowAdvanced(!showAdvanced)} className="text-[12px] text-[#5b8cff] hover:text-[#7da8ff] cursor-pointer transition-colors">
+        <button onClick={() => setShowAdvanced(!showAdvanced)} className="text-[12px] text-[#00c98d] hover:text-[#7da8ff] cursor-pointer transition-colors">
           {showAdvanced ? "Hide Advanced" : "Show Advanced"}
         </button>
       </div>

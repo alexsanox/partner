@@ -69,7 +69,7 @@ function ResetPasswordForm() {
           </p>
           <Link
             href="/forgot-password"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+            className="mt-6 inline-flex items-center gap-1.5 text-sm text-[#00c98d] hover:text-[#4dd9ae] transition-colors"
           >
             Request a new link
           </Link>
@@ -91,7 +91,7 @@ function ResetPasswordForm() {
           </p>
           <Link
             href="/login"
-            className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+            className="mt-6 flex items-center justify-center gap-1.5 text-sm text-[#00c98d] hover:text-[#4dd9ae] transition-colors"
           >
             Sign in now
           </Link>
@@ -127,7 +127,7 @@ function ResetPasswordForm() {
                 placeholder="Min. 8 characters"
                 required
                 minLength={8}
-                className="border-white/10 bg-white/5 pr-10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+                className="border-white/10 bg-white/5 pr-10 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
               />
               <button
                 type="button"
@@ -150,7 +150,7 @@ function ResetPasswordForm() {
                 type={showConfirm ? "text" : "password"}
                 placeholder="Repeat your password"
                 required
-                className="border-white/10 bg-white/5 pr-10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+                className="border-white/10 bg-white/5 pr-10 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
               />
               <button
                 type="button"
@@ -164,7 +164,7 @@ function ResetPasswordForm() {
           </div>
           <Button
             type="submit"
-            className="w-full bg-blue-600 text-white hover:bg-blue-500"
+            className="w-full bg-[#00c98d] text-white hover:bg-[#00b07d]"
             disabled={loading}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

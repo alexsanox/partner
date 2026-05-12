@@ -71,7 +71,7 @@ function UpdateForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel: 
         <button
           type="submit"
           disabled={!stripe || processing}
-          className="flex items-center gap-2 rounded-lg bg-[#5b8cff] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
+          className="flex items-center gap-2 rounded-lg bg-[#00c98d] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
         >
           {processing ? (
             <>
@@ -149,7 +149,7 @@ export function UpdatePaymentMethod() {
       <button
         onClick={handleOpen}
         disabled={loading}
-        className="flex items-center gap-2 rounded-lg bg-[#5b8cff] px-4 py-2 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
+        className="flex items-center gap-2 rounded-lg bg-[#00c98d] px-4 py-2 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -166,7 +166,7 @@ export function UpdatePaymentMethod() {
   return (
     <div className="rounded-xl border border-white/[0.07] bg-[#1a1e2e] p-5">
       <h4 className="text-sm font-semibold text-[#e2e8f0] mb-4 flex items-center gap-2">
-        <CreditCard className="h-4 w-4 text-[#5b8cff]" />
+        <CreditCard className="h-4 w-4 text-[#00c98d]" />
         Update Payment Method
       </h4>
       <Elements
@@ -176,7 +176,7 @@ export function UpdatePaymentMethod() {
           appearance: {
             theme: "night",
             variables: {
-              colorPrimary: "#5b8cff",
+              colorPrimary: "#00c98d",
               colorBackground: "#1a1e2e",
               colorText: "#e2e8f0",
               colorTextSecondary: "#8b92a8",

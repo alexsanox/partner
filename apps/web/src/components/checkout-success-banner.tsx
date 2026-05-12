@@ -17,7 +17,7 @@ export function CheckoutSuccessBanner() {
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ["#5b8cff", "#22c55e", "#a78bfa", "#f472b6", "#fbbf24"],
+      colors: ["#00c98d", "#22c55e", "#a78bfa", "#f472b6", "#fbbf24"],
     });
 
     // Side cannons with delay
@@ -27,14 +27,14 @@ export function CheckoutSuccessBanner() {
         angle: 60,
         spread: 55,
         origin: { x: 0 },
-        colors: ["#5b8cff", "#22c55e", "#fbbf24"],
+        colors: ["#00c98d", "#22c55e", "#fbbf24"],
       });
       confetti({
         particleCount: 50,
         angle: 120,
         spread: 55,
         origin: { x: 1 },
-        colors: ["#a78bfa", "#f472b6", "#5b8cff"],
+        colors: ["#a78bfa", "#f472b6", "#00c98d"],
       });
     }, 300);
 
@@ -88,9 +88,9 @@ export function CheckoutSuccessBanner() {
             : "scale-95 opacity-0 translate-y-4"
         }`}
       >
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#1a1e2e] shadow-2xl shadow-[#5b8cff]/10">
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#1a1e2e] shadow-2xl shadow-[#00c98d]/10">
           {/* Glow effect at top */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-32 w-64 bg-[#5b8cff]/20 blur-[80px] rounded-full" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-32 w-64 bg-[#00c98d]/20 blur-[80px] rounded-full" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 h-16 w-32 bg-green-400/20 blur-[40px] rounded-full" />
 
           <div className="relative px-8 pt-10 pb-8 text-center">
@@ -118,7 +118,7 @@ export function CheckoutSuccessBanner() {
             {/* Fun stats */}
             <div className="mt-6 grid grid-cols-3 gap-3">
               <div className="rounded-xl bg-white/[0.03] border border-white/[0.05] px-3 py-3">
-                <p className="text-lg font-bold text-[#5b8cff]">24/7</p>
+                <p className="text-lg font-bold text-[#00c98d]">24/7</p>
                 <p className="text-[10px] text-[#8b92a8] mt-0.5">Uptime</p>
               </div>
               <div className="rounded-xl bg-white/[0.03] border border-white/[0.05] px-3 py-3">
@@ -134,7 +134,7 @@ export function CheckoutSuccessBanner() {
             {/* CTA */}
             <button
               onClick={handleDismiss}
-              className="mt-6 w-full rounded-xl bg-[#5b8cff] px-6 py-3 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors"
+              className="mt-6 w-full rounded-xl bg-[#00c98d] px-6 py-3 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors"
             >
               Go to My Servers
             </button>

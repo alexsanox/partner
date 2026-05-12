@@ -40,8 +40,8 @@ export default function ForgotPasswordPage() {
     return (
       <Card className="border-white/5 bg-white/[0.03]">
         <CardContent className="p-6 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/10 border border-blue-500/20">
-            <MailCheck className="h-7 w-7 text-blue-400" />
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#00b07d]/10 border border-[#00c98d]/20">
+            <MailCheck className="h-7 w-7 text-[#00c98d]" />
           </div>
           <h2 className="text-xl font-bold text-white">Check your inbox</h2>
           <p className="mt-2 text-sm text-slate-400">
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
             Didn&apos;t receive it? Check your spam folder or{" "}
             <button
               onClick={() => setSent(false)}
-              className="text-blue-400 hover:text-blue-300 underline"
+              className="text-[#00c98d] hover:text-[#4dd9ae] underline"
             >
               try again
             </button>
@@ -97,12 +97,12 @@ export default function ForgotPasswordPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
           <Button
             type="submit"
-            className="w-full bg-blue-600 text-white hover:bg-blue-500"
+            className="w-full bg-[#00c98d] text-white hover:bg-[#00b07d]"
             disabled={loading}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

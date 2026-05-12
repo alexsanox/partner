@@ -91,10 +91,10 @@ export default function StorePage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search plugins, mods, modpacks..."
-              className="pl-9 border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+              className="pl-9 border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
-          <Button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white">
+          <Button type="submit" className="bg-[#00c98d] hover:bg-[#00b07d] text-white">
             Search
           </Button>
         </form>
@@ -108,7 +108,7 @@ export default function StorePage() {
             onClick={() => { setCategory(cat.value); setQuery(""); }}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               category === cat.value
-                ? "bg-blue-600 text-white"
+                ? "bg-[#00c98d] text-white"
                 : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10"
             }`}
           >

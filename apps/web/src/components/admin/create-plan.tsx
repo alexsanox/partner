@@ -120,7 +120,7 @@ export function CreatePlanButton() {
     <>
       <Button
         onClick={() => setOpen(true)}
-        className="bg-[#5b8cff] text-white hover:bg-[#4a7aee]"
+        className="bg-[#00c98d] text-white hover:bg-[#4a7aee]"
       >
         <Plus className="mr-2 h-4 w-4" />
         Create Plan
@@ -184,7 +184,7 @@ export function CreatePlanButton() {
             >
               Cancel
             </DialogClose>
-            <Button onClick={handleCreate} disabled={loading} className="bg-[#5b8cff] text-white hover:bg-[#4a7aee]">
+            <Button onClick={handleCreate} disabled={loading} className="bg-[#00c98d] text-white hover:bg-[#4a7aee]">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Create Plan
             </Button>

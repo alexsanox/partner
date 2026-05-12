@@ -59,7 +59,7 @@ export default async function AdminPlansPage() {
         {[
           { label: "Total Plans", value: plans.length, color: "text-white" },
           { label: "Active", value: activePlans.length, color: "text-green-400" },
-          { label: "Services", value: totalServices, color: "text-blue-400" },
+          { label: "Services", value: totalServices, color: "text-[#00c98d]" },
           { label: "Orders", value: totalOrders, color: "text-purple-400" },
         ].map((s) => (
           <Card key={s.label} className="border-white/5 bg-white/[0.02]">
@@ -115,7 +115,7 @@ export default async function AdminPlansPage() {
                     <TableCell>
                       <div className="flex items-center gap-3 text-xs">
                         <span className="flex items-center gap-1 text-[#8b92a8]">
-                          <MemoryStick className="h-3 w-3 text-[#5b8cff]" />
+                          <MemoryStick className="h-3 w-3 text-[#00c98d]" />
                           <span className="text-white">{formatMb(plan.ramMb)}</span>
                         </span>
                         <span className="flex items-center gap-1 text-[#8b92a8]">
@@ -207,7 +207,7 @@ export default async function AdminPlansPage() {
                 {/* Resources grid */}
                 <div className="grid grid-cols-3 gap-px bg-white/[0.03]">
                   {[
-                    { label: "RAM", value: formatMb(plan.ramMb), icon: MemoryStick, color: "text-[#5b8cff]" },
+                    { label: "RAM", value: formatMb(plan.ramMb), icon: MemoryStick, color: "text-[#00c98d]" },
                     { label: "CPU", value: `${plan.cpuPercent}%`, icon: Cpu, color: "text-purple-400" },
                     { label: "Disk", value: formatMb(plan.diskMb), icon: HardDrive, color: "text-green-400" },
                   ].map((r) => (

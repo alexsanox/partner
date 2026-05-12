@@ -320,8 +320,8 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
       <div className="rounded-xl border border-white/[0.07] bg-[#232839]">
         <div className="flex items-center justify-between px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-[#5b8cff]/10">
-              <Users className="h-4.5 w-4.5 text-[#5b8cff]" />
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-[#00c98d]/10">
+              <Users className="h-4.5 w-4.5 text-[#00c98d]" />
             </div>
             <div>
               <h3 className="text-[15px] font-bold text-[#e2e8f0]">Online Players</h3>
@@ -341,9 +341,9 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
 
       {/* TP bar */}
       {tpTarget && (
-        <div className="rounded-xl border border-[#5b8cff]/20 bg-[#5b8cff]/5 px-5 py-3">
+        <div className="rounded-xl border border-[#00c98d]/20 bg-[#00c98d]/5 px-5 py-3">
           <div className="flex items-center gap-3">
-            <ArrowUpRight className="h-4 w-4 text-[#5b8cff] shrink-0" />
+            <ArrowUpRight className="h-4 w-4 text-[#00c98d] shrink-0" />
             <span className="text-[13px] text-[#e2e8f0] font-medium shrink-0">Teleport {tpTarget}</span>
             <div className="flex items-center gap-1.5 flex-1">
               {(["x", "y", "z"] as const).map((axis) => (
@@ -352,14 +352,14 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
                   value={tpCoords[axis]}
                   onChange={(e) => setTpCoords((p) => ({ ...p, [axis]: e.target.value }))}
                   placeholder={axis.toUpperCase()}
-                  className="w-20 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-2.5 py-1.5 text-[12px] text-[#e2e8f0] outline-none focus:border-[#5b8cff]/40 font-mono text-center"
+                  className="w-20 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-2.5 py-1.5 text-[12px] text-[#e2e8f0] outline-none focus:border-[#00c98d]/40 font-mono text-center"
                 />
               ))}
             </div>
             <button
               onClick={() => { doAction(tpTarget, "tp", `${tpCoords.x} ${tpCoords.y} ${tpCoords.z}`); setTpTarget(null); setTpCoords({ x: "", y: "", z: "" }); }}
               disabled={!tpCoords.x || !tpCoords.y || !tpCoords.z}
-              className="rounded-lg bg-[#5b8cff] px-4 py-1.5 text-[12px] font-bold text-white hover:bg-[#4a7bee] disabled:opacity-40 transition-colors"
+              className="rounded-lg bg-[#00c98d] px-4 py-1.5 text-[12px] font-bold text-white hover:bg-[#4a7bee] disabled:opacity-40 transition-colors"
             >
               Teleport
             </button>
@@ -373,7 +373,7 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
       {/* Player cards */}
       {loading && players.length === 0 ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-[#5b8cff]" />
+          <Loader2 className="h-6 w-6 animate-spin text-[#00c98d]" />
         </div>
       ) : players.length === 0 ? (
         <div className="rounded-xl border border-white/[0.07] bg-[#232839] text-center py-20">
@@ -427,7 +427,7 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
                     <div className="flex items-center gap-4 mt-1 text-[12px] text-[#8b92a8]">
                       {player.pos && (
                         <span className="flex items-center gap-1 font-mono text-[11px]">
-                          <MapPin className="h-3 w-3 text-[#5b8cff]" />
+                          <MapPin className="h-3 w-3 text-[#00c98d]" />
                           {player.pos.x}, {player.pos.y}, {player.pos.z}
                         </span>
                       )}
@@ -489,7 +489,7 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
                             onClick={() => doAction(player.name, "gamemode", gm)}
                             disabled={actionLoading === `${player.name}-gamemode`}
                             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-semibold capitalize transition-colors ${
-                              active ? "bg-[#5b8cff] text-white" : "border border-white/[0.07] text-[#8b92a8] hover:text-white hover:bg-white/5"
+                              active ? "bg-[#00c98d] text-white" : "border border-white/[0.07] text-[#8b92a8] hover:text-white hover:bg-white/5"
                             }`}
                           >
                             <Icon className="h-3 w-3" />
@@ -521,7 +521,7 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
                         <button
                           onClick={() => fetchInventory(player.name)}
                           disabled={invLoading === player.name}
-                          className="ml-auto text-[11px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors"
+                          className="ml-auto text-[11px] text-[#00c98d] hover:text-[#7da8ff] transition-colors"
                         >
                           {invLoading === player.name ? "Loading..." : "Refresh"}
                         </button>
@@ -529,7 +529,7 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
 
                       {invLoading === player.name && !player.inventory ? (
                         <div className="flex items-center justify-center py-8">
-                          <Loader2 className="h-4 w-4 animate-spin text-[#5b8cff]" />
+                          <Loader2 className="h-4 w-4 animate-spin text-[#00c98d]" />
                         </div>
                       ) : !player.inventory || player.inventory.length === 0 ? (
                         <div className="text-center py-6 text-[12px] text-[#8b92a8]/50">
@@ -610,7 +610,7 @@ export function PlayerManager({ serverId }: PlayerManagerProps) {
               onChange={(e) => setWlInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && wlInput.trim()) { addToWhitelist(wlInput.trim()); setWlInput(""); } }}
               placeholder="Player name..."
-              className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-[13px] text-[#e2e8f0] outline-none focus:border-[#5b8cff]/40 placeholder:text-[#8b92a8]/40"
+              className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2 text-[13px] text-[#e2e8f0] outline-none focus:border-[#00c98d]/40 placeholder:text-[#8b92a8]/40"
             />
             <button
               onClick={() => { if (wlInput.trim()) { addToWhitelist(wlInput.trim()); setWlInput(""); } }}
@@ -720,7 +720,7 @@ function ActionBtn({
       disabled={loading}
       className={`rounded-lg p-2 transition-colors disabled:opacity-50 ${
         active
-          ? "bg-[#5b8cff]/10 text-[#5b8cff]"
+          ? "bg-[#00c98d]/10 text-[#00c98d]"
           : danger
             ? "text-[#8b92a8] hover:bg-red-500/10 hover:text-red-400"
             : "text-[#8b92a8] hover:bg-white/5 hover:text-white"

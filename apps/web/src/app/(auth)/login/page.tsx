@@ -70,7 +70,7 @@ export default function LoginPage() {
               type="email"
               placeholder="you@example.com"
               required
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
           <div className="space-y-2">
@@ -80,7 +80,7 @@ export default function LoginPage() {
               </Label>
               <Link
                 href="/forgot-password"
-                className="text-xs text-blue-400 hover:text-blue-300"
+                className="text-xs text-[#00c98d] hover:text-[#4dd9ae]"
               >
                 Forgot password?
               </Link>
@@ -91,12 +91,12 @@ export default function LoginPage() {
               type="password"
               placeholder="••••••••"
               required
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
           <Button
             type="submit"
-            className="w-full bg-blue-600 text-white hover:bg-blue-500"
+            className="w-full bg-[#00c98d] text-white hover:bg-[#00b07d]"
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -108,7 +108,7 @@ export default function LoginPage() {
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="font-medium text-blue-400 hover:text-blue-300"
+            className="font-medium text-[#00c98d] hover:text-[#4dd9ae]"
           >
             Sign up
           </Link>

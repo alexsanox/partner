@@ -42,9 +42,9 @@ const plans = [
     accent: "from-slate-400 to-slate-200",
     accentText: "text-slate-300",
     accentBg: "bg-slate-400/10",
-    accentBorder: "border-blue-500/40",
-    accentGlow: "shadow-blue-500/20",
-    checkColor: "text-blue-400",
+    accentBorder: "border-[#00c98d]/40",
+    accentGlow: "shadow-[#00c98d]/20",
+    checkColor: "text-[#00c98d]",
     description: "Solid and reliable — built for growing communities",
     features: [
       "4 GB DDR5 RAM",
@@ -89,13 +89,13 @@ export function Pricing() {
   return (
     <section id="pricing" className="relative py-20 sm:py-28">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute right-1/4 top-0 h-[500px] w-[600px] rounded-full bg-blue-600/5 blur-[100px]" />
+        <div className="absolute right-1/4 top-0 h-[500px] w-[600px] rounded-full bg-[#00c98d]/5 blur-[100px]" />
         <div className="absolute left-1/4 bottom-0 h-[400px] w-[500px] rounded-full bg-cyan-600/5 blur-[100px]" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-blue-400">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-[#00c98d]">
             Pricing
           </h2>
           <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -126,7 +126,7 @@ export function Pricing() {
 
               {plan.popular && (
                 <div className="absolute right-4 top-5">
-                  <Badge className="border-0 bg-blue-600 text-xs font-bold text-white shadow-lg shadow-blue-600/25 hover:bg-blue-600">
+                  <Badge className="border-0 bg-[#00c98d] text-xs font-bold text-white shadow-lg shadow-blue-600/25 hover:bg-[#00c98d]">
                     <Zap className="mr-1 h-3 w-3" />
                     Most Popular
                   </Badge>
@@ -198,7 +198,7 @@ export function Pricing() {
                     className={cn(
                       "w-full h-11 font-semibold transition-all",
                       plan.popular
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/25 hover:bg-blue-500 hover:shadow-blue-600/40"
+                        ? "bg-[#00c98d] text-white shadow-lg shadow-blue-600/25 hover:bg-[#00b07d] hover:shadow-blue-600/40"
                         : "bg-white/[0.06] text-white hover:bg-white/10 border border-white/[0.08]"
                     )}
                   >

@@ -50,7 +50,7 @@ export default async function AdminUsersPage() {
 
       <div className="grid gap-4 sm:grid-cols-4">
         {[
-          { label: "Total Users", value: stats.total, icon: Users, color: "text-blue-400", bg: "bg-blue-400/10" },
+          { label: "Total Users", value: stats.total, icon: Users, color: "text-[#00c98d]", bg: "bg-blue-400/10" },
           { label: "Admins", value: stats.admins, icon: ShieldCheck, color: "text-red-400", bg: "bg-red-400/10" },
           { label: "Verified", value: stats.verified, icon: Users, color: "text-green-400", bg: "bg-green-400/10" },
           { label: "New (30d)", value: stats.recent, icon: UserX, color: "text-purple-400", bg: "bg-purple-400/10" },
@@ -133,7 +133,7 @@ export default async function AdminUsersPage() {
                         className={
                           // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           (user as any).twoFactorEnabled
-                            ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                            ? "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20"
                             : "bg-slate-500/10 text-slate-500 border-slate-500/20"
                         }
                       >

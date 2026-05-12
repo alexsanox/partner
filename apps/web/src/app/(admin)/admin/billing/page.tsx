@@ -58,7 +58,7 @@ export default async function AdminBillingPage() {
 
   const statCards = [
     { label: "Total Revenue", value: `$${stats.totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-green-400", bg: "bg-green-400/10" },
-    { label: "Paid Orders", value: stats.paidOrders.toString(), icon: Receipt, color: "text-blue-400", bg: "bg-blue-400/10" },
+    { label: "Paid Orders", value: stats.paidOrders.toString(), icon: Receipt, color: "text-[#00c98d]", bg: "bg-blue-400/10" },
     { label: "This Month", value: stats.monthlyOrders.toString(), icon: TrendingUp, color: "text-purple-400", bg: "bg-purple-400/10" },
     { label: "Failed", value: stats.failedOrders.toString(), icon: CreditCard, color: "text-red-400", bg: "bg-red-400/10" },
   ];

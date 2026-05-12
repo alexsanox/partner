@@ -33,7 +33,7 @@ interface TicketDetail {
 }
 
 const statusConfig: Record<string, { label: string; icon: React.ElementType; className: string; dot: string; banner?: string }> = {
-  OPEN: { label: "Open", icon: AlertCircle, className: "bg-blue-500/10 text-blue-400 border-blue-500/20", dot: "bg-blue-400" },
+  OPEN: { label: "Open", icon: AlertCircle, className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20", dot: "bg-blue-400" },
   IN_PROGRESS: { label: "In Progress", icon: Clock, className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", dot: "bg-yellow-400" },
   WAITING_REPLY: { label: "Waiting Reply", icon: AlertTriangle, className: "bg-orange-500/10 text-orange-400 border-orange-500/20", dot: "bg-orange-400 animate-pulse", banner: "Our team has replied and is waiting for your response." },
   RESOLVED: { label: "Resolved", icon: CheckCircle2, className: "bg-green-500/10 text-green-400 border-green-500/20", dot: "bg-green-400" },
@@ -42,7 +42,7 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; cla
 
 const priorityConfig: Record<string, { label: string; icon: React.ElementType; className: string }> = {
   LOW: { label: "Low", icon: Minus, className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
-  MEDIUM: { label: "Medium", icon: AlertCircle, className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  MEDIUM: { label: "Medium", icon: AlertCircle, className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20" },
   HIGH: { label: "High", icon: AlertTriangle, className: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
   CRITICAL: { label: "Critical", icon: Flame, className: "bg-red-500/10 text-red-400 border-red-500/20" },
 };
@@ -176,22 +176,22 @@ export default function TicketDetailPage() {
         {ticket.messages.map((msg, idx) => (
           <div
             key={msg.id}
-            className={`flex gap-4 px-5 py-5 ${msg.isStaff ? "bg-[#5b8cff]/[0.03]" : ""}`}
+            className={`flex gap-4 px-5 py-5 ${msg.isStaff ? "bg-[#00c98d]/[0.03]" : ""}`}
           >
             <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
               msg.isStaff
-                ? "bg-gradient-to-br from-[#5b8cff]/30 to-[#7c3aed]/20 text-[#5b8cff]"
+                ? "bg-gradient-to-br from-[#00c98d]/30 to-[#7c3aed]/20 text-[#00c98d]"
                 : "bg-white/[0.08] text-white"
             }`}>
               {msg.isStaff ? <Headphones className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
             </div>
             <div className="min-w-0 flex-1">
               <div className="mb-2 flex items-center gap-2">
-                <span className={`text-xs font-semibold ${msg.isStaff ? "text-[#5b8cff]" : "text-white"}`}>
+                <span className={`text-xs font-semibold ${msg.isStaff ? "text-[#00c98d]" : "text-white"}`}>
                   {msg.isStaff ? "Support Team" : "You"}
                 </span>
                 {msg.isStaff && (
-                  <span className="rounded-full border border-[#5b8cff]/20 bg-[#5b8cff]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#5b8cff]">Staff</span>
+                  <span className="rounded-full border border-[#00c98d]/20 bg-[#00c98d]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#00c98d]">Staff</span>
                 )}
                 <span className="ml-auto text-xs text-[#8b92a8]" title={formatDate(msg.createdAt)}>{formatShort(msg.createdAt)}</span>
               </div>
@@ -231,7 +231,7 @@ export default function TicketDetailPage() {
             value={reply}
             onChange={(e) => setReply(e.target.value)}
             rows={4}
-            className="border-white/[0.07] bg-white/[0.04] text-white placeholder:text-[#8b92a8] resize-none focus:border-[#5b8cff]/40"
+            className="border-white/[0.07] bg-white/[0.04] text-white placeholder:text-[#8b92a8] resize-none focus:border-[#00c98d]/40"
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleReply();
             }}
@@ -244,7 +244,7 @@ export default function TicketDetailPage() {
             <Button
               onClick={handleReply}
               disabled={sending || !reply.trim()}
-              className="bg-[#5b8cff] text-white hover:bg-[#4a7aee] disabled:opacity-50"
+              className="bg-[#00c98d] text-white hover:bg-[#4a7aee] disabled:opacity-50"
             >
               {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
               Send Reply

@@ -97,7 +97,7 @@ export function TicketActions({ ticketId, currentStatus }: TicketActionsProps) {
         {!isActive && (
           <DropdownMenuItem
             onClick={() => handleAction("reopen")}
-            className="text-xs text-blue-400 focus:text-blue-300 focus:bg-blue-500/10"
+            className="text-xs text-[#00c98d] focus:text-[#4dd9ae] focus:bg-[#00b07d]/10"
           >
             <RotateCcw className="mr-2 h-3.5 w-3.5" />
             Reopen

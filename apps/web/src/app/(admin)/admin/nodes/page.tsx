@@ -88,7 +88,7 @@ export default async function AdminNodesPage() {
         <div className="grid gap-4 sm:grid-cols-4">
           {[
             { label: "Nodes", value: nodes.length.toString(), icon: HardDrive, color: "text-cyan-400", bg: "bg-cyan-400/10" },
-            { label: "Servers", value: totalServers.toString(), icon: Server, color: "text-blue-400", bg: "bg-blue-400/10" },
+            { label: "Servers", value: totalServers.toString(), icon: Server, color: "text-[#00c98d]", bg: "bg-blue-400/10" },
             { label: "RAM Allocated", value: formatMbValue(totalAllocRam), icon: MemoryStick, color: "text-purple-400", bg: "bg-purple-400/10" },
             { label: "Disk Allocated", value: formatMbValue(totalAllocDisk), icon: DatabaseIcon, color: "text-green-400", bg: "bg-green-400/10" },
           ].map((s) => (
@@ -171,7 +171,7 @@ export default async function AdminNodesPage() {
                       </span>
                     </div>
                     {hasRamLimit && (
-                      <ProgressBar used={node.allocatedRam} total={node.limitRam} color="bg-[#5b8cff]" />
+                      <ProgressBar used={node.allocatedRam} total={node.limitRam} color="bg-[#00c98d]" />
                     )}
                   </div>
                   {/* Disk */}

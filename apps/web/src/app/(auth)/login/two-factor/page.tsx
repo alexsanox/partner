@@ -102,8 +102,8 @@ export default function TwoFactorPage() {
   return (
     <Card className="border-white/5 bg-white/[0.03]">
       <CardHeader className="space-y-1 p-6 pb-0 text-center">
-        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#5b8cff]/10">
-          <ShieldCheck className="h-7 w-7 text-[#5b8cff]" />
+        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#00c98d]/10">
+          <ShieldCheck className="h-7 w-7 text-[#00c98d]" />
         </div>
         <h1 className="text-2xl font-bold text-white">Two-Factor Authentication</h1>
         <p className="text-sm text-slate-400">
@@ -130,7 +130,7 @@ export default function TwoFactorPage() {
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
               className="h-14 w-12 rounded-lg border border-white/10 bg-white/5 text-center text-xl font-bold text-white
-                focus:border-[#5b8cff]/50 focus:outline-none focus:ring-1 focus:ring-[#5b8cff]/30
+                focus:border-[#00c98d]/50 focus:outline-none focus:ring-1 focus:ring-[#00c98d]/30
                 transition-all"
               autoFocus={i === 0}
               disabled={loading}
@@ -150,7 +150,7 @@ export default function TwoFactorPage() {
           <button
             onClick={handleSendOTP}
             disabled={sending}
-            className="inline-flex items-center gap-1.5 text-sm text-[#5b8cff] hover:text-[#4a7bef] transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-sm text-[#00c98d] hover:text-[#4a7bef] transition-colors disabled:opacity-50"
           >
             {sending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

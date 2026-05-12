@@ -80,7 +80,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
               className={
                 isDestructive
                   ? "bg-red-600 text-white hover:bg-red-500"
-                  : "bg-[#5b8cff] text-white hover:bg-[#4a7aee]"
+                  : "bg-[#00c98d] text-white hover:bg-[#4a7aee]"
               }
             >
               {options.confirmLabel || "Confirm"}

@@ -235,7 +235,7 @@ export default function SettingsPage() {
   if (isPending) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5b8cff]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#00c98d]" />
       </div>
     );
   }
@@ -279,7 +279,7 @@ export default function SettingsPage() {
               <Button
                 onClick={handleNameSave}
                 disabled={nameLoading || name === session?.user?.name}
-                className="bg-[#5b8cff] text-white hover:bg-[#4a7bef] disabled:opacity-40"
+                className="bg-[#00c98d] text-white hover:bg-[#4a7bef] disabled:opacity-40"
               >
                 {nameLoading ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
@@ -345,7 +345,7 @@ export default function SettingsPage() {
                         size="sm"
                         onClick={handleEmailChange}
                         disabled={emailLoading || !newEmail.trim()}
-                        className="bg-[#5b8cff] text-white hover:bg-[#4a7bef] disabled:opacity-40"
+                        className="bg-[#00c98d] text-white hover:bg-[#4a7bef] disabled:opacity-40"
                       >
                         {emailLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Update Email"}
                       </Button>
@@ -422,7 +422,7 @@ export default function SettingsPage() {
                         size="sm"
                         onClick={handlePasswordChange}
                         disabled={passwordLoading || !currentPassword || !newPassword || !confirmPassword}
-                        className="bg-[#5b8cff] text-white hover:bg-[#4a7bef] disabled:opacity-40"
+                        className="bg-[#00c98d] text-white hover:bg-[#4a7bef] disabled:opacity-40"
                       >
                         {passwordLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Update Password"}
                       </Button>
@@ -453,7 +453,7 @@ export default function SettingsPage() {
           <Card className="border-white/5 bg-white/[0.02]">
             <CardHeader className="p-5 pb-0">
               <h2 className="text-base font-semibold text-white flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-[#5b8cff]" />
+                <ShieldCheck className="h-4 w-4 text-[#00c98d]" />
                 Two-Factor Authentication
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -490,7 +490,7 @@ export default function SettingsPage() {
                       size="sm"
                       className={twoFAEnabled
                         ? "border-red-500/20 text-red-400 hover:bg-red-500/10"
-                        : "border-[#5b8cff]/20 text-[#5b8cff] hover:bg-[#5b8cff]/10"
+                        : "border-[#00c98d]/20 text-[#00c98d] hover:bg-[#00c98d]/10"
                       }
                       onClick={() => { setTwoFAEnabling(true); setTwoFAError(null); setTwoFAPassword(""); }}
                     >
@@ -520,7 +520,7 @@ export default function SettingsPage() {
                         disabled={twoFALoading || !twoFAPassword}
                         className={twoFAEnabled
                           ? "bg-red-500 text-white hover:bg-red-600 disabled:opacity-40"
-                          : "bg-[#5b8cff] text-white hover:bg-[#4a7bef] disabled:opacity-40"
+                          : "bg-[#00c98d] text-white hover:bg-[#4a7bef] disabled:opacity-40"
                         }
                       >
                         {twoFALoading ? (
@@ -557,7 +557,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-3 p-5">
               {sessionsLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-5 w-5 animate-spin text-[#5b8cff]" />
+                  <Loader2 className="h-5 w-5 animate-spin text-[#00c98d]" />
                 </div>
               ) : sessions.length === 0 ? (
                 <p className="text-sm text-slate-400 py-4 text-center">No sessions found</p>
@@ -571,7 +571,7 @@ export default function SettingsPage() {
                     <div
                       key={s.id}
                       className={`flex items-center justify-between rounded-lg border p-3 ${
-                        isCurrent ? "border-[#5b8cff]/20 bg-[#5b8cff]/[0.03]" : "border-white/5"
+                        isCurrent ? "border-[#00c98d]/20 bg-[#00c98d]/[0.03]" : "border-white/5"
                       }`}
                     >
                       <div className="flex items-center gap-3">

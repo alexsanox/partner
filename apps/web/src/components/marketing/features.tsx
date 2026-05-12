@@ -44,8 +44,8 @@ const features = [
     title: "DDoS Protection",
     description:
       "We guarantee full protection against DDoS attacks under our SLA.",
-    color: "text-blue-400",
-    borderColor: "border-blue-500/20",
+    color: "text-[#00c98d]",
+    borderColor: "border-[#00c98d]/20",
     bg: "bg-blue-400/10",
   },
   {
@@ -95,14 +95,14 @@ export function Features() {
   return (
     <section id="features" className="relative py-20 sm:py-28">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute left-0 top-1/3 h-[500px] w-[500px] rounded-full bg-blue-600/5 blur-[100px]" />
+        <div className="absolute left-0 top-1/3 h-[500px] w-[500px] rounded-full bg-[#00c98d]/5 blur-[100px]" />
         <div className="absolute right-0 bottom-1/3 h-[400px] w-[400px] rounded-full bg-purple-600/5 blur-[100px]" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-blue-400">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-[#00c98d]">
             Exclusive Features
           </h2>
           <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -182,7 +182,7 @@ export function Features() {
                       key={item}
                       className={`rounded-md px-3 py-2 text-sm ${
                         i === 0
-                          ? "bg-blue-600/20 font-medium text-blue-300"
+                          ? "bg-[#00c98d]/20 font-medium text-[#4dd9ae]"
                           : "text-slate-500 hover:text-slate-300"
                       }`}
                     >
@@ -195,10 +195,10 @@ export function Features() {
                   <div className="text-emerald-400">[Server] Starting Minecraft server...</div>
                   <div className="text-slate-500">[Server] Loading libraries, please wait...</div>
                   <div className="text-slate-500">[Server] Preparing level &quot;world&quot;</div>
-                  <div className="text-blue-400">[Server] Done (2.847s)! For help, type &quot;help&quot;</div>
+                  <div className="text-[#00c98d]">[Server] Done (2.847s)! For help, type &quot;help&quot;</div>
                   <div className="text-slate-500">[Server] 0/100 players online</div>
                   <div className="mt-2 flex items-center gap-2">
-                    <span className="text-blue-400">{">"}</span>
+                    <span className="text-[#00c98d]">{">"}</span>
                     <span className="animate-pulse text-white">_</span>
                   </div>
                 </div>
@@ -212,7 +212,7 @@ export function Features() {
           {detailFeatures.map((f) => (
             <div key={f.title} className="text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
-                <f.icon className="h-5 w-5 text-blue-400" />
+                <f.icon className="h-5 w-5 text-[#00c98d]" />
               </div>
               <h4 className="mt-4 text-sm font-semibold text-white">{f.title}</h4>
               <p className="mt-2 text-xs leading-relaxed text-slate-500">

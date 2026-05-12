@@ -83,7 +83,7 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
 
   const typeColor: Record<string, string> = {
     mod: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-    plugin: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    plugin: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20",
     modpack: "bg-orange-500/10 text-orange-400 border-orange-500/20",
     resourcepack: "bg-green-500/10 text-green-400 border-green-500/20",
     shader: "bg-pink-500/10 text-pink-400 border-pink-500/20",
@@ -170,8 +170,8 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
               {/* Stats row */}
               <div className="mt-4 flex flex-wrap items-center gap-5">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
-                    <Download className="h-3.5 w-3.5 text-blue-400" />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00b07d]/10">
+                    <Download className="h-3.5 w-3.5 text-[#00c98d]" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white">{formatDownloads(project.downloads)}</p>
@@ -202,7 +202,7 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
                   </a>
                   {latestFile && (
                     <a href={latestFile.url} download={latestFile.filename}>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white gap-1.5 text-xs h-8 font-semibold">
+                      <Button size="sm" className="bg-[#00c98d] hover:bg-[#00b07d] text-white gap-1.5 text-xs h-8 font-semibold">
                         <Download className="h-3.5 w-3.5" />Latest Version
                       </Button>
                     </a>
@@ -220,9 +220,9 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-white">All Versions</h2>
-            <div className="flex items-center gap-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 px-3 py-1.5">
-              <Copy className="h-3 w-3 text-blue-400" />
-              <span className="text-[11px] text-blue-400 font-medium">Copy URL → paste into file manager or <code className="font-mono">wget</code></span>
+            <div className="flex items-center gap-1.5 rounded-lg bg-[#00b07d]/10 border border-[#00c98d]/20 px-3 py-1.5">
+              <Copy className="h-3 w-3 text-[#00c98d]" />
+              <span className="text-[11px] text-[#00c98d] font-medium">Copy URL → paste into file manager or <code className="font-mono">wget</code></span>
             </div>
           </div>
 
@@ -237,10 +237,10 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
                 const primaryFile = ver.files.find((f) => f.primary) ?? ver.files[0];
                 const isLatest = i === 0;
                 return (
-                  <div key={ver.id} className={`group relative rounded-xl border transition-all ${isLatest ? "border-blue-500/30 bg-blue-500/[0.04]" : "border-white/[0.06] bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.04]"}`}>
+                  <div key={ver.id} className={`group relative rounded-xl border transition-all ${isLatest ? "border-[#00c98d]/30 bg-[#00b07d]/[0.04]" : "border-white/[0.06] bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.04]"}`}>
                     {isLatest && (
                       <div className="absolute right-3 top-3">
-                        <span className="rounded-full bg-blue-500/20 border border-blue-500/30 px-2 py-0.5 text-[10px] font-semibold text-blue-400">Latest</span>
+                        <span className="rounded-full bg-[#00b07d]/20 border border-[#00c98d]/30 px-2 py-0.5 text-[10px] font-semibold text-[#00c98d]">Latest</span>
                       </div>
                     )}
                     <div className="flex items-center justify-between gap-4 p-4">
@@ -251,7 +251,7 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
                         </div>
                         <div className="mt-2 flex flex-wrap gap-1.5">
                           {ver.loaders.map((l) => (
-                            <span key={l} className="inline-flex items-center rounded-md bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 text-[10px] font-medium text-blue-400 capitalize">{l}</span>
+                            <span key={l} className="inline-flex items-center rounded-md bg-[#00b07d]/10 border border-[#00c98d]/20 px-2 py-0.5 text-[10px] font-medium text-[#00c98d] capitalize">{l}</span>
                           ))}
                           {ver.game_versions.slice(0, 4).map((v) => (
                             <span key={v} className="inline-flex items-center rounded-md bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] font-medium text-slate-400">{v}</span>
@@ -275,7 +275,7 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
                                 : <><Copy className="h-3.5 w-3.5" />Copy URL</>}
                             </Button>
                             <a href={primaryFile.url} download={primaryFile.filename}>
-                              <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white gap-1.5 text-xs h-8">
+                              <Button size="sm" className="bg-[#00c98d] hover:bg-[#00b07d] text-white gap-1.5 text-xs h-8">
                                 <Download className="h-3.5 w-3.5" />Download
                               </Button>
                             </a>
@@ -310,7 +310,7 @@ export default function StoreProjectPage({ params }: { params: Promise<{ slug: s
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Loaders</p>
               <div className="flex flex-wrap gap-1.5">
                 {project.loaders.map((l) => (
-                  <span key={l} className="rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 text-[11px] text-blue-400 capitalize">{l}</span>
+                  <span key={l} className="rounded-full bg-[#00b07d]/10 border border-[#00c98d]/20 px-2.5 py-1 text-[11px] text-[#00c98d] capitalize">{l}</span>
                 ))}
               </div>
             </div>

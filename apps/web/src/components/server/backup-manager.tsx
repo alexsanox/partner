@@ -196,7 +196,7 @@ export function BackupManager({ serverId, backupLimit }: BackupManagerProps) {
           {canCreate && (
             <button
               onClick={() => setShowCreate(!showCreate)}
-              className="flex items-center gap-1.5 rounded-lg bg-[#5b8cff] px-3 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee]"
+              className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-3 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee]"
             >
               <Plus className="h-3 w-3" />
               New Backup
@@ -229,7 +229,7 @@ export function BackupManager({ serverId, backupLimit }: BackupManagerProps) {
           <button
             onClick={handleCreate}
             disabled={creating}
-            className="flex items-center gap-1.5 rounded-lg bg-[#5b8cff] px-3 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-3 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-50"
           >
             {creating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
             Create

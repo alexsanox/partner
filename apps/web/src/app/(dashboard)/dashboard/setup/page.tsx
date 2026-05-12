@@ -17,7 +17,7 @@ const SERVER_TYPES = [
     id: "paper",
     label: "Paper",
     description: "High-performance Spigot fork. Best for plugins & vanilla+.",
-    color: "bg-blue-500/10 border-blue-500/30 text-blue-300",
+    color: "bg-[#00b07d]/10 border-[#00c98d]/30 text-[#4dd9ae]",
     dot: "bg-blue-400",
   },
   {
@@ -146,7 +146,7 @@ function SetupWizard() {
       }
 
       setDeployed(true);
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ["#5b8cff", "#22c55e", "#a78bfa", "#fbbf24"] });
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ["#00c98d", "#22c55e", "#a78bfa", "#fbbf24"] });
       setTimeout(() => {
         router.push(`/dashboard/services/${data.serverId}`);
       }, 2500);
@@ -188,7 +188,7 @@ function SetupWizard() {
           )}
           <p className="text-[#8b92a8] text-sm mt-1">Redirecting to your server dashboard...</p>
         </div>
-        <Loader2 className="h-5 w-5 animate-spin text-[#5b8cff]" />
+        <Loader2 className="h-5 w-5 animate-spin text-[#00c98d]" />
       </div>
     );
   }
@@ -198,8 +198,8 @@ function SetupWizard() {
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#5b8cff]/10 border border-[#5b8cff]/20">
-            <Rocket className="h-6 w-6 text-[#5b8cff]" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#00c98d]/10 border border-[#00c98d]/20">
+            <Rocket className="h-6 w-6 text-[#00c98d]" />
           </div>
         </div>
         <h1 className="text-2xl font-extrabold text-white">Set Up Your Server</h1>
@@ -214,7 +214,7 @@ function SetupWizard() {
       {/* Step 1 — MC Version */}
       <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-6 space-y-4">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b8cff]/20 text-[#5b8cff] text-xs font-bold">1</span>
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00c98d]/20 text-[#00c98d] text-xs font-bold">1</span>
           <h2 className="text-[15px] font-bold text-[#e2e8f0]">Minecraft Version</h2>
         </div>
         {loadingVersions ? (
@@ -226,7 +226,7 @@ function SetupWizard() {
             <select
               value={selectedVersion}
               onChange={(e) => setSelectedVersion(e.target.value)}
-              className="w-full appearance-none rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-3 text-[14px] text-[#e2e8f0] outline-none focus:border-[#5b8cff]/40 transition-colors pr-10"
+              className="w-full appearance-none rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-3 text-[14px] text-[#e2e8f0] outline-none focus:border-[#00c98d]/40 transition-colors pr-10"
             >
               {versions.map((v) => (
                 <option key={v} value={v}>{v}</option>
@@ -240,7 +240,7 @@ function SetupWizard() {
       {/* Step 2 — Server Type */}
       <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-6 space-y-4">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b8cff]/20 text-[#5b8cff] text-xs font-bold">2</span>
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00c98d]/20 text-[#00c98d] text-xs font-bold">2</span>
           <h2 className="text-[15px] font-bold text-[#e2e8f0]">Server Type</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -268,10 +268,10 @@ function SetupWizard() {
       {supportsMrpack && (
         <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-6 space-y-4">
           <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b8cff]/20 text-[#5b8cff] text-xs font-bold">3</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00c98d]/20 text-[#00c98d] text-xs font-bold">3</span>
             <h2 className="text-[15px] font-bold text-[#e2e8f0]">Modpack <span className="text-[#8b92a8] font-normal text-[13px]">(optional)</span></h2>
           </div>
-          <p className="text-[12px] text-[#8b92a8]">Upload a <code className="text-[#5b8cff]">.mrpack</code> file from Modrinth to automatically install all mods.</p>
+          <p className="text-[12px] text-[#8b92a8]">Upload a <code className="text-[#00c98d]">.mrpack</code> file from Modrinth to automatically install all mods.</p>
           {mrpackFile ? (
             <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
               <Package className="h-4 w-4 text-green-400 shrink-0" />
@@ -284,9 +284,9 @@ function SetupWizard() {
               </button>
             </div>
           ) : (
-            <label className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/[0.07] bg-[#1a1e2e] px-6 py-8 cursor-pointer hover:border-[#5b8cff]/40 hover:bg-[#5b8cff]/5 transition-all group">
-              <Upload className="h-5 w-5 text-[#8b92a8] group-hover:text-[#5b8cff] transition-colors" />
-              <span className="text-[13px] text-[#8b92a8] group-hover:text-[#5b8cff] transition-colors">Click to upload .mrpack</span>
+            <label className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/[0.07] bg-[#1a1e2e] px-6 py-8 cursor-pointer hover:border-[#00c98d]/40 hover:bg-[#00c98d]/5 transition-all group">
+              <Upload className="h-5 w-5 text-[#8b92a8] group-hover:text-[#00c98d] transition-colors" />
+              <span className="text-[13px] text-[#8b92a8] group-hover:text-[#00c98d] transition-colors">Click to upload .mrpack</span>
               <input
                 ref={mrpackInputRef}
                 type="file"
@@ -302,11 +302,11 @@ function SetupWizard() {
       {/* Summary + Deploy */}
       <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-6 space-y-4">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b8cff]/20 text-[#5b8cff] text-xs font-bold">{supportsMrpack ? "4" : "3"}</span>
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00c98d]/20 text-[#00c98d] text-xs font-bold">{supportsMrpack ? "4" : "3"}</span>
           <h2 className="text-[15px] font-bold text-[#e2e8f0]">Review & Deploy</h2>
         </div>
         <div className="flex items-center gap-4 rounded-lg bg-[#1a1e2e] border border-white/[0.07] px-4 py-3">
-          <Server className="h-5 w-5 text-[#5b8cff] shrink-0" />
+          <Server className="h-5 w-5 text-[#00c98d] shrink-0" />
           <div className="text-[13px] text-[#8b92a8]">
             <span className="text-white font-semibold capitalize">{SERVER_TYPES.find((t) => t.id === selectedType)?.label}</span>
             {" "}{selectedVersion && <span className="font-mono">{selectedVersion}</span>}
@@ -329,7 +329,7 @@ function SetupWizard() {
         <button
           onClick={handleDeploy}
           disabled={deploying || !orderId || !selectedVersion}
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#5b8cff] px-6 py-3.5 text-[14px] font-bold text-white hover:bg-[#4a7bef] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00c98d] px-6 py-3.5 text-[14px] font-bold text-white hover:bg-[#4a7bef] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {deploying ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Deploying...</>

@@ -168,14 +168,14 @@ export function ServerConfig({
       )}
 
       {pendingRebuild && (
-        <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 px-4 py-3">
-          <p className="text-[13px] text-blue-300 font-medium mb-1">Game version changed</p>
+        <div className="rounded-lg border border-[#00c98d]/20 bg-[#00b07d]/5 px-4 py-3">
+          <p className="text-[13px] text-[#4dd9ae] font-medium mb-1">Game version changed</p>
           <p className="text-[12px] text-[#8b92a8] mb-3">Rebuild the server to download and apply the new version. This will wipe server data.</p>
           <div className="flex gap-2">
             <button
               onClick={doReinstall}
               disabled={reinstalling}
-              className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[12px] font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-2 text-[12px] font-bold text-white transition-colors hover:bg-[#00b07d] disabled:opacity-50"
             >
               {reinstalling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
               Rebuild Now
@@ -204,13 +204,13 @@ export function ServerConfig({
               <input
                 value={name}
                 onChange={(e) => { setName(e.target.value); setNameDirty(true); }}
-                className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2.5 text-[13px] text-[#e2e8f0] outline-none transition-colors focus:border-[#5b8cff]/40"
+                className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2.5 text-[13px] text-[#e2e8f0] outline-none transition-colors focus:border-[#00c98d]/40"
               />
               {nameDirty && (
                 <button
                   onClick={saveName}
                   disabled={nameSaving}
-                  className="flex items-center gap-1.5 rounded-lg bg-[#5b8cff] px-4 py-2.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-2.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-50"
                 >
                   {nameSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : nameSaved ? <Check className="h-3 w-3" /> : <Save className="h-3 w-3" />}
                   Save
@@ -227,7 +227,7 @@ export function ServerConfig({
               value={desc}
               onChange={(e) => { setDesc(e.target.value); setNameDirty(true); }}
               placeholder="Optional description..."
-              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2.5 text-[13px] text-[#e2e8f0] outline-none transition-colors focus:border-[#5b8cff]/40 placeholder:text-[#6b7280]"
+              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2.5 text-[13px] text-[#e2e8f0] outline-none transition-colors focus:border-[#00c98d]/40 placeholder:text-[#6b7280]"
             />
           </div>
         </div>
@@ -279,13 +279,13 @@ export function ServerConfig({
                       value={vars[v.env_variable] ?? ""}
                       onChange={(e) => handleVarChange(v.env_variable, e.target.value)}
                       placeholder={v.default_value || "Enter value..."}
-                      className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2.5 font-mono text-[13px] text-[#e2e8f0] outline-none transition-colors focus:border-[#5b8cff]/40 placeholder:text-[#6b7280]"
+                      className="flex-1 rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-3 py-2.5 font-mono text-[13px] text-[#e2e8f0] outline-none transition-colors focus:border-[#00c98d]/40 placeholder:text-[#6b7280]"
                     />
                     {isDirty && (
                       <button
                         onClick={() => saveVariable(v.env_variable)}
                         disabled={isSaving}
-                        className="flex items-center gap-1.5 rounded-lg bg-[#5b8cff] px-4 py-2.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-50"
+                        className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-2.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-50"
                       >
                         {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
                         Save

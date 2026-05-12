@@ -103,7 +103,7 @@ export function ServerTabs({
       <div>
         <div className="flex items-center gap-3 mb-2">
           <div className="flex h-8 w-8 items-center justify-center">
-            <Server className="h-5 w-5 text-[#5b8cff]" />
+            <Server className="h-5 w-5 text-[#00c98d]" />
           </div>
           <h1 className="text-[22px] font-bold text-white">{serverName}</h1>
         </div>
@@ -139,13 +139,13 @@ export function ServerTabs({
             onClick={() => setActiveTab(tab.key)}
             className={`relative px-4 py-3 text-[13px] font-semibold transition-colors ${
               activeTab === tab.key
-                ? "text-[#5b8cff]"
+                ? "text-[#00c98d]"
                 : "text-[#8b92a8] hover:text-[#c8cdd8]"
             }`}
           >
             {tab.label}
             {activeTab === tab.key && (
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#5b8cff] rounded-t-full" />
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00c98d] rounded-t-full" />
             )}
           </button>
         ))}

@@ -25,7 +25,7 @@ interface Ticket {
 }
 
 const statusConfig: Record<string, { label: string; icon: React.ElementType; className: string; dot: string }> = {
-  OPEN: { label: "Open", icon: AlertCircle, className: "bg-blue-500/10 text-blue-400 border-blue-500/20", dot: "bg-blue-400" },
+  OPEN: { label: "Open", icon: AlertCircle, className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20", dot: "bg-blue-400" },
   IN_PROGRESS: { label: "In Progress", icon: Clock, className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", dot: "bg-yellow-400" },
   WAITING_REPLY: { label: "Waiting Reply", icon: AlertTriangle, className: "bg-orange-500/10 text-orange-400 border-orange-500/20", dot: "bg-orange-400 animate-pulse" },
   RESOLVED: { label: "Resolved", icon: CheckCircle2, className: "bg-green-500/10 text-green-400 border-green-500/20", dot: "bg-green-400" },
@@ -34,7 +34,7 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; cla
 
 const priorityConfig: Record<string, { label: string; icon: React.ElementType; className: string; active: string }> = {
   LOW: { label: "Low", icon: Minus, className: "border-slate-500/30 text-slate-400", active: "bg-slate-500/15 border-slate-400/40 text-slate-300 ring-1 ring-slate-400/20" },
-  MEDIUM: { label: "Medium", icon: AlertCircle, className: "border-blue-500/30 text-blue-400", active: "bg-blue-500/15 border-blue-400/40 text-blue-300 ring-1 ring-blue-400/20" },
+  MEDIUM: { label: "Medium", icon: AlertCircle, className: "border-[#00c98d]/30 text-[#00c98d]", active: "bg-[#00b07d]/15 border-[#00c98d]/40 text-[#4dd9ae] ring-1 ring-blue-400/20" },
   HIGH: { label: "High", icon: AlertTriangle, className: "border-orange-500/30 text-orange-400", active: "bg-orange-500/15 border-orange-400/40 text-orange-300 ring-1 ring-orange-400/20" },
   CRITICAL: { label: "Critical", icon: Flame, className: "border-red-500/30 text-red-400", active: "bg-red-500/15 border-red-400/40 text-red-300 ring-1 ring-red-400/20" },
 };
@@ -111,7 +111,7 @@ export default function SupportPage() {
         </div>
         <Button
           onClick={() => setShowForm((v) => !v)}
-          className="bg-[#5b8cff] text-white hover:bg-[#4a7aee] shrink-0"
+          className="bg-[#00c98d] text-white hover:bg-[#4a7aee] shrink-0"
         >
           {showForm ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
           {showForm ? "Cancel" : "New Ticket"}
@@ -122,7 +122,7 @@ export default function SupportPage() {
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: "Total Tickets", value: tickets.length, color: "text-white" },
-          { label: "Open", value: openTickets.length, color: "text-blue-400" },
+          { label: "Open", value: openTickets.length, color: "text-[#00c98d]" },
           { label: "Awaiting Reply", value: waitingReply, color: waitingReply > 0 ? "text-orange-400" : "text-[#8b92a8]" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
@@ -134,10 +134,10 @@ export default function SupportPage() {
 
       {/* New Ticket Form */}
       {showForm && (
-        <div className="overflow-hidden rounded-xl border border-[#5b8cff]/20 bg-[#5b8cff]/[0.03]">
+        <div className="overflow-hidden rounded-xl border border-[#00c98d]/20 bg-[#00c98d]/[0.03]">
           <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
             <div className="flex items-center gap-2">
-              <LifeBuoy className="h-4 w-4 text-[#5b8cff]" />
+              <LifeBuoy className="h-4 w-4 text-[#00c98d]" />
               <h2 className="text-sm font-semibold text-white">Open a New Ticket</h2>
             </div>
             <button onClick={() => setShowForm(false)} className="rounded-md p-1 text-[#8b92a8] hover:text-white transition-colors">
@@ -145,10 +145,10 @@ export default function SupportPage() {
             </button>
           </div>
           <div className="space-y-4 p-5">
-            <div className="rounded-lg border border-blue-500/20 bg-blue-500/[0.06] p-3">
+            <div className="rounded-lg border border-[#00c98d]/20 bg-[#00b07d]/[0.06] p-3">
               <div className="flex items-start gap-2">
-                <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
-                <p className="text-xs text-blue-300/90">Provide as much detail as possible — screenshots, error messages, and steps to reproduce help us resolve issues faster.</p>
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#00c98d]" />
+                <p className="text-xs text-[#4dd9ae]/90">Provide as much detail as possible — screenshots, error messages, and steps to reproduce help us resolve issues faster.</p>
               </div>
             </div>
 
@@ -159,7 +159,7 @@ export default function SupportPage() {
                   placeholder="e.g. Server won't start after restart"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="border-white/[0.07] bg-white/[0.04] text-white placeholder:text-[#8b92a8] focus:border-[#5b8cff]/50"
+                  className="border-white/[0.07] bg-white/[0.04] text-white placeholder:text-[#8b92a8] focus:border-[#00c98d]/50"
                 />
               </div>
               <div className="space-y-2">
@@ -193,7 +193,7 @@ export default function SupportPage() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleCreate(); }}
-                className="border-white/[0.07] bg-white/[0.04] text-white placeholder:text-[#8b92a8] resize-none focus:border-[#5b8cff]/50"
+                className="border-white/[0.07] bg-white/[0.04] text-white placeholder:text-[#8b92a8] resize-none focus:border-[#00c98d]/50"
               />
               <p className="text-right text-[11px] text-[#8b92a8]">{message.length} chars · Ctrl+Enter to submit</p>
             </div>
@@ -205,7 +205,7 @@ export default function SupportPage() {
               <Button
                 onClick={handleCreate}
                 disabled={creating || !subject.trim() || !message.trim()}
-                className="bg-[#5b8cff] text-white hover:bg-[#4a7aee] disabled:opacity-50"
+                className="bg-[#00c98d] text-white hover:bg-[#4a7aee] disabled:opacity-50"
               >
                 {creating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                 Submit Ticket
@@ -229,7 +229,7 @@ export default function SupportPage() {
               Active
               {openTickets.length > 0 && (
                 <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                  tab === "open" ? "bg-[#5b8cff]/20 text-[#5b8cff]" : "bg-white/[0.06] text-[#8b92a8]"
+                  tab === "open" ? "bg-[#00c98d]/20 text-[#00c98d]" : "bg-white/[0.06] text-[#8b92a8]"
                 }`}>{openTickets.length}</span>
               )}
             </button>
@@ -288,7 +288,7 @@ export default function SupportPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-medium text-white group-hover:text-[#5b8cff] transition-colors">
+                      <p className="truncate text-sm font-medium text-white group-hover:text-[#00c98d] transition-colors">
                         {ticket.subject}
                       </p>
                       {isWaiting && (

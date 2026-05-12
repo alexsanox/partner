@@ -238,7 +238,7 @@ export function ServerConsole({ serverId, onStats, onOutput, onStatus }: ServerC
           {!connected && (
             <button
               onClick={manualReconnect}
-              className="text-[12px] text-[#5b8cff] hover:text-[#7da8ff] transition-colors"
+              className="text-[12px] text-[#00c98d] hover:text-[#7da8ff] transition-colors"
             >
               Reconnect
             </button>
@@ -258,7 +258,7 @@ export function ServerConsole({ serverId, onStats, onOutput, onStatus }: ServerC
             <span className="text-[#6b7280]">
               {connected ? "Waiting for output..." : ""}
             </span>
-            <span className="inline-block w-[7px] h-[14px] bg-[#5b8cff]/70 animate-pulse ml-0.5 align-middle" />
+            <span className="inline-block w-[7px] h-[14px] bg-[#00c98d]/70 animate-pulse ml-0.5 align-middle" />
           </div>
         ) : (
           lines.map((line, i) => (
@@ -279,7 +279,7 @@ export function ServerConsole({ serverId, onStats, onOutput, onStatus }: ServerC
               setAutoScroll(true);
               consoleRef.current?.scrollTo({ top: consoleRef.current.scrollHeight, behavior: "smooth" });
             }}
-            className="rounded-full bg-blue-600/90 px-3 py-1 text-[11px] font-medium text-white shadow-lg backdrop-blur transition-colors hover:bg-blue-500"
+            className="rounded-full bg-[#00c98d]/90 px-3 py-1 text-[11px] font-medium text-white shadow-lg backdrop-blur transition-colors hover:bg-[#00b07d]"
           >
             ↓ New output
           </button>
@@ -293,7 +293,7 @@ export function ServerConsole({ serverId, onStats, onOutput, onStatus }: ServerC
           onChange={(e) => setCommand(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Enter a command..."
-          className="w-full bg-[#2a3048] rounded-lg px-4 py-2.5 text-[13px] text-[#c8ccd4] outline-none placeholder:text-[#6b7280] border border-white/[0.07] focus:border-[#5b8cff]/40 transition-colors"
+          className="w-full bg-[#2a3048] rounded-lg px-4 py-2.5 text-[13px] text-[#c8ccd4] outline-none placeholder:text-[#6b7280] border border-white/[0.07] focus:border-[#00c98d]/40 transition-colors"
           style={{ fontFamily: 'var(--font-mono), "JetBrains Mono", Menlo, Consolas, monospace' }}
           spellCheck={false}
           autoComplete="off"

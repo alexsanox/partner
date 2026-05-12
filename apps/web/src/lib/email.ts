@@ -21,7 +21,7 @@ function layout(opts: {
   cta?: { label: string; url: string; color?: string };
   footer?: string;
 }) {
-  const accent = "#5b8cff";
+  const accent = "#00c98d";
   const ctaColor = opts.cta?.color || accent;
   return `
 <!DOCTYPE html>
@@ -85,7 +85,7 @@ function simpleLayout(opts: {
   cta?: { label: string; url: string };
   footer?: string;
 }) {
-  const accent = "#5b8cff";
+  const accent = "#00c98d";
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -157,7 +157,7 @@ function detailTable(rows: [string, string, string?][]) {
 }
 
 function quoteBlock(text: string) {
-  return `<div style="background-color:#0f1219;border:1px solid rgba(255,255,255,0.06);border-left:3px solid #5b8cff;border-radius:0 12px 12px 0;padding:20px;margin:0 0 20px;">
+  return `<div style="background-color:#0f1219;border:1px solid rgba(255,255,255,0.06);border-left:3px solid #00c98d;border-radius:0 12px 12px 0;padding:20px;margin:0 0 20px;">
     <p style="margin:0;font-size:14px;line-height:1.7;color:#d1d5e0;white-space:pre-wrap;">${text}</p>
   </div>`;
 }
@@ -200,7 +200,7 @@ export async function sendPasswordResetEmail(email: string, url: string) {
 
 export async function sendTwoFactorOTP(email: string, otp: string) {
   const digits = otp.split("").map((d) =>
-    `<td style="width:44px;height:52px;background-color:#0f1219;border:1px solid rgba(255,255,255,0.08);border-radius:10px;text-align:center;font-size:24px;font-weight:800;color:#5b8cff;font-family:'SF Mono',monospace;letter-spacing:0;">${d}</td>`
+    `<td style="width:44px;height:52px;background-color:#0f1219;border:1px solid rgba(255,255,255,0.08);border-radius:10px;text-align:center;font-size:24px;font-weight:800;color:#00c98d;font-family:'SF Mono',monospace;letter-spacing:0;">${d}</td>`
   ).join('<td style="width:8px;"></td>');
 
   await getResend().emails.send({
@@ -298,7 +298,7 @@ export async function sendPaymentSuccessEmail(email: string, data: { serverName:
         detailTable([
           ["Server", data.serverName],
           ["Plan", data.planName],
-          ["Amount Paid", data.amount, "#5b8cff"],
+          ["Amount Paid", data.amount, "#00c98d"],
         ]),
       cta: { label: "View Your Servers &rarr;", url: `${APP_URL()}/dashboard/services` },
     }),
@@ -319,7 +319,7 @@ export async function sendServerReadyEmail(email: string, data: { serverName: st
         detailTable([
           ["Server", data.serverName],
           ["Plan", data.planName],
-          ["Connect Address", `<code style="font-family:'SF Mono',monospace;background-color:rgba(91,140,255,0.1);padding:3px 8px;border-radius:6px;font-size:13px;">${data.ip}:${data.port}</code>`, "#5b8cff"],
+          ["Connect Address", `<code style="font-family:'SF Mono',monospace;background-color:rgba(91,140,255,0.1);padding:3px 8px;border-radius:6px;font-size:13px;">${data.ip}:${data.port}</code>`, "#00c98d"],
         ]) +
         `<div style="background-color:rgba(91,140,255,0.06);border:1px solid rgba(91,140,255,0.15);border-radius:12px;padding:16px 20px;margin:0 0 20px;">
           <p style="margin:0;font-size:13px;color:#7ca3ff;">&#128161; <strong>Quick Tip:</strong> Add the server address to your Minecraft multiplayer list to join instantly.</p>
@@ -388,7 +388,7 @@ export async function sendUpcomingRenewalEmail(email: string, data: { serverName
         detailTable([
           ["Server", data.serverName],
           ["Plan", data.planName],
-          ["Amount", data.amount, "#5b8cff"],
+          ["Amount", data.amount, "#00c98d"],
           ["Renewal Date", data.renewalDate],
         ]) +
         `<div style="background-color:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:12px;padding:16px 20px;margin:0 0 20px;">
@@ -414,7 +414,7 @@ export async function sendInvoiceEmail(email: string, data: { invoiceNumber: str
           ["Invoice Number", data.invoiceNumber],
           ["Date", data.date],
           ["Server", data.serverName],
-          ["Amount", data.amount, "#5b8cff"],
+          ["Amount", data.amount, "#00c98d"],
         ]),
       cta: data.pdfUrl ? { label: "Download PDF &rarr;", url: data.pdfUrl } : undefined,
       footer: "This invoice was generated automatically. Keep it for your records.",
@@ -440,7 +440,7 @@ export async function sendTicketReplyEmail(
       body: `
         <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#b0b8cd;">Hey ${firstName},</p>
         <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#b0b8cd;">We replied to your support ticket <strong style="color:#e2e8f0;">${data.subject}</strong>.</p>
-        <div style="border-left:3px solid #5b8cff;padding:14px 20px;margin:0 0 28px;background-color:#0d1117;border-radius:0 8px 8px 0;">
+        <div style="border-left:3px solid #00c98d;padding:14px 20px;margin:0 0 28px;background-color:#0d1117;border-radius:0 8px 8px 0;">
           <p style="margin:0;font-size:14px;line-height:1.75;color:#c8cdd8;white-space:pre-wrap;">${data.message}</p>
         </div>
         <p style="margin:0 0 32px;font-size:14px;line-height:1.7;color:#6b7490;">Click the button below to view the full conversation and reply.</p>

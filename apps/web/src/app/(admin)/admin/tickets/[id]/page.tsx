@@ -73,7 +73,7 @@ interface UserProfile {
 }
 
 const statusConfig: Record<string, { label: string; className: string; dot: string }> = {
-  OPEN:          { label: "Open",          className: "bg-blue-500/10 text-blue-400 border-blue-500/20",     dot: "bg-blue-400" },
+  OPEN:          { label: "Open",          className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20",     dot: "bg-blue-400" },
   IN_PROGRESS:   { label: "In Progress",   className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", dot: "bg-yellow-400" },
   WAITING_REPLY: { label: "Waiting Reply", className: "bg-orange-500/10 text-orange-400 border-orange-500/20", dot: "bg-orange-400 animate-pulse" },
   RESOLVED:      { label: "Resolved",      className: "bg-green-500/10 text-green-400 border-green-500/20",   dot: "bg-green-400" },
@@ -82,7 +82,7 @@ const statusConfig: Record<string, { label: string; className: string; dot: stri
 
 const priorityConfig: Record<string, { label: string; className: string }> = {
   LOW:      { label: "Low",      className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
-  MEDIUM:   { label: "Medium",   className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  MEDIUM:   { label: "Medium",   className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20" },
   HIGH:     { label: "High",     className: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
   CRITICAL: { label: "Critical", className: "bg-red-500/10 text-red-400 border-red-500/20" },
 };
@@ -91,7 +91,7 @@ const serviceStatusConfig: Record<string, { label: string; className: string }> 
   ACTIVE:    { label: "Active",    className: "bg-green-500/10 text-green-400 border-green-500/20" },
   SUSPENDED: { label: "Suspended", className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
   CANCELLED: { label: "Cancelled", className: "bg-red-500/10 text-red-400 border-red-500/20" },
-  PENDING:   { label: "Pending",   className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  PENDING:   { label: "Pending",   className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20" },
 };
 
 const orderStatusConfig: Record<string, { label: string; color: string }> = {
@@ -264,7 +264,7 @@ export default function AdminTicketDetailPage() {
           )}
           {isClosed && (
             <Button size="sm" variant="outline" onClick={() => handleStatusAction("reopen")} disabled={actionLoading}
-              className="border-blue-500/20 text-blue-400 hover:bg-blue-500/10">
+              className="border-[#00c98d]/20 text-[#00c98d] hover:bg-[#00b07d]/10">
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reopen
             </Button>
           )}
@@ -277,23 +277,23 @@ export default function AdminTicketDetailPage() {
         <div className="space-y-3 min-w-0">
           <div className="rounded-xl border border-white/[0.07] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
             {ticket.messages.map((msg) => (
-              <div key={msg.id} className={`flex gap-4 px-5 py-5 ${msg.isStaff ? "bg-[#5b8cff]/[0.03]" : ""}`}>
+              <div key={msg.id} className={`flex gap-4 px-5 py-5 ${msg.isStaff ? "bg-[#00c98d]/[0.03]" : ""}`}>
                 <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                  msg.isStaff ? "bg-gradient-to-br from-[#5b8cff]/30 to-[#7c3aed]/20" : "bg-white/[0.08]"
+                  msg.isStaff ? "bg-gradient-to-br from-[#00c98d]/30 to-[#7c3aed]/20" : "bg-white/[0.08]"
                 }`}>
                   {msg.isStaff ? (
-                    <Headphones className="h-3.5 w-3.5 text-[#5b8cff]" />
+                    <Headphones className="h-3.5 w-3.5 text-[#00c98d]" />
                   ) : (
                     <User className="h-3.5 w-3.5 text-[#8b92a8]" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-2 flex items-center gap-2">
-                    <span className={`text-xs font-semibold ${msg.isStaff ? "text-[#5b8cff]" : "text-white"}`}>
+                    <span className={`text-xs font-semibold ${msg.isStaff ? "text-[#00c98d]" : "text-white"}`}>
                       {msg.isStaff ? "Staff" : ticket.user.name}
                     </span>
                     {msg.isStaff && (
-                      <span className="rounded-full border border-[#5b8cff]/20 bg-[#5b8cff]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#5b8cff]">Admin</span>
+                      <span className="rounded-full border border-[#00c98d]/20 bg-[#00c98d]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#00c98d]">Admin</span>
                     )}
                     <span className="ml-auto text-xs text-[#8b92a8]" title={formatDate(msg.createdAt)}>{formatShort(msg.createdAt)}</span>
                   </div>
@@ -312,7 +312,7 @@ export default function AdminTicketDetailPage() {
                 {ticket.status === "RESOLVED" ? "Ticket is resolved." : "Ticket is closed."} Reopen to continue the conversation.
               </p>
               <Button size="sm" variant="outline" onClick={() => handleStatusAction("reopen")} disabled={actionLoading}
-                className="ml-auto shrink-0 border-blue-500/20 text-blue-400 hover:bg-blue-500/10 text-xs">
+                className="ml-auto shrink-0 border-[#00c98d]/20 text-[#00c98d] hover:bg-[#00b07d]/10 text-xs">
                 <RotateCcw className="mr-1.5 h-3 w-3" /> Reopen
               </Button>
             </div>
@@ -323,7 +323,7 @@ export default function AdminTicketDetailPage() {
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
                 rows={4}
-                className="border-white/[0.07] bg-white/[0.04] text-white placeholder:text-[#8b92a8] resize-none focus:border-[#5b8cff]/40"
+                className="border-white/[0.07] bg-white/[0.04] text-white placeholder:text-[#8b92a8] resize-none focus:border-[#00c98d]/40"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleReply(false);
                 }}
@@ -346,7 +346,7 @@ export default function AdminTicketDetailPage() {
                   <Button
                     onClick={() => handleReply(false)}
                     disabled={sending || !reply.trim()}
-                    className="bg-[#5b8cff] text-white hover:bg-[#4a7aee] disabled:opacity-50"
+                    className="bg-[#00c98d] text-white hover:bg-[#4a7aee] disabled:opacity-50"
                   >
                     {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                     Send Reply
@@ -362,8 +362,8 @@ export default function AdminTicketDetailPage() {
           {/* User Info */}
           <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
             <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#5b8cff]/15 border border-[#5b8cff]/20">
-                <User className="h-5 w-5 text-[#5b8cff]" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#00c98d]/15 border border-[#00c98d]/20">
+                <User className="h-5 w-5 text-[#00c98d]" />
               </div>
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-white">{ticket.user.name}</p>
@@ -402,7 +402,7 @@ export default function AdminTicketDetailPage() {
                       <div className="space-y-0.5 text-[11px] text-[#8b92a8]">
                         <p>{svc.plan.name} · ${(svc.plan.priceMonthly / 100).toFixed(2)}/mo</p>
                         {svc.ipAddress && svc.port && (
-                          <p className="font-mono text-[#5b8cff]">{svc.ipAddress}:{svc.port}</p>
+                          <p className="font-mono text-[#00c98d]">{svc.ipAddress}:{svc.port}</p>
                         )}
                       </div>
                     </div>
@@ -456,7 +456,7 @@ export default function AdminTicketDetailPage() {
                       className="group flex items-center justify-between rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2 transition-colors hover:bg-white/[0.04]"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs text-white group-hover:text-[#5b8cff] transition-colors">{t.subject}</p>
+                        <p className="truncate text-xs text-white group-hover:text-[#00c98d] transition-colors">{t.subject}</p>
                         <p className="text-[11px] text-[#8b92a8]">
                           {new Date(t.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </p>

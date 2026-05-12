@@ -193,7 +193,7 @@ export function PlanActions({ plan }: { plan: PlanData }) {
             >
               Cancel
             </DialogClose>
-            <Button onClick={handleSave} disabled={loading} className="bg-[#5b8cff] text-white hover:bg-[#4a7aee]">
+            <Button onClick={handleSave} disabled={loading} className="bg-[#00c98d] text-white hover:bg-[#4a7aee]">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Save Changes
             </Button>

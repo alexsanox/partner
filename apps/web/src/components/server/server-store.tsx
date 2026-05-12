@@ -113,7 +113,7 @@ const LOADER_COLORS: Record<string, string> = {
   forge: "text-orange-400 border-orange-500/30",
   neoforge: "text-orange-300 border-orange-400/30",
   quilt: "text-pink-400 border-pink-500/30",
-  velocity: "text-blue-400 border-blue-500/30",
+  velocity: "text-[#00c98d] border-[#00c98d]/30",
   bungeecord: "text-cyan-400 border-cyan-500/30",
   waterfall: "text-sky-400 border-sky-500/30",
   sponge: "text-yellow-300 border-yellow-400/30",
@@ -247,7 +247,7 @@ function ProjectDetail({
           <div className="mt-2 flex gap-5 text-xs text-slate-500">
             <span className="flex items-center gap-1"><Download className="h-3 w-3" />{fmt(project.downloads)}</span>
             <span className="flex items-center gap-1"><Star className="h-3 w-3" />{fmt(project.follows)}</span>
-            <a href={`https://modrinth.com/project/${project.slug}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-blue-400 transition-colors">
+            <a href={`https://modrinth.com/project/${project.slug}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-[#00c98d] transition-colors">
               <ExternalLink className="h-3 w-3" />Modrinth
             </a>
           </div>
@@ -259,7 +259,7 @@ function ProjectDetail({
         <div className="flex flex-wrap gap-2">
           {serverLoaders.length > 0 && (
             <div className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
-              filterLoader ? "border-blue-500/30 bg-blue-500/10 text-blue-300" : "border-white/10 bg-white/5 text-slate-500 line-through"
+              filterLoader ? "border-[#00c98d]/30 bg-[#00b07d]/10 text-[#4dd9ae]" : "border-white/10 bg-white/5 text-slate-500 line-through"
             }`}>
               <Zap className="h-3 w-3" />
               <span className="capitalize">{serverLoaders[0]}</span>
@@ -299,12 +299,12 @@ function ProjectDetail({
               const isLatest = i === 0;
               const isInstalling = installing === ver.id;
               return (
-                <Card key={ver.id} className={`border-white/5 ${isLatest ? "bg-blue-500/5 border-blue-500/20" : "bg-white/[0.02]"}`}>
+                <Card key={ver.id} className={`border-white/5 ${isLatest ? "bg-[#00b07d]/5 border-[#00c98d]/20" : "bg-white/[0.02]"}`}>
                   <CardContent className="flex items-center justify-between gap-3 p-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium text-white truncate">{ver.name}</p>
-                        {isLatest && <Badge className="text-[10px] bg-blue-500/20 text-blue-300 border-blue-500/30 border">Latest</Badge>}
+                        {isLatest && <Badge className="text-[10px] bg-[#00b07d]/20 text-[#4dd9ae] border-[#00c98d]/30 border">Latest</Badge>}
                       </div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {ver.loaders.map((l) => (
@@ -330,7 +330,7 @@ function ProjectDetail({
                         </Button>
                         <Button
                           size="sm"
-                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs gap-1.5 min-w-[110px]"
+                          className="bg-[#00c98d] hover:bg-[#00b07d] text-white text-xs gap-1.5 min-w-[110px]"
                           onClick={() => installToServer(ver)}
                           disabled={isInstalling}
                         >
@@ -455,7 +455,7 @@ export function ServerStore({ serverId }: { serverId: string }) {
       {/* Loader badge */}
       {serverLoaders.length > 0 && (
         <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2">
-          <Zap className="h-3.5 w-3.5 text-blue-400" />
+          <Zap className="h-3.5 w-3.5 text-[#00c98d]" />
           <span className="text-xs text-slate-400">Server loader detected:</span>
           {serverLoaders.map((l) => (
             <Badge key={l} variant="outline" className={`text-[10px] capitalize ${LOADER_COLORS[l] ?? "text-slate-400 border-white/10"}`}>{l}</Badge>
@@ -467,16 +467,16 @@ export function ServerStore({ serverId }: { serverId: string }) {
       <form onSubmit={(e) => { e.preventDefault(); search(query, category); }} className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search plugins, mods..." className="pl-9 border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-blue-500" />
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search plugins, mods..." className="pl-9 border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]" />
         </div>
-        <Button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white">Search</Button>
+        <Button type="submit" className="bg-[#00c98d] hover:bg-[#00b07d] text-white">Search</Button>
       </form>
 
       {/* Category tabs */}
       <div className="flex flex-wrap gap-2">
         {CATEGORIES.map((cat) => (
           <button key={cat.value} onClick={() => { setCategory(cat.value); setQuery(""); }}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${category === cat.value ? "bg-blue-600 text-white" : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10"}`}>
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${category === cat.value ? "bg-[#00c98d] text-white" : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10"}`}>
             {cat.label}
           </button>
         ))}

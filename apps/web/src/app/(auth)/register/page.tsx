@@ -65,7 +65,7 @@ export default function RegisterPage() {
               type="text"
               placeholder="Your name"
               required
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
           <div className="space-y-2">
@@ -78,7 +78,7 @@ export default function RegisterPage() {
               type="email"
               placeholder="you@example.com"
               required
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
           <div className="space-y-2">
@@ -92,12 +92,12 @@ export default function RegisterPage() {
               placeholder="••••••••"
               required
               minLength={8}
-              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+              className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
           <Button
             type="submit"
-            className="w-full bg-blue-600 text-white hover:bg-blue-500"
+            className="w-full bg-[#00c98d] text-white hover:bg-[#00b07d]"
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -109,7 +109,7 @@ export default function RegisterPage() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="font-medium text-blue-400 hover:text-blue-300"
+            className="font-medium text-[#00c98d] hover:text-[#4dd9ae]"
           >
             Sign in
           </Link>

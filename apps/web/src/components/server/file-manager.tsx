@@ -183,7 +183,7 @@ export function FileManager({ serverId }: FileManagerProps) {
           </div>
           <div className="flex gap-2">
             <button onClick={saveFile} disabled={saving}
-              className="flex items-center gap-1.5 rounded-lg bg-[#5b8cff] px-4 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-50">
+              className="flex items-center gap-1.5 rounded-lg bg-[#00c98d] px-4 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee] disabled:opacity-50">
               {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
               Save
             </button>
@@ -207,19 +207,19 @@ export function FileManager({ serverId }: FileManagerProps) {
     return (
       <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-5">
         <h3 className="text-[15px] font-bold text-[#e2e8f0] mb-4">
-          Move <span className="font-mono text-[#5b8cff]">{movingFile}</span>
+          Move <span className="font-mono text-[#00c98d]">{movingFile}</span>
         </h3>
         <div className="space-y-3">
           <div>
             <label className="text-[11px] uppercase tracking-wider text-[#8b92a8] mb-1.5 block">Destination directory</label>
             <input value={moveTarget} onChange={(e) => setMoveTarget(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && moveItem(movingFile, moveTarget)}
-              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-2.5 font-mono text-[13px] text-[#e2e8f0] outline-none focus:border-[#5b8cff]/40"
+              className="w-full rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-2.5 font-mono text-[13px] text-[#e2e8f0] outline-none focus:border-[#00c98d]/40"
               placeholder="/target/directory/" autoFocus />
           </div>
           <div className="flex gap-2">
             <button onClick={() => moveItem(movingFile, moveTarget)}
-              className="rounded-lg bg-[#5b8cff] px-4 py-2 text-[13px] font-bold text-white transition-colors hover:bg-[#4a7bee]">Move</button>
+              className="rounded-lg bg-[#00c98d] px-4 py-2 text-[13px] font-bold text-white transition-colors hover:bg-[#4a7bee]">Move</button>
             <button onClick={() => setMovingFile(null)}
               className="rounded-lg px-4 py-2 text-[13px] text-[#8b92a8] transition-colors hover:bg-white/5 hover:text-white">Cancel</button>
           </div>
@@ -243,7 +243,7 @@ export function FileManager({ serverId }: FileManagerProps) {
       <div className="flex items-center justify-between px-5 py-3">
         <div className="flex items-center gap-2">
           <button onClick={toggleSelectAll} className="shrink-0 text-[#8b92a8] hover:text-white transition-colors">
-            {selected.size === files.length && files.length > 0 ? <CheckSquare className="h-4 w-4 text-[#5b8cff]" /> : <Square className="h-4 w-4" />}
+            {selected.size === files.length && files.length > 0 ? <CheckSquare className="h-4 w-4 text-[#00c98d]" /> : <Square className="h-4 w-4" />}
           </button>
           <span className="text-[15px] font-bold text-[#e2e8f0]">File Manager</span>
           <span className="text-[13px] text-[#8b92a8] ml-1">{breadcrumb}</span>
@@ -263,7 +263,7 @@ export function FileManager({ serverId }: FileManagerProps) {
             </button>
           )}
           <button onClick={() => { setShowNewFolder(!showNewFolder); setNewFolderName(""); }}
-            className="rounded-lg bg-[#5b8cff] px-3 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee]">
+            className="rounded-lg bg-[#00c98d] px-3 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-[#4a7bee]">
             New Folder
           </button>
         </div>
@@ -276,7 +276,7 @@ export function FileManager({ serverId }: FileManagerProps) {
           <input value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") createFolder(); if (e.key === "Escape") setShowNewFolder(false); }}
             placeholder="New folder name..." className="flex-1 bg-transparent text-[13px] text-[#e2e8f0] outline-none placeholder:text-[#6b7280]" autoFocus />
-          <button onClick={createFolder} className="rounded-lg bg-[#5b8cff] px-3 py-1 text-[12px] font-bold text-white">Create</button>
+          <button onClick={createFolder} className="rounded-lg bg-[#00c98d] px-3 py-1 text-[12px] font-bold text-white">Create</button>
         </div>
       )}
 
@@ -307,21 +307,21 @@ export function FileManager({ serverId }: FileManagerProps) {
             return (
               <div key={file.name} onContextMenu={(e) => handleContextMenu(e, file)}
                 className={`grid grid-cols-[40px_1fr_100px_80px_140px_40px] items-center px-5 py-2.5 border-b border-white/[0.04] transition-colors cursor-default ${
-                  isSelected ? "bg-[#5b8cff]/[0.06]" : "hover:bg-white/[0.02]"
+                  isSelected ? "bg-[#00c98d]/[0.06]" : "hover:bg-white/[0.02]"
                 }`}>
                 {/* Checkbox */}
                 <button onClick={(e) => { e.stopPropagation(); toggleSelect(file.name); }} className="text-[#8b92a8] hover:text-white transition-colors">
-                  {isSelected ? <CheckSquare className="h-4 w-4 text-[#5b8cff]" /> : <Square className="h-4 w-4" />}
+                  {isSelected ? <CheckSquare className="h-4 w-4 text-[#00c98d]" /> : <Square className="h-4 w-4" />}
                 </button>
 
                 {/* Name */}
                 <button onClick={() => file.is_file ? openFile(file.name) : navigateTo(file.name)} className="flex items-center gap-2.5 min-w-0 text-left">
-                  {file.is_file ? <FileText className="h-4 w-4 shrink-0 text-[#8b92a8]" /> : <Folder className="h-4 w-4 shrink-0 text-[#5b8cff]" />}
+                  {file.is_file ? <FileText className="h-4 w-4 shrink-0 text-[#8b92a8]" /> : <Folder className="h-4 w-4 shrink-0 text-[#00c98d]" />}
                   {isRenaming ? (
                     <input ref={renameInputRef} value={renameValue} onChange={(e) => setRenameValue(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") renameItem(file.name, renameValue); if (e.key === "Escape") setRenamingFile(null); }}
                       onBlur={() => renameItem(file.name, renameValue)} onClick={(e) => e.stopPropagation()}
-                      className="min-w-0 flex-1 rounded border border-[#5b8cff]/30 bg-[#1a1e2e] px-2 py-0.5 text-[13px] text-white outline-none" autoFocus />
+                      className="min-w-0 flex-1 rounded border border-[#00c98d]/30 bg-[#1a1e2e] px-2 py-0.5 text-[13px] text-white outline-none" autoFocus />
                   ) : (
                     <span className="truncate text-[13px] text-[#e2e8f0] hover:text-white transition-colors">{file.name}</span>
                   )}
@@ -349,7 +349,7 @@ export function FileManager({ serverId }: FileManagerProps) {
 
       {/* File count */}
       {!loading && files.length > 0 && (
-        <div className="px-5 py-2 text-[12px] text-[#5b8cff] border-t border-white/[0.07]">
+        <div className="px-5 py-2 text-[12px] text-[#00c98d] border-t border-white/[0.07]">
           {folderCount} Folder{folderCount !== 1 ? "s" : ""}, {fileCount} File{fileCount !== 1 ? "s" : ""}
         </div>
       )}

@@ -65,7 +65,7 @@ export default function AdminSettingsPage() {
       title: "Database",
       description: "PostgreSQL database connection",
       icon: Database,
-      color: "text-blue-400",
+      color: "text-[#00c98d]",
       bg: "bg-blue-400/10",
       items: [
         { label: "Connection URL", value: dbUrl, masked: dbUrl ? `${dbUrl.split("@")[1]?.split("/")[0] ?? "configured"}` : "Not set" },

@@ -67,7 +67,7 @@ export function Reviews() {
             Rated <span className="font-semibold text-white">4.8</span> out of 5 based on customer reviews
           </p>
           <p className="mt-6 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Trusted by <span className="text-blue-400">Thousands</span> of Players
+            Trusted by <span className="text-[#00c98d]">Thousands</span> of Players
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export function Reviews() {
                   &ldquo;{review.text}&rdquo;
                 </p>
                 <div className="mt-4 flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600/20 text-xs font-bold text-blue-300">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00c98d]/20 text-xs font-bold text-[#4dd9ae]">
                     {review.initials}
                   </div>
                   <span className="text-sm font-medium text-white">

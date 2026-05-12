@@ -13,7 +13,7 @@ import { prisma } from "@/lib/db";
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   QUEUED: { label: "Queued", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
-  PROCESSING: { label: "Processing", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  PROCESSING: { label: "Processing", className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20" },
   COMPLETED: { label: "Completed", className: "bg-green-500/10 text-green-400 border-green-500/20" },
   FAILED: { label: "Failed", className: "bg-red-500/10 text-red-400 border-red-500/20" },
 };
@@ -21,7 +21,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 const actionColors: Record<string, string> = {
   CREATE: "text-green-400",
   SUSPEND: "text-orange-400",
-  UNSUSPEND: "text-blue-400",
+  UNSUSPEND: "text-[#00c98d]",
   DELETE: "text-red-400",
   RETRY: "text-yellow-400",
 };
@@ -69,7 +69,7 @@ export default async function AdminProvisioningPage() {
           { label: "Total Jobs", value: stats.total, color: "text-white" },
           { label: "Completed", value: stats.completed, color: "text-green-400" },
           { label: "Failed", value: stats.failed, color: "text-red-400" },
-          { label: "Processing", value: stats.processing, color: "text-blue-400" },
+          { label: "Processing", value: stats.processing, color: "text-[#00c98d]" },
         ].map((s) => (
           <Card key={s.label} className="border-white/5 bg-white/[0.02]">
             <CardContent className="p-5">

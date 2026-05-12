@@ -8,7 +8,7 @@ export function Hero() {
     <section className="relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-[800px] w-[1000px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-blue-600/8 blur-[120px]" />
+        <div className="absolute left-1/2 top-0 h-[800px] w-[1000px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#00c98d]/8 blur-[120px]" />
         <div className="absolute right-0 top-1/4 h-[500px] w-[500px] rounded-full bg-purple-600/5 blur-[100px]" />
         <div className="absolute left-0 bottom-0 h-[400px] w-[400px] rounded-full bg-emerald-600/5 blur-[100px]" />
       </div>
@@ -64,7 +64,7 @@ export function Hero() {
           <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
               { icon: Shield, label: "DDoS Protected", value: "Enterprise", color: "text-green-400", bg: "bg-green-400/10" },
-              { icon: Globe, label: "Global Locations", value: "Low Latency", color: "text-blue-400", bg: "bg-blue-400/10" },
+              { icon: Globe, label: "Global Locations", value: "Low Latency", color: "text-[#00c98d]", bg: "bg-blue-400/10" },
               { icon: Clock, label: "Uptime SLA", value: "99.9%", color: "text-yellow-400", bg: "bg-yellow-400/10" },
               { icon: Users, label: "Active Servers", value: "1,000+", color: "text-purple-400", bg: "bg-purple-400/10" },
             ].map((stat) => (

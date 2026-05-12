@@ -55,7 +55,7 @@ export function FAQ() {
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Frequently Asked{" "}
-            <span className="text-blue-400">Questions</span>
+            <span className="text-[#00c98d]">Questions</span>
           </h2>
           <p className="mt-4 text-lg text-slate-400">
             Got questions? We&apos;ve got answers.
@@ -69,7 +69,7 @@ export function FAQ() {
               value={`item-${i}`}
               className="border-white/5"
             >
-              <AccordionTrigger className="text-left text-white hover:text-blue-300 [&[data-state=open]]:text-blue-400">
+              <AccordionTrigger className="text-left text-white hover:text-[#4dd9ae] [&[data-state=open]]:text-[#00c98d]">
                 {faq.question}
               </AccordionTrigger>
               <AccordionContent className="text-slate-400 leading-relaxed">

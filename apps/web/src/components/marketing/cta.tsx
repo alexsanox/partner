@@ -6,7 +6,7 @@ export function CTA() {
   return (
     <section className="relative py-20 sm:py-28">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-3xl" />
+        <div className="absolute left-1/2 top-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00c98d]/10 blur-3xl" />
       </div>
 
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
@@ -25,7 +25,7 @@ export function CTA() {
           <Link href="/register">
             <Button
               size="lg"
-              className="h-12 bg-blue-600 px-8 text-base font-semibold text-white shadow-lg shadow-blue-600/25 hover:bg-blue-500 hover:shadow-blue-600/40 transition-all"
+              className="h-12 bg-[#00c98d] px-8 text-base font-semibold text-white shadow-lg shadow-blue-600/25 hover:bg-[#00b07d] hover:shadow-blue-600/40 transition-all"
             >
               <Zap className="mr-2 h-4 w-4" />
               Get Started Now

@@ -59,11 +59,11 @@ export function InstallingScreen({ serverId, serverName, mode = "installing" }: 
     <div className="flex flex-col items-center justify-center py-24">
       <div className="relative mb-8">
         <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#232839] border border-white/[0.07]">
-          <Server className="h-9 w-9 text-[#5b8cff]" />
+          <Server className="h-9 w-9 text-[#00c98d]" />
         </div>
         {status === "installing" && (
           <div className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#1a1e2e] border border-white/[0.07]">
-            <Loader2 className="h-4 w-4 animate-spin text-[#5b8cff]" />
+            <Loader2 className="h-4 w-4 animate-spin text-[#00c98d]" />
           </div>
         )}
         {status === "done" && (
@@ -77,7 +77,7 @@ export function InstallingScreen({ serverId, serverName, mode = "installing" }: 
 
       {status === "installing" ? (
         <>
-          <p className="text-[15px] text-[#5b8cff] font-semibold mb-1">
+          <p className="text-[15px] text-[#00c98d] font-semibold mb-1">
             {isRebuilding ? "Rebuilding" : "Installing"}{dots}
           </p>
           <p className="text-sm text-[#8b92a8] max-w-md text-center leading-relaxed">
@@ -88,7 +88,7 @@ export function InstallingScreen({ serverId, serverName, mode = "installing" }: 
 
           {/* Progress bar animation */}
           <div className="mt-8 w-64 h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
-            <div className="h-full w-1/3 rounded-full bg-[#5b8cff] animate-[slide_2s_ease-in-out_infinite]" />
+            <div className="h-full w-1/3 rounded-full bg-[#00c98d] animate-[slide_2s_ease-in-out_infinite]" />
           </div>
 
           <style jsx>{`

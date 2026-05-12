@@ -92,7 +92,7 @@ export function UserActions({ userId, userName, currentRole, isSelf }: UserActio
       <DropdownMenuContent align="end" className="w-44 border-white/[0.08] bg-[#1a1f2e] shadow-xl">
         <DropdownMenuItem
           onClick={() => handleAction("impersonate")}
-          className="text-xs text-blue-400 focus:text-blue-300 focus:bg-blue-500/10"
+          className="text-xs text-[#00c98d] focus:text-[#4dd9ae] focus:bg-[#00b07d]/10"
         >
           <UserRound className="mr-2 h-3.5 w-3.5" />
           Impersonate

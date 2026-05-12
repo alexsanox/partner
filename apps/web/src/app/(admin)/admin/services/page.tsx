@@ -15,7 +15,7 @@ import { ServiceActions } from "@/components/admin/service-actions";
 const dbStatusConfig: Record<string, { label: string; className: string }> = {
   ACTIVE: { label: "Active", className: "bg-green-500/10 text-green-400 border-green-500/20" },
   PENDING: { label: "Pending", className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
-  PROVISIONING: { label: "Provisioning", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  PROVISIONING: { label: "Provisioning", className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20" },
   SUSPENDED: { label: "Suspended", className: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
   CANCELLED: { label: "Cancelled", className: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
   FAILED: { label: "Failed", className: "bg-red-500/10 text-red-400 border-red-500/20" },

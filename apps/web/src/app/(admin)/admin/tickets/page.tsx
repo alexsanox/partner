@@ -4,7 +4,7 @@ import { TicketActions } from "@/components/admin/ticket-actions";
 import Link from "next/link";
 
 const statusConfig: Record<string, { label: string; className: string; dot: string }> = {
-  OPEN:          { label: "Open",          className: "bg-blue-500/10 text-blue-400 border-blue-500/20",     dot: "bg-blue-400" },
+  OPEN:          { label: "Open",          className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20",     dot: "bg-blue-400" },
   IN_PROGRESS:   { label: "In Progress",   className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", dot: "bg-yellow-400" },
   WAITING_REPLY: { label: "Waiting Reply", className: "bg-orange-500/10 text-orange-400 border-orange-500/20", dot: "bg-orange-400 animate-pulse" },
   RESOLVED:      { label: "Resolved",      className: "bg-green-500/10 text-green-400 border-green-500/20",   dot: "bg-green-400" },
@@ -13,7 +13,7 @@ const statusConfig: Record<string, { label: string; className: string; dot: stri
 
 const priorityConfig: Record<string, { label: string; className: string; bar: string }> = {
   LOW:      { label: "Low",      className: "bg-slate-500/10 text-slate-400 border-slate-500/20", bar: "bg-slate-500" },
-  MEDIUM:   { label: "Medium",   className: "bg-blue-500/10 text-blue-400 border-blue-500/20",   bar: "bg-blue-400" },
+  MEDIUM:   { label: "Medium",   className: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20",   bar: "bg-blue-400" },
   HIGH:     { label: "High",     className: "bg-orange-500/10 text-orange-400 border-orange-500/20", bar: "bg-orange-400" },
   CRITICAL: { label: "Critical", className: "bg-red-500/10 text-red-400 border-red-500/20",       bar: "bg-red-500" },
 };
@@ -66,14 +66,14 @@ export default async function AdminTicketsPage() {
     const isUrgent = ticket.status === "WAITING_REPLY" || ticket.priority === "CRITICAL";
     return (
       <div className={`group relative flex items-center gap-4 px-5 py-4 transition-colors hover:bg-white/[0.025] ${
-        isUrgent ? "border-l-2 border-orange-400/50" : ticket.status === "OPEN" ? "border-l-2 border-blue-400/30" : "border-l-2 border-transparent"
+        isUrgent ? "border-l-2 border-orange-400/50" : ticket.status === "OPEN" ? "border-l-2 border-[#00c98d]/30" : "border-l-2 border-transparent"
       }`}>
         <div className={`h-2 w-2 shrink-0 rounded-full ${sCfg.dot}`} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <Link
               href={`/admin/tickets/${ticket.id}`}
-              className="truncate text-sm font-medium text-white group-hover:text-[#5b8cff] transition-colors"
+              className="truncate text-sm font-medium text-white group-hover:text-[#00c98d] transition-colors"
             >
               {ticket.subject}
             </Link>
@@ -132,7 +132,7 @@ export default async function AdminTicketsPage() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {[
           { label: "Total",         value: stats.total,        color: "text-white",        dot: "bg-white/30" },
-          { label: "Open",          value: stats.open,         color: "text-blue-400",     dot: "bg-blue-400" },
+          { label: "Open",          value: stats.open,         color: "text-[#00c98d]",     dot: "bg-blue-400" },
           { label: "Waiting Reply", value: stats.waitingReply, color: "text-orange-400",   dot: "bg-orange-400" },
           { label: "In Progress",   value: stats.inProgress,   color: "text-yellow-400",   dot: "bg-yellow-400" },
           { label: "Resolved",      value: stats.resolved,     color: "text-green-400",    dot: "bg-green-400" },

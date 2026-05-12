@@ -41,13 +41,13 @@ const statusStyles: Record<string, string> = {
   ACTIVE: "bg-green-500/10 text-green-400 border-green-500/20",
   SUSPENDED: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   CANCELLED: "bg-red-500/10 text-red-400 border-red-500/20",
-  PENDING: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  PENDING: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20",
   FAILED: "bg-red-500/10 text-red-400 border-red-500/20",
 };
 
 const invoiceStatusStyles: Record<string, string> = {
   paid: "bg-green-500/10 text-green-400 border-green-500/20",
-  open: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  open: "bg-[#00b07d]/10 text-[#00c98d] border-[#00c98d]/20",
   draft: "bg-slate-500/10 text-slate-400 border-slate-500/20",
   uncollectible: "bg-red-500/10 text-red-400 border-red-500/20",
   void: "bg-slate-500/10 text-slate-400 border-slate-500/20",
@@ -173,7 +173,7 @@ export default async function BillingPage() {
           </p>
         </div>
         <Link href="/dashboard/services/create">
-          <Button className="bg-[#5b8cff] text-white hover:bg-[#4a7bef]">
+          <Button className="bg-[#00c98d] text-white hover:bg-[#4a7bef]">
             <Plus className="mr-2 h-4 w-4" />
             New Server
           </Button>
@@ -185,7 +185,7 @@ export default async function BillingPage() {
         <Card className="border-white/5 bg-white/[0.02]">
           <CardContent className="flex items-center gap-4 p-5">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-400/10">
-              <CreditCard className="h-5 w-5 text-blue-400" />
+              <CreditCard className="h-5 w-5 text-[#00c98d]" />
             </div>
             <div>
               <p className="text-xs text-slate-400">Monthly Total</p>
@@ -219,8 +219,8 @@ export default async function BillingPage() {
         </Card>
         <Card className="border-white/5 bg-white/[0.02]">
           <CardContent className="flex items-center gap-4 p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5b8cff]/10">
-              <Server className="h-5 w-5 text-[#5b8cff]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#00c98d]/10">
+              <Server className="h-5 w-5 text-[#00c98d]" />
             </div>
             <div>
               <p className="text-xs text-slate-400">Total Servers</p>
@@ -299,8 +299,8 @@ export default async function BillingPage() {
                       isCancelling ? "bg-orange-500/[0.02]" : "bg-white/[0.02]"
                     }`}>
                       <div className="flex items-center gap-4">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#5b8cff]/10">
-                          <Server className="h-5 w-5 text-[#5b8cff]" />
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#00c98d]/10">
+                          <Server className="h-5 w-5 text-[#00c98d]" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
@@ -333,23 +333,23 @@ export default async function BillingPage() {
                     <div className="border-t border-white/[0.04] px-5 py-3">
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                         <div className="flex items-center gap-2">
-                          <MemoryStick className="h-3.5 w-3.5 text-[#5b8cff]" />
+                          <MemoryStick className="h-3.5 w-3.5 text-[#00c98d]" />
                           <span className="text-xs text-[#e2e8f0]">{formatMemory(plan.ramMb)} RAM</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <HardDrive className="h-3.5 w-3.5 text-[#5b8cff]" />
+                          <HardDrive className="h-3.5 w-3.5 text-[#00c98d]" />
                           <span className="text-xs text-[#e2e8f0]">{formatMemory(plan.diskMb)} Disk</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Cpu className="h-3.5 w-3.5 text-[#5b8cff]" />
+                          <Cpu className="h-3.5 w-3.5 text-[#00c98d]" />
                           <span className="text-xs text-[#e2e8f0]">{plan.cpuPercent}% CPU</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Users className="h-3.5 w-3.5 text-[#5b8cff]" />
+                          <Users className="h-3.5 w-3.5 text-[#00c98d]" />
                           <span className="text-xs text-[#e2e8f0]">{plan.playerSlots} Players</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Archive className="h-3.5 w-3.5 text-[#5b8cff]" />
+                          <Archive className="h-3.5 w-3.5 text-[#00c98d]" />
                           <span className="text-xs text-[#e2e8f0]">{plan.backupSlots} Backup{plan.backupSlots !== 1 ? "s" : ""}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -359,7 +359,7 @@ export default async function BillingPage() {
                       </div>
                       {plan.databaseLimit > 0 && (
                         <div className="flex items-center gap-2 mt-2">
-                          <Database className="h-3.5 w-3.5 text-[#5b8cff]" />
+                          <Database className="h-3.5 w-3.5 text-[#00c98d]" />
                           <span className="text-xs text-[#e2e8f0]">{plan.databaseLimit} Database{plan.databaseLimit !== 1 ? "s" : ""}</span>
                         </div>
                       )}
@@ -411,14 +411,14 @@ export default async function BillingPage() {
                   key={plan.id}
                   className={`rounded-xl border p-5 ${
                     userHasPlan
-                      ? "border-[#5b8cff]/30 bg-[#5b8cff]/[0.03]"
+                      ? "border-[#00c98d]/30 bg-[#00c98d]/[0.03]"
                       : "border-white/[0.05] bg-white/[0.02]"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-[15px] font-bold text-white">{plan.name}</h3>
                     {userHasPlan && (
-                      <Badge variant="outline" className="bg-[#5b8cff]/10 text-[#5b8cff] border-[#5b8cff]/20 text-[10px]">
+                      <Badge variant="outline" className="bg-[#00c98d]/10 text-[#00c98d] border-[#00c98d]/20 text-[10px]">
                         ACTIVE
                       </Badge>
                     )}
@@ -431,23 +431,23 @@ export default async function BillingPage() {
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs text-[#e2e8f0]">
-                      <MemoryStick className="h-3 w-3 text-[#5b8cff]" /> {formatMemory(plan.ramMb)} RAM
+                      <MemoryStick className="h-3 w-3 text-[#00c98d]" /> {formatMemory(plan.ramMb)} RAM
                     </div>
                     <div className="flex items-center gap-2 text-xs text-[#e2e8f0]">
-                      <HardDrive className="h-3 w-3 text-[#5b8cff]" /> {formatMemory(plan.diskMb)} Disk
+                      <HardDrive className="h-3 w-3 text-[#00c98d]" /> {formatMemory(plan.diskMb)} Disk
                     </div>
                     <div className="flex items-center gap-2 text-xs text-[#e2e8f0]">
-                      <Cpu className="h-3 w-3 text-[#5b8cff]" /> {plan.cpuPercent}% CPU
+                      <Cpu className="h-3 w-3 text-[#00c98d]" /> {plan.cpuPercent}% CPU
                     </div>
                     <div className="flex items-center gap-2 text-xs text-[#e2e8f0]">
-                      <Users className="h-3 w-3 text-[#5b8cff]" /> {plan.playerSlots} Players
+                      <Users className="h-3 w-3 text-[#00c98d]" /> {plan.playerSlots} Players
                     </div>
                     <div className="flex items-center gap-2 text-xs text-[#e2e8f0]">
-                      <Archive className="h-3 w-3 text-[#5b8cff]" /> {plan.backupSlots} Backup{plan.backupSlots !== 1 ? "s" : ""}
+                      <Archive className="h-3 w-3 text-[#00c98d]" /> {plan.backupSlots} Backup{plan.backupSlots !== 1 ? "s" : ""}
                     </div>
                     {plan.databaseLimit > 0 && (
                       <div className="flex items-center gap-2 text-xs text-[#e2e8f0]">
-                        <Database className="h-3 w-3 text-[#5b8cff]" /> {plan.databaseLimit} Database{plan.databaseLimit !== 1 ? "s" : ""}
+                        <Database className="h-3 w-3 text-[#00c98d]" /> {plan.databaseLimit} Database{plan.databaseLimit !== 1 ? "s" : ""}
                       </div>
                     )}
                     <div className="flex items-center gap-2 text-xs text-[#e2e8f0]">
@@ -540,7 +540,7 @@ export default async function BillingPage() {
             <p className="text-lg font-medium text-slate-400">No active subscriptions</p>
             <p className="mt-1 text-sm text-slate-500">Create a server to get started</p>
             <Link href="/dashboard/services/create" className="mt-4">
-              <Button className="bg-[#5b8cff] text-white hover:bg-[#4a7bef]">
+              <Button className="bg-[#00c98d] text-white hover:bg-[#4a7bef]">
                 Create Server
               </Button>
             </Link>
