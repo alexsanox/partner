@@ -141,7 +141,8 @@ function ProjectDetail({
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
   const [installing, setInstalling] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState(false);
+  const [filterLoader, setFilterLoader] = useState(true);
+  const [filterVersion, setFilterVersion] = useState(true);
 
   useEffect(() => {
     async function load() {
@@ -202,12 +203,10 @@ function ProjectDetail({
   );
 
   const compatibleVersions = versions.filter((v) => {
-    if (showAll) return true;
-    const loaderOk = versionCompatible(v.loaders, serverLoaders);
-    const versionOk = !gameVersion || v.game_versions.length === 0 || v.game_versions.some((gv) => gv === gameVersion || gv.startsWith(gameVersion.split(".").slice(0, 2).join(".")));
+    const loaderOk = !filterLoader || serverLoaders.length === 0 || versionCompatible(v.loaders, serverLoaders);
+    const versionOk = !filterVersion || !gameVersion || v.game_versions.length === 0 || v.game_versions.some((gv) => gv === gameVersion || gv.startsWith(gameVersion.split(".").slice(0, 2).join(".")));
     return loaderOk && versionOk;
   });
-  const incompatibleCount = versions.length - versions.filter((v) => versionCompatible(v.loaders, serverLoaders)).length;
 
   return (
     <div className="space-y-5">
@@ -237,23 +236,31 @@ function ProjectDetail({
         </div>
       </div>
 
-      {/* Server loader info banner */}
-      {serverLoaders.length > 0 && (
-        <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 px-3 py-2">
-          <Zap className="h-3.5 w-3.5 text-blue-400 shrink-0" />
-          <span className="text-xs text-blue-300">
-            Your server runs <span className="font-semibold capitalize">{serverLoaders.join(", ")}</span>{gameVersion ? <> on <span className="font-semibold">{gameVersion}</span></> : null} — showing compatible versions
-          </span>
-          {incompatibleCount > 0 && !showAll && (
-            <button onClick={() => setShowAll(true)} className="ml-auto text-xs text-slate-500 hover:text-slate-300 transition-colors underline">
-              Show all ({versions.length})
-            </button>
+      {/* Active filters */}
+      {(serverLoaders.length > 0 || gameVersion) && (
+        <div className="flex flex-wrap gap-2">
+          {serverLoaders.length > 0 && (
+            <div className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+              filterLoader ? "border-blue-500/30 bg-blue-500/10 text-blue-300" : "border-white/10 bg-white/5 text-slate-500 line-through"
+            }`}>
+              <Zap className="h-3 w-3" />
+              <span className="capitalize">{serverLoaders[0]}</span>
+              <button onClick={() => setFilterLoader((v) => !v)} className="ml-0.5 opacity-60 hover:opacity-100">
+                {filterLoader ? "×" : "+"}
+              </button>
+            </div>
           )}
-          {showAll && (
-            <button onClick={() => setShowAll(false)} className="ml-auto text-xs text-slate-500 hover:text-slate-300 transition-colors underline">
-              Compatible only
-            </button>
+          {gameVersion && (
+            <div className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+              filterVersion ? "border-green-500/30 bg-green-500/10 text-green-300" : "border-white/10 bg-white/5 text-slate-500 line-through"
+            }`}>
+              <span>MC {gameVersion}</span>
+              <button onClick={() => setFilterVersion((v) => !v)} className="ml-0.5 opacity-60 hover:opacity-100">
+                {filterVersion ? "×" : "+"}
+              </button>
+            </div>
           )}
+          <span className="self-center text-xs text-slate-500">{compatibleVersions.length} of {versions.length} versions</span>
         </div>
       )}
 
@@ -265,13 +272,13 @@ function ProjectDetail({
           <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-6 text-center">
             <ServerCrash className="h-8 w-8 text-yellow-500/50 mx-auto mb-2" />
             <p className="text-sm text-yellow-300">No compatible versions for your server&apos;s loader</p>
-            <button onClick={() => setShowAll(true)} className="mt-2 text-xs text-slate-400 hover:text-white underline">Show all versions anyway</button>
+            <button onClick={() => { setFilterLoader(false); setFilterVersion(false); }} className="mt-2 text-xs text-slate-400 hover:text-white underline">Remove filters</button>
           </div>
         ) : (
           <div className="space-y-2">
             {compatibleVersions.map((ver, i) => {
               const file = ver.files.find((f) => f.primary) ?? ver.files[0];
-              const isLatest = i === 0 && !showAll;
+              const isLatest = i === 0;
               const isInstalling = installing === ver.id;
               return (
                 <Card key={ver.id} className={`border-white/5 ${isLatest ? "bg-blue-500/5 border-blue-500/20" : "bg-white/[0.02]"}`}>

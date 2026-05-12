@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useConfirm } from "@/components/ui/confirm-dialog";
-import { Save, Loader2, RotateCcw, Copy, Check } from "lucide-react";
+import { Save, Loader2, RotateCcw, Copy, Check, RefreshCw } from "lucide-react";
+
+const VERSION_VARS = ["MC_VERSION", "VERSION", "MINECRAFT_VERSION", "GAME_VERSION", "SERVER_VERSION", "PAPER_VERSION", "FABRIC_VERSION", "FORGE_VERSION"];
 
 interface StartupVariable {
   name: string;
@@ -53,6 +55,7 @@ export function ServerConfig({
   const [nameSaved, setNameSaved] = useState(false);
 
   const [reinstalling, setReinstalling] = useState(false);
+  const [pendingRebuild, setPendingRebuild] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
   const handleVarChange = (key: string, value: string) => {
@@ -84,8 +87,13 @@ export function ServerConfig({
           return next;
         });
         setSaved((prev) => new Set(prev).add(key));
-        setShowRestart(true);
         setTimeout(() => setSaved((prev) => { const n = new Set(prev); n.delete(key); return n; }), 2000);
+        // If it's a version variable, prompt to rebuild
+        if (VERSION_VARS.includes(key)) {
+          setPendingRebuild(key);
+        } else {
+          setShowRestart(true);
+        }
       }
     } catch {
       setError("Network error");
@@ -118,10 +126,9 @@ export function ServerConfig({
     }
   };
 
-  const handleReinstall = async () => {
-    const ok = await confirm({ title: "Reinstall Server", description: "Are you sure you want to reinstall? This will erase all server data!", confirmLabel: "Reinstall", variant: "destructive" });
-    if (!ok) return;
+  const doReinstall = async () => {
     setReinstalling(true);
+    setPendingRebuild(null);
     try {
       await fetch(`/api/pelican/servers/${serverId}/settings`, {
         method: "POST",
@@ -133,6 +140,12 @@ export function ServerConfig({
     } finally {
       setReinstalling(false);
     }
+  };
+
+  const handleReinstall = async () => {
+    const ok = await confirm({ title: "Reinstall Server", description: "Are you sure you want to reinstall? This will erase all server data!", confirmLabel: "Reinstall", variant: "destructive" });
+    if (!ok) return;
+    await doReinstall();
   };
 
   const copyText = (text: string, id: string) => {
@@ -151,7 +164,27 @@ export function ServerConfig({
         </div>
       )}
 
-      {showRestart && (
+      {pendingRebuild && (
+        <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+          <p className="text-[13px] text-blue-300 font-medium mb-1">Game version changed</p>
+          <p className="text-[12px] text-[#8b92a8] mb-3">Rebuild the server to download and apply the new version. This will wipe server data.</p>
+          <div className="flex gap-2">
+            <button
+              onClick={doReinstall}
+              disabled={reinstalling}
+              className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[12px] font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+            >
+              {reinstalling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+              Rebuild Now
+            </button>
+            <button onClick={() => { setPendingRebuild(null); setShowRestart(true); }} className="rounded-lg border border-white/10 px-4 py-2 text-[12px] text-[#8b92a8] hover:text-white transition-colors">
+              Restart Only
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showRestart && !pendingRebuild && (
         <div className="flex items-center justify-between rounded-lg border border-[#FFAA00]/20 bg-[#FFAA00]/5 px-4 py-3">
           <span className="text-[13px] text-[#FFAA00]">Changes saved. Restart your server for them to take effect.</span>
           <button onClick={() => setShowRestart(false)} className="text-[12px] text-[#8b92a8] hover:text-white transition-colors ml-4 shrink-0">Dismiss</button>
