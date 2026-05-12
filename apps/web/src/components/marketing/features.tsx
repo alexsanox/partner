@@ -10,6 +10,7 @@ import {
   Wrench,
   Terminal,
 } from "lucide-react";
+import { PanelMockup } from "./panel-mockup";
 
 const features = [
   {
@@ -155,49 +156,8 @@ export function Features() {
             </p>
           </div>
 
-          {/* Panel mockup */}
-          <div className="mt-12 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1117] shadow-2xl shadow-[#00c98d]/5">
-            {/* Title bar */}
-            <div className="flex items-center gap-2 border-b border-white/[0.06] bg-[#161b27] px-4 py-3">
-              <div className="h-3 w-3 rounded-full bg-red-500/70" />
-              <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
-              <div className="h-3 w-3 rounded-full bg-green-500/70" />
-              <span className="ml-3 text-xs text-[#8b92a8]">
-                panel.partnerhosting.com — My Server
-              </span>
-            </div>
-            {/* Panel content */}
-            <div className="p-6 sm:p-8">
-              <div className="flex flex-col gap-6 sm:flex-row">
-                {/* Sidebar */}
-                <div className="flex flex-col gap-0.5 sm:w-44">
-                  {["Console", "Files", "Backups", "Settings", "Players", "Databases"].map((item, i) => (
-                    <div
-                      key={item}
-                      className={`rounded-lg px-3 py-2 text-sm font-medium ${
-                        i === 0
-                          ? "bg-[#00c98d]/15 text-[#00c98d]"
-                          : "text-[#8b92a8]"
-                      }`}
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                {/* Console output */}
-                <div className="flex-1 rounded-xl border border-white/[0.06] bg-[#0a0e18] p-4 font-mono text-xs leading-loose">
-                  <div className="text-[#00c98d]">[Server] Starting Minecraft server...</div>
-                  <div className="text-[#8b92a8]">[Server] Loading libraries, please wait...</div>
-                  <div className="text-[#8b92a8]">[Server] Preparing level &quot;world&quot;</div>
-                  <div className="text-[#4dd9ae] font-semibold">[Server] Done (2.847s)! For help, type &quot;help&quot;</div>
-                  <div className="text-[#8b92a8]">[Server] 0/100 players online</div>
-                  <div className="mt-2 flex items-center gap-1.5">
-                    <span className="text-[#00c98d]">{">"}</span>
-                    <span className="inline-block h-[14px] w-[7px] animate-pulse bg-[#00c98d]/70" />
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="mt-12">
+            <PanelMockup />
           </div>
         </div>
 

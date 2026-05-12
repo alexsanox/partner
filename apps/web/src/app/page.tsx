@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/marketing/navbar";
-import { Hero } from "@/components/marketing/hero";
+import { HeroAnimated } from "@/components/marketing/hero-animated";
 import { Features } from "@/components/marketing/features";
 import { Pricing } from "@/components/marketing/pricing";
 import { Reviews } from "@/components/marketing/reviews";
@@ -12,7 +12,7 @@ export default function Home() {
     <>
       <Navbar />
       <main className="flex-1">
-        <Hero />
+        <HeroAnimated />
         <Features />
         <Pricing />
         <Reviews />
