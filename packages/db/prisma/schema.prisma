@@ -120,8 +120,9 @@ model Session {
   token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
+  ipAddress       String?
+  userAgent       String?
+  impersonatedBy  String?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
