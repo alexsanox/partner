@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Server, ChevronDown, Loader2, CheckCircle, Rocket, Sparkles } from "lucide-react";
+import { Server, ChevronDown, Loader2, CheckCircle, Rocket, Sparkles, Package, Upload, X } from "lucide-react";
 import confetti from "canvas-confetti";
 
 const SERVER_TYPES = [
@@ -64,6 +64,12 @@ function SetupWizard() {
   const [error, setError] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [serverName, setServerName] = useState("");
+  const [mrpackFile, setMrpackFile] = useState<File | null>(null);
+  const [installingMods, setInstallingMods] = useState(false);
+  const [modResult, setModResult] = useState<{ installed: number; failed: number; modpack: string } | null>(null);
+  const mrpackInputRef = useRef<HTMLInputElement>(null);
+
+  const supportsMrpack = ["fabric", "forge"].includes(selectedType);
 
   // Fetch MC versions
   useEffect(() => {
@@ -103,6 +109,21 @@ function SetupWizard() {
         setError(data.error || "Deployment failed");
         return;
       }
+      // If mrpack provided, install it now
+      if (mrpackFile) {
+        setInstallingMods(true);
+        try {
+          const form = new FormData();
+          form.append("serverId", data.serverId);
+          form.append("mrpack", mrpackFile);
+          const modRes = await fetch("/api/server/install-mrpack", { method: "POST", body: form });
+          const modData = await modRes.json();
+          if (modRes.ok) setModResult({ installed: modData.installed, failed: modData.failed, modpack: modData.modpack });
+        } catch { /* non-fatal */ } finally {
+          setInstallingMods(false);
+        }
+      }
+
       setDeployed(true);
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ["#5b8cff", "#22c55e", "#a78bfa", "#fbbf24"] });
       setTimeout(() => {
@@ -115,6 +136,21 @@ function SetupWizard() {
     }
   };
 
+  if (deploying && installingMods) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-6">
+        <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-yellow-500/10 border-2 border-yellow-500/30">
+          <Package className="h-10 w-10 text-yellow-400" />
+        </div>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">Installing Mods...</h2>
+          <p className="text-[#8b92a8] text-sm">Downloading and uploading mods to your server.</p>
+        </div>
+        <Loader2 className="h-5 w-5 animate-spin text-yellow-400" />
+      </div>
+    );
+  }
+
   if (deployed) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-6">
@@ -123,7 +159,13 @@ function SetupWizard() {
         </div>
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-2">Server Deploying!</h2>
-          <p className="text-[#8b92a8] text-sm">Redirecting to your server dashboard...</p>
+          {modResult && (
+            <p className="text-[#8b92a8] text-sm mt-1">
+              {modResult.modpack}: <span className="text-green-400">{modResult.installed} mods installed</span>
+              {modResult.failed > 0 && <span className="text-red-400">, {modResult.failed} failed</span>}
+            </p>
+          )}
+          <p className="text-[#8b92a8] text-sm mt-1">Redirecting to your server dashboard...</p>
         </div>
         <Loader2 className="h-5 w-5 animate-spin text-[#5b8cff]" />
       </div>
@@ -201,10 +243,42 @@ function SetupWizard() {
         </div>
       </div>
 
+      {/* Step 3 — Mrpack (Fabric/Forge only) */}
+      {supportsMrpack && (
+        <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b8cff]/20 text-[#5b8cff] text-xs font-bold">3</span>
+            <h2 className="text-[15px] font-bold text-[#e2e8f0]">Modpack <span className="text-[#8b92a8] font-normal text-[13px]">(optional)</span></h2>
+          </div>
+          <p className="text-[12px] text-[#8b92a8]">Upload a <code className="text-[#5b8cff]">.mrpack</code> file from Modrinth to automatically install all mods.</p>
+          {mrpackFile ? (
+            <div className="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
+              <Package className="h-4 w-4 text-green-400 shrink-0" />
+              <span className="text-[13px] text-green-300 flex-1 truncate">{mrpackFile.name}</span>
+              <button onClick={() => setMrpackFile(null)} className="text-[#8b92a8] hover:text-white transition-colors">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <label className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/[0.07] bg-[#1a1e2e] px-6 py-8 cursor-pointer hover:border-[#5b8cff]/40 hover:bg-[#5b8cff]/5 transition-all group">
+              <Upload className="h-5 w-5 text-[#8b92a8] group-hover:text-[#5b8cff] transition-colors" />
+              <span className="text-[13px] text-[#8b92a8] group-hover:text-[#5b8cff] transition-colors">Click to upload .mrpack</span>
+              <input
+                ref={mrpackInputRef}
+                type="file"
+                accept=".mrpack"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) setMrpackFile(f); }}
+              />
+            </label>
+          )}
+        </div>
+      )}
+
       {/* Summary + Deploy */}
       <div className="rounded-xl border border-white/[0.07] bg-[#232839] p-6 space-y-4">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b8cff]/20 text-[#5b8cff] text-xs font-bold">3</span>
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#5b8cff]/20 text-[#5b8cff] text-xs font-bold">{supportsMrpack ? "4" : "3"}</span>
           <h2 className="text-[15px] font-bold text-[#e2e8f0]">Review & Deploy</h2>
         </div>
         <div className="flex items-center gap-4 rounded-lg bg-[#1a1e2e] border border-white/[0.07] px-4 py-3">

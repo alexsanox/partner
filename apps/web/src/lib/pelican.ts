@@ -482,6 +482,13 @@ export async function renameFile(identifier: string, root: string, from: string,
   });
 }
 
+export async function getFileUploadUrl(identifier: string) {
+  const res = await clientFetch<{ attributes: { url: string } }>(
+    `/servers/${identifier}/files/upload`
+  );
+  return res.attributes.url;
+}
+
 export async function createDirectory(identifier: string, root: string, name: string) {
   return clientFetch<void>(`/servers/${identifier}/files/create-folder`, {
     method: "POST",
