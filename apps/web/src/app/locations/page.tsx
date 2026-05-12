@@ -1,19 +1,20 @@
 import { Navbar } from "@/components/marketing/navbar";
 import { Footer } from "@/components/marketing/footer";
+import { WorldMap } from "@/components/marketing/world-map";
 import { Globe, Zap, Shield } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Server Locations" };
 
 const locations = [
-  { city: "Frankfurt", country: "Germany", flag: "🇩🇪", region: "Europe", ping: "~8ms", status: "Online" },
-  { city: "London", country: "United Kingdom", flag: "🇬🇧", region: "Europe", ping: "~12ms", status: "Online" },
-  { city: "New York", country: "United States", flag: "🇺🇸", region: "North America", ping: "~18ms", status: "Online" },
-  { city: "Dallas", country: "United States", flag: "🇺🇸", region: "North America", ping: "~22ms", status: "Online" },
-  { city: "Los Angeles", country: "United States", flag: "🇺🇸", region: "North America", ping: "~28ms", status: "Online" },
-  { city: "Singapore", country: "Singapore", flag: "🇸🇬", region: "Asia Pacific", ping: "~15ms", status: "Online" },
-  { city: "Sydney", country: "Australia", flag: "🇦🇺", region: "Asia Pacific", ping: "~20ms", status: "Online" },
-  { city: "Tokyo", country: "Japan", flag: "🇯🇵", region: "Asia Pacific", ping: "~10ms", status: "Online" },
+  { city: "Frankfurt",    country: "Germany",        flag: "🇩🇪", region: "Europe",        ping: "~8ms",  status: "Online", x: 483, y: 92  },
+  { city: "London",       country: "United Kingdom", flag: "🇬🇧", region: "Europe",        ping: "~12ms", status: "Online", x: 446, y: 82  },
+  { city: "New York",     country: "United States",  flag: "🇺🇸", region: "North America", ping: "~18ms", status: "Online", x: 168, y: 138 },
+  { city: "Dallas",       country: "United States",  flag: "🇺🇸", region: "North America", ping: "~22ms", status: "Online", x: 152, y: 175 },
+  { city: "Los Angeles",  country: "United States",  flag: "🇺🇸", region: "North America", ping: "~28ms", status: "Online", x: 118, y: 165 },
+  { city: "Singapore",    country: "Singapore",      flag: "🇸🇬", region: "Asia Pacific",  ping: "~15ms", status: "Online", x: 692, y: 192 },
+  { city: "Sydney",       country: "Australia",      flag: "🇦🇺", region: "Asia Pacific",  ping: "~20ms", status: "Online", x: 790, y: 355 },
+  { city: "Tokyo",        country: "Japan",          flag: "🇯🇵", region: "Asia Pacific",  ping: "~10ms", status: "Online", x: 782, y: 118 },
 ];
 
 const regions = ["All", "Europe", "North America", "Asia Pacific"];
@@ -60,6 +61,11 @@ export default function LocationsPage() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* World map */}
+        <section className="mx-auto max-w-7xl px-4 py-12 pb-0 sm:px-6 lg:px-8">
+          <WorldMap locations={locations} />
         </section>
 
         {/* Locations grid */}
