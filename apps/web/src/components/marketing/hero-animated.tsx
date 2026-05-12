@@ -111,14 +111,14 @@ export function HeroAnimated() {
             {stats.map((stat, i) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] p-4 opacity-0"
+                className="group flex flex-col items-center gap-2 rounded-xl border border-white/[0.10] bg-[#161b27] p-5 opacity-0 cursor-default transition-all duration-300 hover:-translate-y-1 hover:border-[#00c98d]/30 hover:bg-[#1a2035] hover:shadow-lg hover:shadow-[#00c98d]/10"
                 style={{ animation: `fadeUp 0.5s ${0.65 + i * 0.1}s ease forwards` }}
               >
-                <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${stat.bg}`}>
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.bg} transition-transform duration-300 group-hover:scale-110`}>
+                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
                 </div>
                 <span className="text-lg font-bold text-white">{stat.value}</span>
-                <span className="text-xs font-medium text-[#8b92a8]">{stat.label}</span>
+                <span className="text-xs font-medium text-[#8b92a8] group-hover:text-[#a8b0c4] transition-colors">{stat.label}</span>
               </div>
             ))}
           </div>
