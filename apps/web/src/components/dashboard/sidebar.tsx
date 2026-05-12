@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Zap,
   HelpCircle,
+  ShoppingBag,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -22,6 +23,7 @@ import { signOut } from "@/lib/auth-client";
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
   { href: "/dashboard/services", icon: Server, label: "My Servers" },
+  { href: "/dashboard/store", icon: ShoppingBag, label: "Store" },
   { href: "/dashboard/billing", icon: CreditCard, label: "Billing" },
   { href: "/dashboard/support", icon: LifeBuoy, label: "Support" },
   { href: "/dashboard/settings", icon: Settings, label: "Settings" },
