@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Terminal, FolderOpen, Settings, LayoutDashboard, Copy, Check, Archive, SlidersHorizontal, Users, Server, Gamepad2, Box, ShoppingBag } from "lucide-react";
+import { Terminal, FolderOpen, Settings, LayoutDashboard, Copy, Check, Archive, SlidersHorizontal, Users, Server, Gamepad2, Box, ShoppingBag, Database } from "lucide-react";
 import { ServerConsole } from "./server-console";
 import { PowerControls } from "./power-controls";
 import { ResourceUsage, type ResourceStats } from "./resource-usage";
@@ -12,6 +12,7 @@ import { ServerProperties } from "./server-properties";
 import { PlayerManager } from "./player-manager";
 import { ServerStore } from "./server-store";
 import { InstallingScreen } from "./installing-screen";
+import { DatabaseManager } from "./database-manager";
 
 interface ServerTabsProps {
   serverId: string;
@@ -50,6 +51,7 @@ const tabs = [
   { key: "mods", label: "Mods & Plugins", icon: ShoppingBag },
   { key: "backups", label: "Backups", icon: Archive },
   { key: "players", label: "Players", icon: Users },
+  { key: "databases", label: "Databases", icon: Database },
   { key: "settings", label: "Settings", icon: SlidersHorizontal },
   { key: "config", label: "Config", icon: Settings },
 ];
@@ -131,13 +133,13 @@ export function ServerTabs({
         </div>
       </div>
 
-      {/* Tabs — Shockbyte underline style */}
-      <div className="flex items-center gap-0 border-b border-white/[0.07]">
+      {/* Tabs — scrollable underline style */}
+      <div className="flex items-center gap-0 border-b border-white/[0.07] overflow-x-auto scrollbar-none">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`relative px-4 py-3 text-[13px] font-semibold transition-colors ${
+            className={`relative shrink-0 px-4 py-3 text-[13px] font-semibold transition-colors ${
               activeTab === tab.key
                 ? "text-[#00c98d]"
                 : "text-[#8b92a8] hover:text-[#c8cdd8]"
@@ -219,6 +221,9 @@ export function ServerTabs({
       {/* Mods & Plugins Store */}
       {activeTab === "mods" && <ServerStore serverId={serverId} />}
 
+      {/* Databases */}
+      {activeTab === "databases" && <DatabaseManager serverId={serverId} />}
+
       {/* Config */}
       {activeTab === "config" && (
         <ServerConfig
@@ -264,7 +269,7 @@ function InfoRow({
         {copyable && (
           <button
             onClick={handleCopy}
-            className="shrink-0 rounded p-0.5 text-[#8b92a8] transition-colors hover:text-white"
+            className="text-[12px] text-[#00c98d] hover:text-[#00e0a0] transition-colors"
           >
             {copied ? <Check className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
           </button>
