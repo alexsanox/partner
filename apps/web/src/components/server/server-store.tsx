@@ -176,6 +176,22 @@ function ProjectDetail({
     if (!file) return;
     setInstalling(ver.id);
     try {
+      // If it's a .mrpack, download it and run through the mrpack extractor
+      if (file.filename.endsWith(".mrpack")) {
+        const dlRes = await fetch(file.url);
+        if (!dlRes.ok) throw new Error("Failed to download modpack");
+        const blob = await dlRes.blob();
+        const form = new FormData();
+        form.append("serverId", serverId);
+        form.append("mrpack", new File([blob], file.filename, { type: "application/zip" }));
+        const res = await fetch("/api/server/install-mrpack", { method: "POST", body: form });
+        const data = await res.json();
+        if (!res.ok) toast.error(data.error ?? "Modpack install failed");
+        else toast.success(`${data.modpack}: ${data.installed} mods installed${data.failed > 0 ? `, ${data.failed} failed` : ""}`);
+        return;
+      }
+
+      // Regular mod/plugin install
       const res = await fetch(`/api/server/${serverId}/install-mod`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -187,8 +203,8 @@ function ProjectDetail({
       } else {
         toast.success(data.warning ? `Installed (${data.warning})` : "Installed");
       }
-    } catch {
-      toast.error("Network error during installation");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Network error during installation");
     } finally {
       setInstalling(null);
     }
@@ -317,8 +333,8 @@ function ProjectDetail({
                           disabled={isInstalling}
                         >
                           {isInstalling
-                            ? <><RefreshCw className="h-3.5 w-3.5 animate-spin" />Installing...</>
-                            : <><Download className="h-3.5 w-3.5" />Install to Server</>
+                            ? <><RefreshCw className="h-3.5 w-3.5 animate-spin" />{file.filename.endsWith(".mrpack") ? "Extracting..." : "Installing..."}</>
+                            : <><Download className="h-3.5 w-3.5" />{file.filename.endsWith(".mrpack") ? "Install Modpack" : "Install to Server"}</>
                           }
                         </Button>
                       </div>
