@@ -211,7 +211,7 @@ export function ServerTabs({
       )}
 
       {/* Mods & Plugins Store */}
-      {activeTab === "mods" && <ServerStore />}
+      {activeTab === "mods" && <ServerStore serverId={serverId} />}
 
       {/* Config */}
       {activeTab === "config" && (

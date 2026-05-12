@@ -32,11 +32,13 @@ export default async function ServicesPage() {
       select: { externalServerId: true },
     });
     const userServerIds = new Set(userServices.map((s: { externalServerId: string | null }) => String(s.externalServerId)));
+    console.log("[services] userServerIds:", [...userServerIds]);
     const res = await getServers();
     const all = res.data.map((s: { attributes: PelicanServer }) => s.attributes);
-    servers = all.filter((s: PelicanServer) => userServerIds.has(String(s.id)));
-  } catch {
-    // Pelican unreachable
+    console.log("[services] Pelican identifiers:", all.map((s: PelicanServer) => s.identifier));
+    servers = all.filter((s: PelicanServer) => userServerIds.has(s.identifier));
+  } catch (err) {
+    console.error("[services] Failed to load servers:", err);
   }
 
   return (

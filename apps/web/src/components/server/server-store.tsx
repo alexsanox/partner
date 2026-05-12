@@ -5,10 +5,58 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Download, Star, RefreshCw, Package, ArrowLeft, Copy, Check, ExternalLink } from "lucide-react";
+import { Search, Download, Star, RefreshCw, Package, ArrowLeft, Copy, Check, ExternalLink, ServerCrash, Zap } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 
+// ── Loader detection helpers ─────────────────────────────────────────────────
+// Maps known Modrinth loader names to what Pelican egg startup variables look like
+const LOADER_ALIASES: Record<string, string[]> = {
+  spigot:  ["spigot", "bukkit", "craftbukkit"],
+  paper:   ["paper", "spigot", "bukkit"],
+  purpur:  ["purpur", "paper", "spigot"],
+  folia:   ["folia", "paper"],
+  bungeecord: ["bungeecord", "waterfall"],
+  waterfall: ["waterfall", "bungeecord"],
+  velocity: ["velocity"],
+  fabric:  ["fabric"],
+  forge:   ["forge", "neoforge"],
+  neoforge:["neoforge", "forge"],
+  quilt:   ["quilt", "fabric"],
+  liteloader: ["liteloader"],
+  modloader: ["forge"],
+  rift:    ["rift"],
+  sponge:  ["sponge"],
+};
+
+function detectLoaderFromVariables(vars: { env_variable: string; server_value?: string; default_value: string }[]): string[] {
+  const allValues = vars.map((v) => `${v.env_variable}=${v.server_value ?? v.default_value}`.toLowerCase()).join(" ");
+  const detected: string[] = [];
+  for (const [loader] of Object.entries(LOADER_ALIASES)) {
+    if (allValues.includes(loader)) detected.push(loader);
+  }
+  // Also detect from SERVER_JARFILE, STARTUP, docker image name etc.
+  const jarVar = vars.find((v) => v.env_variable === "SERVER_JARFILE" || v.env_variable === "JAR_FILE");
+  if (jarVar) {
+    const val = (jarVar.server_value ?? jarVar.default_value).toLowerCase();
+    for (const loader of ["spigot","paper","purpur","fabric","forge","neoforge","quilt","velocity","bungeecord","waterfall","sponge"]) {
+      if (val.includes(loader) && !detected.includes(loader)) detected.push(loader);
+    }
+  }
+  return detected.length > 0 ? detected : [];
+}
+
+function versionCompatible(verLoaders: string[], serverLoaders: string[]): boolean {
+  if (serverLoaders.length === 0) return true; // unknown — show all
+  const expanded = new Set<string>();
+  for (const sl of serverLoaders) {
+    (LOADER_ALIASES[sl] ?? [sl]).forEach((a) => expanded.add(a));
+    expanded.add(sl);
+  }
+  return verLoaders.some((l) => expanded.has(l.toLowerCase()));
+}
+
+// ── Types ─────────────────────────────────────────────────────────────────────
 type ModrinthProject = {
   project_id: string;
   slug: string;
@@ -46,6 +94,8 @@ type ModrinthDetail = {
   license: { id: string; name: string } | null;
 };
 
+type PelicanVariable = { env_variable: string; server_value?: string; default_value: string };
+
 const CATEGORIES = [
   { value: "plugin", label: "Plugins" },
   { value: "mod", label: "Mods" },
@@ -55,6 +105,20 @@ const CATEGORIES = [
   { value: "datapack", label: "Data Packs" },
 ];
 
+const LOADER_COLORS: Record<string, string> = {
+  spigot: "text-yellow-400 border-yellow-500/30",
+  paper: "text-red-400 border-red-500/30",
+  purpur: "text-purple-400 border-purple-500/30",
+  fabric: "text-green-400 border-green-500/30",
+  forge: "text-orange-400 border-orange-500/30",
+  neoforge: "text-orange-300 border-orange-400/30",
+  quilt: "text-pink-400 border-pink-500/30",
+  velocity: "text-blue-400 border-blue-500/30",
+  bungeecord: "text-cyan-400 border-cyan-500/30",
+  waterfall: "text-sky-400 border-sky-500/30",
+  sponge: "text-yellow-300 border-yellow-400/30",
+};
+
 function fmt(n: number | undefined | null) {
   if (!n) return "0";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -62,11 +126,21 @@ function fmt(n: number | undefined | null) {
   return n.toString();
 }
 
-function ProjectDetail({ slug, onBack }: { slug: string; onBack: () => void }) {
+// ── Project Detail View ───────────────────────────────────────────────────────
+function ProjectDetail({
+  slug, serverId, serverLoaders, onBack,
+}: {
+  slug: string;
+  serverId: string;
+  serverLoaders: string[];
+  onBack: () => void;
+}) {
   const [project, setProject] = useState<ModrinthDetail | null>(null);
   const [versions, setVersions] = useState<ModrinthVersion[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
+  const [installing, setInstalling] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -74,7 +148,7 @@ function ProjectDetail({ slug, onBack }: { slug: string; onBack: () => void }) {
       try {
         const [pRes, vRes] = await Promise.all([
           fetch(`https://api.modrinth.com/v2/project/${slug}`, { headers: { "User-Agent": "PartnerHosting/1.0" } }),
-          fetch(`https://api.modrinth.com/v2/project/${slug}/version?limit=10`, { headers: { "User-Agent": "PartnerHosting/1.0" } }),
+          fetch(`https://api.modrinth.com/v2/project/${slug}/version?limit=20`, { headers: { "User-Agent": "PartnerHosting/1.0" } }),
         ]);
         const [p, v] = await Promise.all([pRes.json(), vRes.json()]);
         setProject(p);
@@ -91,8 +165,35 @@ function ProjectDetail({ slug, onBack }: { slug: string; onBack: () => void }) {
   function copyUrl(url: string, id: string) {
     navigator.clipboard.writeText(url);
     setCopied(id);
-    toast.success("Download URL copied — paste it in your file manager or use wget in console");
+    toast.success("URL copied to clipboard");
     setTimeout(() => setCopied(null), 2000);
+  }
+
+  async function installToServer(ver: ModrinthVersion) {
+    const file = ver.files.find((f) => f.primary) ?? ver.files[0];
+    if (!file) return;
+    setInstalling(ver.id);
+    try {
+      const res = await fetch(`/api/server/${serverId}/install-mod`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileUrl: file.url, filename: file.filename }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error ?? "Installation failed");
+      } else {
+        toast.success(
+          data.warning
+            ? `Installed to ${data.path} (${data.warning})`
+            : `✓ Installed ${file.filename} → ${data.path}`,
+        );
+      }
+    } catch {
+      toast.error("Network error during installation");
+    } finally {
+      setInstalling(null);
+    }
   }
 
   if (loading) return <div className="flex justify-center py-16"><RefreshCw className="h-5 w-5 animate-spin text-slate-500" /></div>;
@@ -102,6 +203,9 @@ function ProjectDetail({ slug, onBack }: { slug: string; onBack: () => void }) {
       <Button variant="ghost" onClick={onBack} className="mt-4 text-slate-400">Back</Button>
     </div>
   );
+
+  const compatibleVersions = versions.filter((v) => showAll || versionCompatible(v.loaders, serverLoaders));
+  const incompatibleCount = versions.length - versions.filter((v) => versionCompatible(v.loaders, serverLoaders)).length;
 
   return (
     <div className="space-y-5">
@@ -131,37 +235,83 @@ function ProjectDetail({ slug, onBack }: { slug: string; onBack: () => void }) {
         </div>
       </div>
 
+      {/* Server loader info banner */}
+      {serverLoaders.length > 0 && (
+        <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 px-3 py-2">
+          <Zap className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+          <span className="text-xs text-blue-300">
+            Your server runs <span className="font-semibold capitalize">{serverLoaders.join(", ")}</span> — showing compatible versions
+          </span>
+          {incompatibleCount > 0 && !showAll && (
+            <button onClick={() => setShowAll(true)} className="ml-auto text-xs text-slate-500 hover:text-slate-300 transition-colors underline">
+              Show all ({versions.length})
+            </button>
+          )}
+          {showAll && (
+            <button onClick={() => setShowAll(false)} className="ml-auto text-xs text-slate-500 hover:text-slate-300 transition-colors underline">
+              Compatible only
+            </button>
+          )}
+        </div>
+      )}
+
       <div>
-        <h3 className="text-sm font-semibold text-white mb-2">Versions</h3>
-        <p className="text-xs text-slate-500 mb-3">Copy the download URL and use <code className="bg-white/5 px-1 rounded">wget &lt;url&gt;</code> in the console, or paste it in the file manager.</p>
-        {versions.length === 0 ? (
-          <p className="text-sm text-slate-500 py-6 text-center">No versions available</p>
+        <h3 className="text-sm font-semibold text-white mb-3">
+          Versions {compatibleVersions.length > 0 && <span className="text-slate-500 font-normal">({compatibleVersions.length})</span>}
+        </h3>
+        {compatibleVersions.length === 0 ? (
+          <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-6 text-center">
+            <ServerCrash className="h-8 w-8 text-yellow-500/50 mx-auto mb-2" />
+            <p className="text-sm text-yellow-300">No compatible versions for your server&apos;s loader</p>
+            <button onClick={() => setShowAll(true)} className="mt-2 text-xs text-slate-400 hover:text-white underline">Show all versions anyway</button>
+          </div>
         ) : (
           <div className="space-y-2">
-            {versions.map((ver) => {
+            {compatibleVersions.map((ver, i) => {
               const file = ver.files.find((f) => f.primary) ?? ver.files[0];
+              const isLatest = i === 0 && !showAll;
+              const isInstalling = installing === ver.id;
               return (
-                <Card key={ver.id} className="border-white/5 bg-white/[0.02]">
+                <Card key={ver.id} className={`border-white/5 ${isLatest ? "bg-blue-500/5 border-blue-500/20" : "bg-white/[0.02]"}`}>
                   <CardContent className="flex items-center justify-between gap-3 p-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-white truncate">{ver.name}</p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-white truncate">{ver.name}</p>
+                        {isLatest && <Badge className="text-[10px] bg-blue-500/20 text-blue-300 border-blue-500/30 border">Latest</Badge>}
+                      </div>
                       <div className="mt-1 flex flex-wrap gap-1">
-                        {ver.loaders.map((l) => <Badge key={l} variant="outline" className="text-[10px] border-white/10 text-blue-400 capitalize">{l}</Badge>)}
-                        {ver.game_versions.slice(0, 3).map((v) => <Badge key={v} variant="outline" className="text-[10px] border-white/10 text-slate-400">{v}</Badge>)}
-                        {ver.game_versions.length > 3 && <Badge variant="outline" className="text-[10px] border-white/10 text-slate-500">+{ver.game_versions.length - 3}</Badge>}
+                        {ver.loaders.map((l) => (
+                          <Badge key={l} variant="outline" className={`text-[10px] capitalize ${LOADER_COLORS[l.toLowerCase()] ?? "text-slate-400 border-white/10"}`}>{l}</Badge>
+                        ))}
+                        {ver.game_versions.slice(0, 3).map((v) => (
+                          <Badge key={v} variant="outline" className="text-[10px] border-white/10 text-slate-400">{v}</Badge>
+                        ))}
+                        {ver.game_versions.length > 3 && (
+                          <Badge variant="outline" className="text-[10px] border-white/10 text-slate-500">+{ver.game_versions.length - 3}</Badge>
+                        )}
                       </div>
                     </div>
                     {file && (
                       <div className="flex items-center gap-2 shrink-0">
-                        <Button size="sm" variant="outline" className="border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 text-xs gap-1.5" onClick={() => copyUrl(file.url, ver.id)}>
+                        <Button
+                          size="sm" variant="outline"
+                          className="border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 text-xs gap-1.5"
+                          onClick={() => copyUrl(file.url, ver.id)}
+                        >
                           {copied === ver.id ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
                           Copy URL
                         </Button>
-                        <a href={file.url} download={file.filename}>
-                          <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white text-xs gap-1.5">
-                            <Download className="h-3.5 w-3.5" />Download
-                          </Button>
-                        </a>
+                        <Button
+                          size="sm"
+                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs gap-1.5 min-w-[110px]"
+                          onClick={() => installToServer(ver)}
+                          disabled={isInstalling}
+                        >
+                          {isInstalling
+                            ? <><RefreshCw className="h-3.5 w-3.5 animate-spin" />Installing...</>
+                            : <><Download className="h-3.5 w-3.5" />Install to Server</>
+                          }
+                        </Button>
                       </div>
                     )}
                   </CardContent>
@@ -175,12 +325,35 @@ function ProjectDetail({ slug, onBack }: { slug: string; onBack: () => void }) {
   );
 }
 
-export function ServerStore() {
+// ── Main ServerStore ──────────────────────────────────────────────────────────
+export function ServerStore({ serverId }: { serverId: string }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("plugin");
   const [projects, setProjects] = useState<ModrinthProject[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [serverLoaders, setServerLoaders] = useState<string[]>([]);
+
+  // Detect server loader from Pelican variables
+  useEffect(() => {
+    async function detectLoader() {
+      try {
+        const res = await fetch(`/api/pelican/servers/${serverId}/startup`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const vars: PelicanVariable[] = data.variables ?? [];
+        const loaders = detectLoaderFromVariables(vars);
+        setServerLoaders(loaders);
+        // Auto-select best category
+        if (loaders.some((l) => ["fabric","forge","neoforge","quilt","liteloader"].includes(l))) {
+          setCategory("mod");
+        } else {
+          setCategory("plugin");
+        }
+      } catch { /* silent */ }
+    }
+    detectLoader();
+  }, [serverId]);
 
   const search = useCallback(async (q: string, cat: string) => {
     setLoading(true);
@@ -199,10 +372,28 @@ export function ServerStore() {
 
   useEffect(() => { search("", category); }, [category, search]);
 
-  if (selectedSlug) return <ProjectDetail slug={selectedSlug} onBack={() => setSelectedSlug(null)} />;
+  if (selectedSlug) return (
+    <ProjectDetail
+      slug={selectedSlug}
+      serverId={serverId}
+      serverLoaders={serverLoaders}
+      onBack={() => setSelectedSlug(null)}
+    />
+  );
 
   return (
     <div className="space-y-4">
+      {/* Loader badge */}
+      {serverLoaders.length > 0 && (
+        <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2">
+          <Zap className="h-3.5 w-3.5 text-blue-400" />
+          <span className="text-xs text-slate-400">Server loader detected:</span>
+          {serverLoaders.map((l) => (
+            <Badge key={l} variant="outline" className={`text-[10px] capitalize ${LOADER_COLORS[l] ?? "text-slate-400 border-white/10"}`}>{l}</Badge>
+          ))}
+        </div>
+      )}
+
       {/* Search */}
       <form onSubmit={(e) => { e.preventDefault(); search(query, category); }} className="flex gap-2">
         <div className="relative flex-1">

@@ -39,7 +39,7 @@ export default async function DashboardPage() {
     const userServerIds = new Set(userServices.map((s: { externalServerId: string | null }) => String(s.externalServerId)));
     const res = await getServers();
     const all = res.data.map((s: { attributes: PelicanServer }) => s.attributes);
-    servers = all.filter((s: PelicanServer) => userServerIds.has(String(s.id)));
+    servers = all.filter((s: PelicanServer) => userServerIds.has(s.identifier));
   } catch {
     // Pelican unreachable
   }
