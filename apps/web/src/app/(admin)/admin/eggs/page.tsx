@@ -110,6 +110,65 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
   const updateVariable = (i: number, field: keyof NewVariable, val: string | boolean) =>
     setVariables((v) => v.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
 
+  const handleDownloadYaml = () => {
+    if (!name.trim() || !startup.trim() || dockerRows.some((r) => !r.label || !r.image)) {
+      toast.error("Fill in all required fields (name, startup, docker images)");
+      return;
+    }
+    const docker_images: Record<string, string> = {};
+    dockerRows.forEach((r) => { docker_images[r.label] = r.image; });
+
+    const lines: string[] = [
+      `_comment: 'DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL'`,
+      `meta:`,
+      `  version: PLCN_v3`,
+      `  update_url: null`,
+      `exported_at: '${new Date().toISOString()}'`,
+      `name: ${name}`,
+      `author: admin@example.com`,
+      `description: '${(description || "").replace(/'/g, "''")}'`,
+      `features: ~`,
+      `docker_images:`,
+      ...Object.entries(docker_images).map(([k, v]) => `  '${k}': '${v}'`),
+      `file_denylist: []`,
+      `startup: '${startup.replace(/'/g, "''")}' `,
+      `config:`,
+      `  files: '{}'`,
+      `  startup: '{"done":[")! For help, type "]}'`,
+      `  logs: '{}'`,
+      `  stop: stop`,
+      `scripts:`,
+      `  installation:`,
+      `    script: |`,
+      `      #!/bin/ash`,
+      `      cd /mnt/server`,
+      `      echo 'Install complete'`,
+      `    container: 'ghcr.io/pelican-eggs/installers:alpine'`,
+      `    entrypoint: ash`,
+      `variables:`,
+      ...variables.flatMap((v, i) => [
+        `  -`,
+        `    name: '${v.name}'`,
+        `    description: '${(v.description || "").replace(/'/g, "''")}'`,
+        `    env_variable: ${v.env_variable}`,
+        `    default_value: '${(v.default_value || "").replace(/'/g, "''")}'`,
+        `    user_viewable: ${v.user_viewable}`,
+        `    user_editable: ${v.user_editable}`,
+        `    rules: '${v.rules}'`,
+        `    sort: ${i + 1}`,
+      ]),
+    ];
+
+    const blob = new Blob([lines.join("\n")], { type: "text/yaml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `egg-${name.toLowerCase().replace(/\s+/g, "-")}.yaml`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded egg-${name.toLowerCase().replace(/\s+/g, "-")}.yaml`);
+  };
+
   const handleDownloadJson = () => {
     if (!name.trim() || !startup.trim() || dockerRows.some((r) => !r.label || !r.image)) {
       toast.error("Fill in all required fields (name, startup, docker images)");
@@ -308,24 +367,19 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
         </div>
 
         {/* Import instructions */}
-        <div className="mx-6 mb-4 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 text-[12px] text-yellow-300 space-y-1">
+        <div className="mx-6 mb-4 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 text-[12px] text-yellow-300 space-y-2">
           <p className="font-semibold">Pelican does not support creating eggs via API.</p>
-          <p className="text-yellow-300/70">Click <strong>Download JSON</strong> to get the egg file, then import it in your Pelican panel under <strong>Admin → Eggs → Import Egg</strong>.</p>
-          <a
-            href={`${typeof window !== "undefined" ? window.location.origin.replace(/:3000$/, "") : ""}/admin/eggs`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-yellow-400 hover:text-yellow-300 underline"
-          >
-            Open Pelican Admin <ExternalLink className="h-3 w-3" />
-          </a>
+          <p className="text-yellow-300/70">Download the egg file below, then import it in your Pelican panel under <strong>Admin → Eggs → Import Egg</strong>. If you get a <strong>413 error</strong>, increase your nginx limit: <code className="bg-black/30 px-1 rounded">client_max_body_size 100m;</code></p>
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 border-t border-white/[0.07] px-6 py-4">
           <Button variant="outline" onClick={onClose} className="border-white/10 text-[#8b92a8] hover:text-white">Cancel</Button>
+          <Button variant="outline" onClick={handleDownloadYaml} className="border-white/10 text-[#8b92a8] hover:text-white">
+            <Download className="h-4 w-4 mr-2" />YAML
+          </Button>
           <Button onClick={handleDownloadJson} className="bg-[#5b8cff] hover:bg-[#4a7bef] text-white">
-            <Download className="h-4 w-4 mr-2" />Download JSON
+            <Download className="h-4 w-4 mr-2" />JSON
           </Button>
         </div>
       </div>
