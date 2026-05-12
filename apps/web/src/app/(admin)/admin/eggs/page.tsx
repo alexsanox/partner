@@ -68,6 +68,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
     reader.onload = (ev) => {
       try {
         const parsed = yaml.load(ev.target?.result as string) as Record<string, unknown>;
+        delete parsed.image;
         if (parsed.name) setName(parsed.name as string);
         if (parsed.description) setDescription(parsed.description as string);
         // Docker images
