@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const isAdmin = session.user.role === "ADMIN";
+  const isAdmin = session.user.role === "admin";
 
   const ticket = await prisma.supportTicket.findUnique({
     where: { id },
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const isAdmin = session.user.role === "ADMIN";
+  const isAdmin = session.user.role === "admin";
 
   const ticket = await prisma.supportTicket.findUnique({
     where: { id },

@@ -102,7 +102,7 @@ export function UserActions({ userId, userName, currentRole, isSelf }: UserActio
           onClick={() => handleAction("toggleRole")}
           className="text-xs"
         >
-          {currentRole === "ADMIN" ? (
+          {currentRole === "admin" ? (
             <><ShieldOff className="mr-2 h-3.5 w-3.5" />Remove Admin</>
           ) : (
             <><ShieldCheck className="mr-2 h-3.5 w-3.5" />Make Admin</>

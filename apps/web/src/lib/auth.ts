@@ -31,10 +31,8 @@ export const auth = betterAuth({
   },
   plugins: [
     admin({
-      adminRoles: ["ADMIN"],
-      defaultRole: "USER",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any),
+      allowImpersonatingAdmins: true,
+    }),
     twoFactor({
       skipVerificationOnEnable: true,
       otpOptions: {

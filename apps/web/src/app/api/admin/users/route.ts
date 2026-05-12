@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 
 async function requireAdmin() {
   const session = await getSession();
-  if (!session || session.user.role !== "ADMIN") {
+  if (!session || session.user.role !== "admin") {
     return null;
   }
   return session;
@@ -29,7 +29,7 @@ export async function PATCH(req: NextRequest) {
         if (user.id === session.user.id) {
           return NextResponse.json({ error: "Cannot change your own role" }, { status: 400 });
         }
-        const newRole = user.role === "ADMIN" ? "USER" : "ADMIN";
+        const newRole = user.role === "admin" ? "user" : "admin";
         await prisma.user.update({ where: { id: userId }, data: { role: newRole } });
         return NextResponse.json({ success: true, role: newRole });
       }

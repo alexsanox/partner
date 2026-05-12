@@ -5,7 +5,7 @@ import type { PlanType } from "@prisma/client";
 
 async function requireAdmin() {
   const session = await getSession();
-  if (!session || session.user.role !== "ADMIN") return null;
+  if (!session || session.user.role !== "admin") return null;
   return session;
 }
 

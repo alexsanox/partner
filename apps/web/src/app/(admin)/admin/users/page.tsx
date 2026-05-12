@@ -26,7 +26,7 @@ async function getUsers() {
 async function getUserStats() {
   const [total, admins, verified, recent] = await Promise.all([
     prisma.user.count(),
-    prisma.user.count({ where: { role: "ADMIN" } }),
+    prisma.user.count({ where: { role: "admin" } }),
     prisma.user.count({ where: { emailVerified: true } }),
     prisma.user.count({
       where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
@@ -105,7 +105,7 @@ export default async function AdminUsersPage() {
                       <Badge
                         variant="outline"
                         className={
-                          user.role === "ADMIN"
+                          user.role === "admin"
                             ? "bg-red-500/10 text-red-400 border-red-500/20"
                             : "bg-slate-500/10 text-slate-400 border-slate-500/20"
                         }
