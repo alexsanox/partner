@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Create subscription with incomplete payment so we get clientSecret
+    // Create subscription in incomplete state
     const subscription = await stripe.subscriptions.create({
       customer: customerId,
       items: [{ price: price.id }],
@@ -80,7 +80,6 @@ export async function POST(req: NextRequest) {
         save_default_payment_method: "on_subscription",
         payment_method_types: ["card"],
       },
-      expand: ["latest_invoice", "latest_invoice.payment_intent", "pending_setup_intent"],
       metadata: {
         userId: session.user.id,
         planId: plan.id,
@@ -89,29 +88,28 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Extract client secret — try payment_intent first, then pending_setup_intent
-    type ExpandedInvoice = { payment_intent?: { client_secret?: string | null } | string | null } | string | null;
-    type ExpandedSetupIntent = { client_secret?: string | null } | string | null;
+    // Retrieve the invoice with payment_intent expanded
+    // (Stripe no longer embeds payment_intent on subscription create response)
+    const invoiceId = typeof subscription.latest_invoice === "string"
+      ? subscription.latest_invoice
+      : (subscription.latest_invoice as { id: string } | null)?.id;
 
-    const invoice = subscription.latest_invoice as ExpandedInvoice;
-    const setupIntent = (subscription as unknown as { pending_setup_intent?: ExpandedSetupIntent }).pending_setup_intent;
-
-    let clientSecret: string | null | undefined;
-
-    if (invoice && typeof invoice === "object") {
-      const pi = invoice.payment_intent;
-      if (pi && typeof pi === "object") {
-        clientSecret = pi.client_secret;
-      }
+    if (!invoiceId) {
+      throw new Error("No invoice created for subscription");
     }
 
-    if (!clientSecret && setupIntent && typeof setupIntent === "object") {
-      clientSecret = setupIntent.client_secret;
-    }
+    const invoice = await stripe.invoices.retrieve(invoiceId, {
+      expand: ["payment_intent"],
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pi = (invoice as any).payment_intent as { client_secret?: string | null } | string | null;
+    const clientSecret = pi && typeof pi === "object" ? pi.client_secret : null;
 
     if (!clientSecret) {
-      console.error("[checkout] No client secret. Status:", subscription.status, "invoice:", JSON.stringify(subscription.latest_invoice));
-      throw new Error(`Payment setup failed. Please try again.`);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      console.error("[checkout] No client secret. Invoice status:", invoice.status, "PI:", JSON.stringify((invoice as any).payment_intent));
+      throw new Error("Payment setup failed. Please try again.");
     }
 
     // Create pending order in DB
