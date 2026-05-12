@@ -134,7 +134,7 @@ export function CheckoutSuccessBanner() {
             {/* CTA */}
             <button
               onClick={handleDismiss}
-              className="mt-6 w-full rounded-xl bg-[#00c98d] px-6 py-3 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors"
+              className="mt-6 w-full rounded-xl bg-[#00c98d] px-6 py-3 text-sm font-bold text-white hover:bg-[#00e0a0] transition-colors"
             >
               Go to My Servers
             </button>

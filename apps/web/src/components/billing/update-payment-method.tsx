@@ -71,7 +71,7 @@ function UpdateForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel: 
         <button
           type="submit"
           disabled={!stripe || processing}
-          className="flex items-center gap-2 rounded-lg bg-[#00c98d] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
+          className="flex items-center gap-2 rounded-lg bg-[#00c98d] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#00e0a0] transition-colors disabled:opacity-40"
         >
           {processing ? (
             <>
@@ -149,7 +149,7 @@ export function UpdatePaymentMethod() {
       <button
         onClick={handleOpen}
         disabled={loading}
-        className="flex items-center gap-2 rounded-lg bg-[#00c98d] px-4 py-2 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
+        className="flex items-center gap-2 rounded-lg bg-[#00c98d] px-4 py-2 text-sm font-bold text-white hover:bg-[#00e0a0] transition-colors disabled:opacity-40"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />

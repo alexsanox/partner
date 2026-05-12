@@ -378,7 +378,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
           <Button variant="outline" onClick={handleDownloadYaml} className="border-white/10 text-[#8b92a8] hover:text-white">
             <Download className="h-4 w-4 mr-2" />YAML
           </Button>
-          <Button onClick={handleDownloadJson} className="bg-[#00c98d] hover:bg-[#4a7bef] text-white">
+          <Button onClick={handleDownloadJson} className="bg-[#00c98d] hover:bg-[#00e0a0] text-white">
             <Download className="h-4 w-4 mr-2" />JSON
           </Button>
         </div>
@@ -446,7 +446,7 @@ export default function AdminEggsPage() {
             Pelican server eggs available for plan configuration. These are synced from your panel.
           </p>
         </div>
-        <Button onClick={() => setShowCreate(true)} className="bg-[#00c98d] hover:bg-[#4a7bef] text-white shrink-0">
+        <Button onClick={() => setShowCreate(true)} className="bg-[#00c98d] hover:bg-[#00e0a0] text-white shrink-0">
           <Plus className="h-4 w-4 mr-2" /> Create Egg
         </Button>
       </div>

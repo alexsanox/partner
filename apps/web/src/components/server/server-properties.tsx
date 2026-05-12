@@ -344,7 +344,7 @@ export function ServerProperties({ serverId }: ServerPropertiesProps) {
             </p>
             <button
               onClick={fetchProps}
-              className="mt-5 rounded-lg bg-[#00c98d] px-5 py-2 text-sm font-semibold text-white hover:bg-[#4a7bef] transition-colors"
+              className="mt-5 rounded-lg bg-[#00c98d] px-5 py-2 text-sm font-semibold text-white hover:bg-[#00e0a0] transition-colors"
             >
               Try Again
             </button>

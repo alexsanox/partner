@@ -138,7 +138,7 @@ function PaymentForm({ plan, billingCycle, getPrice, getSavings, onSuccess, setu
       <button
         type="submit"
         disabled={!stripe || processing}
-        className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00c98d] px-6 py-3 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
+        className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00c98d] px-6 py-3 text-sm font-bold text-white hover:bg-[#00e0a0] transition-colors disabled:opacity-40"
       >
         {processing ? (
           <>
@@ -421,7 +421,7 @@ export default function CreateServerPage() {
                       }}
                       className={`mt-6 w-full rounded-lg py-2.5 text-sm font-bold transition-colors ${
                         isPopular || selectedPlan?.id === plan.id
-                          ? "bg-[#00c98d] text-white hover:bg-[#4a7bef]"
+                          ? "bg-[#00c98d] text-white hover:bg-[#00e0a0]"
                           : "bg-white/5 text-white hover:bg-white/10"
                       }`}
                     >
@@ -496,7 +496,7 @@ export default function CreateServerPage() {
             <button
               onClick={handleContinueToPayment}
               disabled={!serverName.trim() || creatingSubscription}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#00c98d] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#4a7bef] transition-colors disabled:opacity-40"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#00c98d] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#00e0a0] transition-colors disabled:opacity-40"
             >
               {creatingSubscription ? (
                 <>

@@ -30,6 +30,10 @@ foreach ($f in $files) {
   $c = $c.Replace('hover:text-blue-400','hover:text-[#00c98d]')
   $c = $c.Replace('hover:border-blue-500','hover:border-[#00c98d]')
   $c = $c.Replace('hover:bg-[#00b07d]','hover:bg-[#00e0a0]')
+  $c = $c.Replace('hover:bg-[#4a7bef]','hover:bg-[#00e0a0]')
+  $c = $c.Replace('hover:text-[#4a7bef]','hover:text-[#00c98d]')
+  $c = $c.Replace('ring-blue-400/20','ring-[#00c98d]/20')
+  $c = $c.Replace('ring-1 ring-blue-400','ring-1 ring-[#00c98d]')
   [System.IO.File]::WriteAllText($f.FullName, $c)
 }
 Write-Host "Done"

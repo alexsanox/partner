@@ -329,7 +329,7 @@ function SetupWizard() {
         <button
           onClick={handleDeploy}
           disabled={deploying || !orderId || !selectedVersion}
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00c98d] px-6 py-3.5 text-[14px] font-bold text-white hover:bg-[#4a7bef] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00c98d] px-6 py-3.5 text-[14px] font-bold text-white hover:bg-[#00e0a0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {deploying ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Deploying...</>

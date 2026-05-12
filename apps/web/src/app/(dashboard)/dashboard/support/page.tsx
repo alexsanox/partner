@@ -34,7 +34,7 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; cla
 
 const priorityConfig: Record<string, { label: string; icon: React.ElementType; className: string; active: string }> = {
   LOW: { label: "Low", icon: Minus, className: "border-slate-500/30 text-slate-400", active: "bg-slate-500/15 border-slate-400/40 text-slate-300 ring-1 ring-slate-400/20" },
-  MEDIUM: { label: "Medium", icon: AlertCircle, className: "border-[#00c98d]/30 text-[#00c98d]", active: "bg-[#00b07d]/15 border-[#00c98d]/40 text-[#4dd9ae] ring-1 ring-blue-400/20" },
+  MEDIUM: { label: "Medium", icon: AlertCircle, className: "border-[#00c98d]/30 text-[#00c98d]", active: "bg-[#00b07d]/15 border-[#00c98d]/40 text-[#4dd9ae] ring-1 ring-[#00c98d]/20" },
   HIGH: { label: "High", icon: AlertTriangle, className: "border-orange-500/30 text-orange-400", active: "bg-orange-500/15 border-orange-400/40 text-orange-300 ring-1 ring-orange-400/20" },
   CRITICAL: { label: "Critical", icon: Flame, className: "border-red-500/30 text-red-400", active: "bg-red-500/15 border-red-400/40 text-red-300 ring-1 ring-red-400/20" },
 };

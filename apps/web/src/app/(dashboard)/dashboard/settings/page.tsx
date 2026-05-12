@@ -279,7 +279,7 @@ export default function SettingsPage() {
               <Button
                 onClick={handleNameSave}
                 disabled={nameLoading || name === session?.user?.name}
-                className="bg-[#00c98d] text-white hover:bg-[#4a7bef] disabled:opacity-40"
+                className="bg-[#00c98d] text-white hover:bg-[#00e0a0] disabled:opacity-40"
               >
                 {nameLoading ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
@@ -345,7 +345,7 @@ export default function SettingsPage() {
                         size="sm"
                         onClick={handleEmailChange}
                         disabled={emailLoading || !newEmail.trim()}
-                        className="bg-[#00c98d] text-white hover:bg-[#4a7bef] disabled:opacity-40"
+                        className="bg-[#00c98d] text-white hover:bg-[#00e0a0] disabled:opacity-40"
                       >
                         {emailLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Update Email"}
                       </Button>
@@ -422,7 +422,7 @@ export default function SettingsPage() {
                         size="sm"
                         onClick={handlePasswordChange}
                         disabled={passwordLoading || !currentPassword || !newPassword || !confirmPassword}
-                        className="bg-[#00c98d] text-white hover:bg-[#4a7bef] disabled:opacity-40"
+                        className="bg-[#00c98d] text-white hover:bg-[#00e0a0] disabled:opacity-40"
                       >
                         {passwordLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Update Password"}
                       </Button>
@@ -520,7 +520,7 @@ export default function SettingsPage() {
                         disabled={twoFALoading || !twoFAPassword}
                         className={twoFAEnabled
                           ? "bg-red-500 text-white hover:bg-red-600 disabled:opacity-40"
-                          : "bg-[#00c98d] text-white hover:bg-[#4a7bef] disabled:opacity-40"
+                          : "bg-[#00c98d] text-white hover:bg-[#00e0a0] disabled:opacity-40"
                         }
                       >
                         {twoFALoading ? (

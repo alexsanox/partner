@@ -150,7 +150,7 @@ export default function TwoFactorPage() {
           <button
             onClick={handleSendOTP}
             disabled={sending}
-            className="inline-flex items-center gap-1.5 text-sm text-[#00c98d] hover:text-[#4a7bef] transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-sm text-[#00c98d] hover:text-[#00c98d] transition-colors disabled:opacity-50"
           >
             {sending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
