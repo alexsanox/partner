@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/table";
 import {
   Loader2, Egg, ChevronDown, ChevronRight, Variable, Container,
-  Terminal, Eye, EyeOff, Pencil, Lock, Plus, X, Trash2,
+  Terminal, Eye, EyeOff, Pencil, Lock, Plus, X, Trash2, Upload,
 } from "lucide-react";
+import yaml from "js-yaml";
 import { toast } from "sonner";
 
 // ── Default docker images for quick-fill ──────────────────────────────────────
@@ -59,6 +60,48 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
   ]);
   const [variables, setVariables] = useState<NewVariable[]>([]);
   const [saving, setSaving] = useState(false);
+
+  const handleYamlImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const parsed = yaml.load(ev.target?.result as string) as Record<string, unknown>;
+        if (parsed.name) setName(parsed.name as string);
+        if (parsed.description) setDescription(parsed.description as string);
+        // Startup: prefer startup_commands.Default, fall back to startup
+        const sc = parsed.startup_commands as Record<string, string> | undefined;
+        const startupCmd = sc?.Default ?? sc?.default ?? (parsed.startup as string | undefined);
+        if (startupCmd) setStartup(startupCmd);
+        // Docker images
+        if (parsed.docker_images && typeof parsed.docker_images === "object") {
+          setDockerRows(
+            Object.entries(parsed.docker_images as Record<string, string>).map(([label, image]) => ({ label, image }))
+          );
+        }
+        // Variables
+        if (Array.isArray(parsed.variables)) {
+          setVariables(
+            (parsed.variables as Record<string, unknown>[]).map((v) => ({
+              name: String(v.name ?? ""),
+              env_variable: String(v.env_variable ?? ""),
+              default_value: String(v.default_value ?? ""),
+              description: String(v.description ?? ""),
+              user_viewable: Boolean(v.user_viewable ?? true),
+              user_editable: Boolean(v.user_editable ?? true),
+              rules: Array.isArray(v.rules) ? (v.rules as string[]).join("|") : String(v.rules ?? "nullable|string"),
+            }))
+          );
+        }
+        toast.success(`Imported "${parsed.name ?? file.name}" from YAML`);
+      } catch {
+        toast.error("Failed to parse YAML file");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
 
   const addDockerRow = () => setDockerRows((r) => [...r, { label: "", image: "" }]);
   const removeDockerRow = (i: number) => setDockerRows((r) => r.filter((_, idx) => idx !== i));
@@ -109,9 +152,16 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
             </div>
             <h2 className="text-[15px] font-bold text-white">Create New Egg</h2>
           </div>
-          <button onClick={onClose} className="text-[#8b92a8] hover:text-white transition-colors">
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-1.5 cursor-pointer rounded-lg border border-white/[0.07] bg-white/[0.04] px-3 py-1.5 text-[12px] text-[#8b92a8] hover:text-white hover:border-white/20 transition-colors">
+              <Upload className="h-3.5 w-3.5" />
+              Import YAML
+              <input type="file" accept=".yaml,.yml" className="hidden" onChange={handleYamlImport} />
+            </label>
+            <button onClick={onClose} className="text-[#8b92a8] hover:text-white transition-colors">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         <div className="px-6 py-5 space-y-5">
