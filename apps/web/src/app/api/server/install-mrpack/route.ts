@@ -119,8 +119,17 @@ export async function POST(req: NextRequest) {
         try {
           const modRes = await fetch(downloadUrl);
           if (!modRes.ok) throw new Error(`Download failed: ${modRes.status}`);
-          const modBuffer = await modRes.arrayBuffer();
-          await writeFileToPelican(serverId, `${targetDir}/${fileName}`, modBuffer);
+          // Stream directly to Pelican — no RAM buffering
+          const uploadRes = await fetch(
+            `${PELICAN_URL}/api/client/servers/${serverId}/files/write?file=${encodeURIComponent(`${targetDir}/${fileName}`)}`,
+            {
+              method: "POST",
+              headers: { Authorization: `Bearer ${PELICAN_CLIENT_KEY}`, "Content-Type": "application/octet-stream" },
+              body: modRes.body,
+              duplex: "half",
+            } as RequestInit
+          );
+          if (!uploadRes.ok) throw new Error(`Upload failed: ${uploadRes.status}`);
           results.push({ name: fileName, ok: true });
         } catch (err) {
           results.push({ name: fileName, ok: false, error: err instanceof Error ? err.message : "Unknown error" });
@@ -152,7 +161,7 @@ export async function POST(req: NextRequest) {
     // Run actual installs after response is sent
     (async () => {
       try {
-        await runConcurrent(modTasks, 8);
+        await runConcurrent(modTasks, 3);
 
         const overrideTasks = overrideBuffers.map(({ path, data }) => async () => {
           const relativePath = path.replace(/^(server-)?overrides\//, "");
@@ -168,7 +177,7 @@ export async function POST(req: NextRequest) {
             console.error(`[install-mrpack] override failed ${relativePath}:`, err);
           }
         });
-        await runConcurrent(overrideTasks, 6);
+        await runConcurrent(overrideTasks, 3);
         try { await sendPowerAction(serverId, "restart"); } catch { /* not running yet */ }
         console.log(`[install-mrpack] done for ${serverId}: ${serverFiles.length} mods + ${overrideEntries.length} overrides`);
       } catch (err) {
