@@ -87,11 +87,26 @@ export async function POST(req: NextRequest) {
     });
 
     // Extract client secret from the pending invoice's payment intent
-    const invoice = subscription.latest_invoice as { payment_intent: { client_secret: string } } | null;
-    const clientSecret = invoice?.payment_intent?.client_secret;
+    const invoice = subscription.latest_invoice as {
+      payment_intent?: { client_secret?: string | null } | string | null;
+      confirmation_secret?: string | null;
+    } | string | null;
+
+    let clientSecret: string | null | undefined;
+    if (invoice && typeof invoice === "object") {
+      const pi = invoice.payment_intent;
+      if (pi && typeof pi === "object") {
+        clientSecret = pi.client_secret;
+      } else if (invoice.confirmation_secret) {
+        clientSecret = invoice.confirmation_secret;
+      }
+    }
+
+    console.log("[checkout] subscription status:", subscription.status, "clientSecret present:", !!clientSecret);
 
     if (!clientSecret) {
-      throw new Error("Failed to create payment intent for subscription");
+      console.error("[checkout] invoice data:", JSON.stringify(subscription.latest_invoice, null, 2));
+      throw new Error(`No client secret returned. Subscription status: ${subscription.status}`);
     }
 
     // Create pending order in DB
