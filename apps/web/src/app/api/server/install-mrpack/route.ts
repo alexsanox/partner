@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-server";
 import { prisma } from "@/lib/db";
-import { createDirectory, getFileUploadUrl } from "@/lib/pelican";
+import { createDirectory, getFileUploadUrl, sendPowerAction } from "@/lib/pelican";
 import AdmZip from "adm-zip";
 
 export const config = {
@@ -68,14 +68,10 @@ export async function POST(req: NextRequest) {
     });
 
     // Ensure /mods directory exists
-    try {
-      await createDirectory(serverId, "/", "mods");
-    } catch { /* already exists */ }
-
-    // Get upload URL from Pelican
-    const uploadUrl = await getFileUploadUrl(serverId);
+    try { await createDirectory(serverId, "/", "mods"); } catch { /* already exists */ }
 
     // Download each mod and upload to Pelican
+    // NOTE: signed upload URLs from Pelican are single-use, so we get a fresh one per file
     const results: { name: string; ok: boolean; error?: string }[] = [];
 
     for (const modFile of serverFiles) {
@@ -83,29 +79,33 @@ export async function POST(req: NextRequest) {
       const downloadUrl = modFile.downloads[0];
       if (!downloadUrl) continue;
 
+      // Determine target directory: mrpack paths are like "mods/fabric-api-1.0.jar"
+      // We upload to the parent directory with the filename
+      const pathParts = modFile.path.split("/");
+      const targetDir = pathParts.length > 1
+        ? "/" + pathParts.slice(0, -1).join("/")
+        : "/mods";
+
+      // Ensure subdirectory exists
+      if (pathParts.length > 2) {
+        try { await createDirectory(serverId, "/", pathParts.slice(0, -1).join("/")); } catch { /* exists */ }
+      }
+
       try {
-        // Download the mod
         const modRes = await fetch(downloadUrl);
         if (!modRes.ok) throw new Error(`Download failed: ${modRes.status}`);
         const modBuffer = await modRes.arrayBuffer();
 
-        // Upload to Pelican via signed URL
-        const targetDir = modFile.path.includes("/") 
-          ? "/" + modFile.path.split("/").slice(0, -1).join("/")
-          : "/mods";
-        
+        // Fresh signed URL per file
+        const uploadUrl = await getFileUploadUrl(serverId);
         const uploadWithDir = `${uploadUrl}&directory=${encodeURIComponent(targetDir)}`;
         const form = new FormData();
         form.append("files", new Blob([modBuffer]), fileName);
 
-        const uploadRes = await fetch(uploadWithDir, {
-          method: "POST",
-          body: form,
-        });
-
+        const uploadRes = await fetch(uploadWithDir, { method: "POST", body: form });
         if (!uploadRes.ok) {
           const text = await uploadRes.text();
-          throw new Error(`Upload failed: ${text}`);
+          throw new Error(`Upload failed: ${text.slice(0, 200)}`);
         }
 
         results.push({ name: fileName, ok: true });
@@ -122,23 +122,32 @@ export async function POST(req: NextRequest) {
     for (const entry of overrideEntries) {
       const relativePath = entry.entryName.replace(/^(server-)?overrides\//, "");
       const fileName = relativePath.split("/").pop()!;
-      const dir = "/" + relativePath.split("/").slice(0, -1).join("/");
+      const dirParts = relativePath.split("/").slice(0, -1);
+      const dir = dirParts.length > 0 ? "/" + dirParts.join("/") : "/";
 
       try {
         if (dir !== "/") {
-          try { await createDirectory(serverId, "/", dir.replace(/^\//, "")); } catch { /* exists */ }
+          try { await createDirectory(serverId, "/", dirParts.join("/")); } catch { /* exists */ }
         }
 
-        const uploadWithDir = `${uploadUrl}&directory=${encodeURIComponent(dir || "/")}`;
+        const uploadUrl = await getFileUploadUrl(serverId);
+        const uploadWithDir = `${uploadUrl}&directory=${encodeURIComponent(dir)}`;
         const form = new FormData();
         form.append("files", new Blob([new Uint8Array(entry.getData())]), fileName);
 
-        await fetch(uploadWithDir, { method: "POST", body: form });
-        results.push({ name: `overrides/${relativePath}`, ok: true });
+        const uploadRes = await fetch(uploadWithDir, { method: "POST", body: form });
+        if (uploadRes.ok) {
+          results.push({ name: `overrides/${relativePath}`, ok: true });
+        } else {
+          throw new Error(await uploadRes.text());
+        }
       } catch (err) {
         results.push({ name: `overrides/${relativePath}`, ok: false, error: err instanceof Error ? err.message : "Unknown" });
       }
     }
+
+    // Restart the server so it picks up the new mods
+    try { await sendPowerAction(serverId, "restart"); } catch { /* server may not be running yet */ }
 
     const failed = results.filter((r) => !r.ok);
     const succeeded = results.filter((r) => r.ok);
