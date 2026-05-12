@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ComposableMap, Geographies, Geography, Marker, Line } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, Marker, useMap } from "react-simple-maps";
 import { Zap, Shield, Globe } from "lucide-react";
 
 export interface MapLocation {
@@ -26,6 +26,45 @@ interface WorldMapProps {
 const REGIONS = ["All", "Europe", "North America", "Asia Pacific"];
 
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+
+/* Renders curved SVG arcs between node pairs using the live projection */
+function Beams({ visible }: { visible: MapLocation[] }) {
+  const { projection } = useMap();
+  if (!projection) return null;
+
+  const paths: string[] = [];
+  for (let i = 0; i < visible.length; i++) {
+    for (let j = i + 1; j < visible.length; j++) {
+      const a = visible[i];
+      const b = visible[j];
+      const pa = projection([a.lng, a.lat]);
+      const pb = projection([b.lng, b.lat]);
+      if (!pa || !pb) continue;
+      const [x1, y1] = pa;
+      const [x2, y2] = pb;
+      /* control point: midpoint lifted toward top of map */
+      const cx = (x1 + x2) / 2;
+      const cy = (y1 + y2) / 2 - Math.hypot(x2 - x1, y2 - y1) * 0.22;
+      paths.push(`M${x1},${y1} Q${cx},${cy} ${x2},${y2}`);
+    }
+  }
+
+  return (
+    <>
+      {paths.map((d, i) => (
+        <path
+          key={i}
+          d={d}
+          fill="none"
+          stroke="url(#beamGrad)"
+          strokeWidth="0.8"
+          strokeOpacity="0.35"
+          strokeLinecap="round"
+        />
+      ))}
+    </>
+  );
+}
 
 export function WorldMap({ locations }: WorldMapProps) {
   const [hovered, setHovered] = useState<string | null>(null);
@@ -68,7 +107,7 @@ export function WorldMap({ locations }: WorldMapProps) {
       <div className="relative">
         <ComposableMap
           projection="geoNaturalEarth1"
-          projectionConfig={{ scale: 153, center: [15, 10] }}
+          projectionConfig={{ scale: 160, center: [15, 18] }}
           style={{ width: "100%", height: "auto", background: "transparent" }}
         >
           <defs>
@@ -83,12 +122,19 @@ export function WorldMap({ locations }: WorldMapProps) {
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            <linearGradient id="beamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#00c98d" stopOpacity="0.05" />
+              <stop offset="50%" stopColor="#00c98d" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#00c98d" stopOpacity="0.05" />
+            </linearGradient>
+            <clipPath id="mapClip">
+              <rect x="0" y="0" width="800" height="455" />
+            </clipPath>
           </defs>
-
-          {/* Ocean */}
           <rect width="800" height="492" fill="url(#mapbg)" />
 
-          {/* Countries */}
+          {/* Countries — clipped to hide south-pole distortion */}
+          <g clipPath="url(#mapClip)">
           <Geographies geography={GEO_URL}>
             {({ geographies }: { geographies: any[] }) =>
               geographies.map((geo: any) => (
@@ -116,21 +162,10 @@ export function WorldMap({ locations }: WorldMapProps) {
               ))
             }
           </Geographies>
+          </g>
 
-          {/* Connection beams */}
-          {visible.map((a, i) =>
-            visible.slice(i + 1).map((b, j) => (
-              <Line
-                key={`beam-${a.city}-${b.city}-${j}`}
-                from={[a.lng, a.lat]}
-                to={[b.lng, b.lat]}
-                stroke="#00c98d"
-                strokeWidth={0.6}
-                strokeOpacity={0.18}
-                strokeDasharray="4 6"
-              />
-            ))
-          )}
+          {/* Curved connection arcs */}
+          <Beams visible={visible} />
 
           {/* Markers */}
           {visible.map((loc) => {
