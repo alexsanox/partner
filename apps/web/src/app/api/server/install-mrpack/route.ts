@@ -87,46 +87,54 @@ export async function POST(req: NextRequest) {
     // Ensure /mods directory exists
     try { await createDirectory(serverId, "/", "mods"); } catch { /* already exists */ }
 
-    // Download each mod and upload to Pelican
-    // NOTE: signed upload URLs from Pelican are single-use, so we get a fresh one per file
     const results: { name: string; ok: boolean; error?: string }[] = [];
 
-    for (const modFile of serverFiles) {
-      const fileName = modFile.path.split("/").pop()!;
-      const downloadUrl = modFile.downloads[0];
-      if (!downloadUrl) continue;
-
-      // Determine target directory: mrpack paths are like "mods/fabric-api-1.0.jar"
-      // We upload to the parent directory with the filename
-      const pathParts = modFile.path.split("/");
-      const targetDir = pathParts.length > 1
-        ? "/" + pathParts.slice(0, -1).join("/")
-        : "/mods";
-
-      // Ensure subdirectory exists
-      if (pathParts.length > 2) {
-        try { await createDirectory(serverId, "/", pathParts.slice(0, -1).join("/")); } catch { /* exists */ }
+    // Run tasks with a concurrency limit
+    async function runConcurrent<T>(tasks: (() => Promise<T>)[], limit = 8): Promise<T[]> {
+      const out: T[] = [];
+      let i = 0;
+      async function next(): Promise<void> {
+        if (i >= tasks.length) return;
+        const idx = i++;
+        out[idx] = await tasks[idx]();
+        await next();
       }
-
-      try {
-        const modRes = await fetch(downloadUrl);
-        if (!modRes.ok) throw new Error(`Download failed: ${modRes.status}`);
-        const modBuffer = await modRes.arrayBuffer();
-
-        await writeFileToPelican(serverId, `${targetDir}/${fileName}`, modBuffer);
-
-        results.push({ name: fileName, ok: true });
-      } catch (err) {
-        results.push({ name: fileName, ok: false, error: err instanceof Error ? err.message : "Unknown error" });
-      }
+      await Promise.all(Array.from({ length: limit }, next));
+      return out;
     }
 
-    // Also extract any override files from the mrpack (overrides/ folder)
+    // Build mod install tasks
+    const modTasks = serverFiles
+      .filter((f) => f.downloads[0])
+      .map((modFile) => async () => {
+        const fileName = modFile.path.split("/").pop()!;
+        const downloadUrl = modFile.downloads[0];
+        const pathParts = modFile.path.split("/");
+        const targetDir = pathParts.length > 1 ? "/" + pathParts.slice(0, -1).join("/") : "/mods";
+
+        if (pathParts.length > 2) {
+          try { await createDirectory(serverId, "/", pathParts.slice(0, -1).join("/")); } catch { /* exists */ }
+        }
+
+        try {
+          const modRes = await fetch(downloadUrl);
+          if (!modRes.ok) throw new Error(`Download failed: ${modRes.status}`);
+          const modBuffer = await modRes.arrayBuffer();
+          await writeFileToPelican(serverId, `${targetDir}/${fileName}`, modBuffer);
+          results.push({ name: fileName, ok: true });
+        } catch (err) {
+          results.push({ name: fileName, ok: false, error: err instanceof Error ? err.message : "Unknown error" });
+        }
+      });
+
+    await runConcurrent(modTasks, 8);
+
+    // Extract override files from the mrpack (overrides/ folder)
     const overrideEntries = zip.getEntries().filter(
       (e) => (e.entryName.startsWith("overrides/") || e.entryName.startsWith("server-overrides/")) && !e.isDirectory
     );
 
-    for (const entry of overrideEntries) {
+    const overrideTasks = overrideEntries.map((entry) => async () => {
       const relativePath = entry.entryName.replace(/^(server-)?overrides\//, "");
       const fileName = relativePath.split("/").pop()!;
       const dirParts = relativePath.split("/").slice(0, -1);
@@ -136,13 +144,14 @@ export async function POST(req: NextRequest) {
         if (dir !== "/") {
           try { await createDirectory(serverId, "/", dirParts.join("/")); } catch { /* exists */ }
         }
-
         await writeFileToPelican(serverId, `${dir}/${fileName}`, new Uint8Array(entry.getData()).buffer as ArrayBuffer);
         results.push({ name: `overrides/${relativePath}`, ok: true });
       } catch (err) {
         results.push({ name: `overrides/${relativePath}`, ok: false, error: err instanceof Error ? err.message : "Unknown" });
       }
-    }
+    });
+
+    await runConcurrent(overrideTasks, 6);
 
     // Restart the server so it picks up the new mods
     try { await sendPowerAction(serverId, "restart"); } catch { /* server may not be running yet */ }
