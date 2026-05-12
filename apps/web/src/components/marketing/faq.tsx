@@ -57,7 +57,7 @@ export function FAQ() {
             Frequently Asked{" "}
             <span className="text-[#00c98d]">Questions</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-400">
+          <p className="mt-4 text-lg text-[#a8b0c4]">
             Got questions? We&apos;ve got answers.
           </p>
         </div>
@@ -72,7 +72,7 @@ export function FAQ() {
               <AccordionTrigger className="text-left text-white hover:text-[#4dd9ae] [&[data-state=open]]:text-[#00c98d]">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-slate-400 leading-relaxed">
+              <AccordionContent className="text-[#a8b0c4] leading-relaxed">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>

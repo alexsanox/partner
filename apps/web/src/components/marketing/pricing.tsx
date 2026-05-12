@@ -95,16 +95,16 @@ export function Pricing() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-[#00c98d]">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#00c98d]">
             Pricing
-          </h2>
-          <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Choose Your{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#00c98d] to-[#4dd9ae] bg-clip-text text-transparent">
               Tier
             </span>
-          </p>
-          <p className="mt-4 text-lg text-slate-400">
+          </h2>
+          <p className="mt-4 text-lg text-[#a8b0c4]">
             No hidden fees. No surprise charges. Pick a plan and start playing
             in under 60 seconds.
           </p>
@@ -115,10 +115,10 @@ export function Pricing() {
             <div
               key={plan.slug}
               className={cn(
-                "group relative flex flex-col overflow-hidden rounded-2xl border bg-gradient-to-b from-white/[0.04] to-white/[0.01] backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]",
+                "group relative flex flex-col overflow-hidden rounded-2xl border bg-[#131720] transition-all duration-300 hover:scale-[1.02] hover:bg-[#181d2e]",
                 plan.popular
                   ? `${plan.accentBorder} shadow-xl ${plan.accentGlow}`
-                  : "border-white/[0.06] hover:border-white/10"
+                  : "border-white/[0.07] hover:border-white/12"
               )}
             >
               {/* Colored top accent bar */}
@@ -126,7 +126,7 @@ export function Pricing() {
 
               {plan.popular && (
                 <div className="absolute right-4 top-5">
-                  <Badge className="border-0 bg-[#00c98d] text-xs font-bold text-white shadow-lg shadow-blue-600/25 hover:bg-[#00c98d]">
+                  <Badge className="border-0 bg-[#00c98d] text-xs font-bold text-white shadow-lg shadow-[#00c98d]/30 hover:bg-[#00c98d]">
                     <Zap className="mr-1 h-3 w-3" />
                     Most Popular
                   </Badge>
@@ -144,7 +144,7 @@ export function Pricing() {
                     {plan.ram} RAM
                   </span>
                 </div>
-                <p className="mt-1.5 text-sm text-slate-500">
+                <p className="mt-1.5 text-sm text-[#8b92a8]">
                   {plan.description}
                 </p>
 
@@ -153,7 +153,7 @@ export function Pricing() {
                   <span className="text-5xl font-black tracking-tight text-white">
                     ${plan.price}
                   </span>
-                  <span className="text-base text-slate-500">/mo</span>
+                  <span className="text-base text-[#8b92a8]">/mo</span>
                 </div>
 
                 {/* Quick stats */}
@@ -168,7 +168,7 @@ export function Pricing() {
                       className="rounded-lg bg-white/[0.03] px-3 py-2 text-center"
                     >
                       <div className="text-sm font-bold text-white">{stat.value}</div>
-                      <div className="text-[10px] uppercase tracking-wider text-slate-600">
+                      <div className="text-[10px] uppercase tracking-wider text-[#8b92a8]">
                         {stat.label}
                       </div>
                     </div>
@@ -185,7 +185,7 @@ export function Pricing() {
                   {plan.features.map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-center gap-2.5 text-sm text-slate-300"
+                      className="flex items-center gap-2.5 text-sm text-[#c8cdd8]"
                     >
                       <Check className={`h-4 w-4 shrink-0 ${plan.checkColor}`} />
                       {feature}
@@ -198,7 +198,7 @@ export function Pricing() {
                     className={cn(
                       "w-full h-11 font-semibold transition-all",
                       plan.popular
-                        ? "bg-[#00c98d] text-white shadow-lg shadow-blue-600/25 hover:bg-[#00e0a0] hover:shadow-blue-600/40"
+                        ? "bg-[#00c98d] text-white shadow-lg shadow-[#00c98d]/30 hover:bg-[#00e0a0] hover:text-white hover:shadow-[#00c98d]/40"
                         : "bg-white/[0.06] text-white hover:bg-white/10 border border-white/[0.08]"
                     )}
                   >

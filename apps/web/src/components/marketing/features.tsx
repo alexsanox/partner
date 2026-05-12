@@ -102,41 +102,35 @@ export function Features() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-[#00c98d]">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#00c98d]">
             Exclusive Features
-          </h2>
-          <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Everything You Need to{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#00c98d] to-[#4dd9ae] bg-clip-text text-transparent">
               Dominate
             </span>
-          </p>
-          <p className="mt-4 text-lg text-slate-400">
+          </h2>
+          <p className="mt-4 text-lg text-[#a8b0c4]">
             We offer a wide variety of features that enhance your gaming
             experience and provide the most powerful hardware at the best price.
           </p>
         </div>
 
-        {/* Bento grid - scattered layout */}
+        {/* Feature grid */}
         <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
             <div
               key={feature.title}
-              className={`group relative rounded-xl border ${feature.borderColor} bg-white/[0.02] p-6 backdrop-blur-sm transition-all hover:bg-white/[0.04] hover:border-white/10`}
+              className={`group relative rounded-xl border ${feature.borderColor} bg-[#131720] p-6 transition-all hover:bg-[#181d2e] hover:border-white/15`}
             >
               <div className="flex items-start gap-4">
-                <div
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${feature.bg}`}
-                >
+                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${feature.bg}`}>
                   <feature.icon className={`h-5 w-5 ${feature.color}`} />
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-white">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-slate-400">
-                    {feature.description}
-                  </p>
+                  <h3 className="text-base font-semibold text-white">{feature.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-[#8b92a8]">{feature.description}</p>
                 </div>
               </div>
             </div>
@@ -146,29 +140,29 @@ export function Features() {
         {/* Control Panel showcase */}
         <div className="mt-24">
           <div className="mx-auto max-w-2xl text-center">
-            <h3 className="text-sm font-semibold uppercase tracking-widest text-emerald-400">
+            <p className="text-sm font-semibold uppercase tracking-widest text-[#00c98d]">
               Control Panel
-            </h3>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Experience the{" "}
-              <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                Power
-              </span>
             </p>
-            <p className="mt-4 text-lg text-slate-400">
+            <h3 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Powerful &amp; Easy to{" "}
+              <span className="bg-gradient-to-r from-[#00c98d] to-[#4dd9ae] bg-clip-text text-transparent">
+                Use
+              </span>
+            </h3>
+            <p className="mt-4 text-lg text-[#a8b0c4]">
               Our panel has all the features you need and more. Get a new
               server today and discover them all.
             </p>
           </div>
 
           {/* Panel mockup */}
-          <div className="mt-12 overflow-hidden rounded-xl border border-white/10 bg-[#0d1117] shadow-2xl shadow-blue-500/5">
+          <div className="mt-12 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d1117] shadow-2xl shadow-[#00c98d]/5">
             {/* Title bar */}
-            <div className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
-              <div className="h-3 w-3 rounded-full bg-red-500/60" />
-              <div className="h-3 w-3 rounded-full bg-yellow-500/60" />
-              <div className="h-3 w-3 rounded-full bg-green-500/60" />
-              <span className="ml-3 text-xs text-slate-500">
+            <div className="flex items-center gap-2 border-b border-white/[0.06] bg-[#161b27] px-4 py-3">
+              <div className="h-3 w-3 rounded-full bg-red-500/70" />
+              <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
+              <div className="h-3 w-3 rounded-full bg-green-500/70" />
+              <span className="ml-3 text-xs text-[#8b92a8]">
                 panel.partnerhosting.com — My Server
               </span>
             </div>
@@ -176,30 +170,30 @@ export function Features() {
             <div className="p-6 sm:p-8">
               <div className="flex flex-col gap-6 sm:flex-row">
                 {/* Sidebar */}
-                <div className="flex flex-col gap-1 sm:w-48">
+                <div className="flex flex-col gap-0.5 sm:w-44">
                   {["Console", "Files", "Backups", "Settings", "Players", "Databases"].map((item, i) => (
                     <div
                       key={item}
-                      className={`rounded-md px-3 py-2 text-sm ${
+                      className={`rounded-lg px-3 py-2 text-sm font-medium ${
                         i === 0
-                          ? "bg-[#00c98d]/20 font-medium text-[#4dd9ae]"
-                          : "text-slate-500 hover:text-slate-300"
+                          ? "bg-[#00c98d]/15 text-[#00c98d]"
+                          : "text-[#8b92a8]"
                       }`}
                     >
                       {item}
                     </div>
                   ))}
                 </div>
-                {/* Main content */}
-                <div className="flex-1 rounded-lg border border-white/5 bg-black/30 p-4 font-mono text-xs leading-relaxed text-slate-400">
-                  <div className="text-emerald-400">[Server] Starting Minecraft server...</div>
-                  <div className="text-slate-500">[Server] Loading libraries, please wait...</div>
-                  <div className="text-slate-500">[Server] Preparing level &quot;world&quot;</div>
-                  <div className="text-[#00c98d]">[Server] Done (2.847s)! For help, type &quot;help&quot;</div>
-                  <div className="text-slate-500">[Server] 0/100 players online</div>
-                  <div className="mt-2 flex items-center gap-2">
+                {/* Console output */}
+                <div className="flex-1 rounded-xl border border-white/[0.06] bg-[#0a0e18] p-4 font-mono text-xs leading-loose">
+                  <div className="text-[#00c98d]">[Server] Starting Minecraft server...</div>
+                  <div className="text-[#8b92a8]">[Server] Loading libraries, please wait...</div>
+                  <div className="text-[#8b92a8]">[Server] Preparing level &quot;world&quot;</div>
+                  <div className="text-[#4dd9ae] font-semibold">[Server] Done (2.847s)! For help, type &quot;help&quot;</div>
+                  <div className="text-[#8b92a8]">[Server] 0/100 players online</div>
+                  <div className="mt-2 flex items-center gap-1.5">
                     <span className="text-[#00c98d]">{">"}</span>
-                    <span className="animate-pulse text-white">_</span>
+                    <span className="inline-block h-[14px] w-[7px] animate-pulse bg-[#00c98d]/70" />
                   </div>
                 </div>
               </div>
@@ -210,14 +204,12 @@ export function Features() {
         {/* Detail features row */}
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {detailFeatures.map((f) => (
-            <div key={f.title} className="text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
+            <div key={f.title} className="rounded-xl border border-white/[0.06] bg-[#131720] p-6 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#00c98d]/10">
                 <f.icon className="h-5 w-5 text-[#00c98d]" />
               </div>
-              <h4 className="mt-4 text-sm font-semibold text-white">{f.title}</h4>
-              <p className="mt-2 text-xs leading-relaxed text-slate-500">
-                {f.description}
-              </p>
+              <h4 className="mt-4 text-sm font-bold text-white">{f.title}</h4>
+              <p className="mt-2 text-sm leading-relaxed text-[#8b92a8]">{f.description}</p>
             </div>
           ))}
         </div>

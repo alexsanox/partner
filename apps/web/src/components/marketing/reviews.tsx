@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 
 const reviews = [
@@ -50,58 +49,47 @@ export function Reviews() {
   return (
     <section className="py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Rating header */}
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-400">
+          <p className="text-sm font-bold uppercase tracking-widest text-[#00c98d]">
             We&apos;re Rated Excellent
-          </h2>
+          </p>
           <div className="mt-4 flex items-center justify-center gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className="h-6 w-6 fill-yellow-400 text-yellow-400"
-              />
+              <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
             ))}
           </div>
-          <p className="mt-2 text-sm text-slate-400">
-            Rated <span className="font-semibold text-white">4.8</span> out of 5 based on customer reviews
+          <p className="mt-2 text-sm text-[#a8b0c4]">
+            Rated <span className="font-bold text-white">4.8</span> out of 5 based on customer reviews
           </p>
-          <p className="mt-6 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Trusted by <span className="text-[#00c98d]">Thousands</span> of Players
-          </p>
+          </h2>
         </div>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {reviews.map((review) => (
-            <Card
+            <div
               key={review.name}
-              className="border-white/5 bg-white/[0.02] transition-all hover:border-white/10"
+              className="rounded-xl border border-white/[0.07] bg-[#131720] p-6 transition-all hover:border-white/[0.12] hover:bg-[#181d2e]"
             >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: review.rating }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                  </div>
-                  <span className="text-xs text-slate-600">{review.date}</span>
+              <div className="flex items-center justify-between">
+                <div className="flex gap-0.5">
+                  {Array.from({ length: review.rating }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
                 </div>
-                <p className="mt-4 text-sm leading-relaxed text-slate-300">
-                  &ldquo;{review.text}&rdquo;
-                </p>
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00c98d]/20 text-xs font-bold text-[#4dd9ae]">
-                    {review.initials}
-                  </div>
-                  <span className="text-sm font-medium text-white">
-                    {review.name}
-                  </span>
+                <span className="text-xs font-medium text-[#8b92a8]">{review.date}</span>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-[#c8cdd8]">
+                &ldquo;{review.text}&rdquo;
+              </p>
+              <div className="mt-5 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#00c98d]/15 text-xs font-bold text-[#00c98d]">
+                  {review.initials}
                 </div>
-              </CardContent>
-            </Card>
+                <span className="text-sm font-semibold text-white">{review.name}</span>
+              </div>
+            </div>
           ))}
         </div>
       </div>
