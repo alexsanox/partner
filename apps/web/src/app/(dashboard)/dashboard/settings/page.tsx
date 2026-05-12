@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Mail, Lock, Loader2, Check, Monitor, Smartphone,
-  Globe, LogOut, AlertTriangle, ShieldCheck, ShieldOff,
+  Globe, LogOut, AlertTriangle, ShieldCheck, ShieldOff, User,
 } from "lucide-react";
 import { authClient, useSession } from "@/lib/auth-client";
 
@@ -240,422 +239,306 @@ export default function SettingsPage() {
     );
   }
 
+  const initials = (session?.user?.name ?? session?.user?.email ?? "?")
+    .split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 pb-10 max-w-2xl">
+      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Manage your account settings and preferences
-        </p>
+        <p className="mt-1 text-sm text-[#8b92a8]">Manage your account settings and preferences</p>
+      </div>
+
+      {/* User profile card */}
+      <div className="rounded-xl border border-white/[0.06] bg-[#1e2235] p-5 flex items-center gap-4">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#00c98d]/15 border border-[#00c98d]/20 text-[#00c98d] text-lg font-bold select-none">
+          {initials}
+        </div>
+        <div className="min-w-0">
+          <p className="text-base font-bold text-white truncate">{session?.user?.name ?? "—"}</p>
+          <p className="text-sm text-[#8b92a8] truncate">{session?.user?.email ?? "—"}</p>
+        </div>
       </div>
 
       <Tabs defaultValue="account">
-        <TabsList className="bg-white/5">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="security" onClick={fetchSessions}>Security</TabsTrigger>
+        <TabsList className="bg-white/[0.04] border border-white/[0.06] p-0.5 gap-0.5">
+          <TabsTrigger value="account" className="data-[state=active]:bg-[#00c98d]/15 data-[state=active]:text-[#00c98d]">Account</TabsTrigger>
+          <TabsTrigger value="security" onClick={fetchSessions} className="data-[state=active]:bg-[#00c98d]/15 data-[state=active]:text-[#00c98d]">Security</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="account" className="mt-6 space-y-6">
-          {/* Personal Info */}
-          <Card className="border-white/5 bg-white/[0.02]">
-            <CardHeader className="p-5 pb-0">
-              <h2 className="text-base font-semibold text-white">
-                Personal Information
-              </h2>
-            </CardHeader>
-            <CardContent className="space-y-4 p-5">
-              <div className="space-y-2">
-                <Label className="text-slate-300">Display Name</Label>
-                <Input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="border-white/10 bg-white/5 text-white max-w-sm"
-                />
-              </div>
-              {nameError && (
-                <p className="text-xs text-red-400">{nameError}</p>
-              )}
+        {/* ── ACCOUNT TAB ── */}
+        <TabsContent value="account" className="mt-5 space-y-4">
+
+          {/* Display Name */}
+          <div className="rounded-xl border border-white/[0.06] bg-[#1e2235] overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.05]">
+              <User className="h-4 w-4 text-[#8b92a8]" />
+              <h2 className="text-sm font-semibold text-white">Display Name</h2>
+            </div>
+            <div className="p-5 space-y-3">
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                className="border-white/10 bg-[#171b29] text-white max-w-sm"
+              />
+              {nameError && <p className="text-xs text-red-400">{nameError}</p>}
               <Button
                 onClick={handleNameSave}
                 disabled={nameLoading || name === session?.user?.name}
-                className="bg-[#00c98d] text-white hover:bg-[#00e0a0] disabled:opacity-40"
+                className="bg-[#00c98d] text-white hover:bg-[#00e0a0] hover:text-white disabled:opacity-40"
               >
-                {nameLoading ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
-                ) : nameSuccess ? (
-                  <><Check className="mr-2 h-4 w-4" /> Saved!</>
-                ) : (
-                  "Save Changes"
-                )}
+                {nameLoading ? <><Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />Saving...</> :
+                 nameSuccess ? <><Check className="mr-2 h-3.5 w-3.5" />Saved!</> : "Save Changes"}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Signing In */}
-          <Card className="border-white/5 bg-white/[0.02]">
-            <CardHeader className="p-5 pb-0">
-              <h2 className="text-base font-semibold text-white">
-                Signing In
-              </h2>
-            </CardHeader>
-            <CardContent className="space-y-4 p-5">
-              {/* Email */}
-              <div className="rounded-lg border border-white/5 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-slate-400" />
-                    <div>
-                      <p className="text-sm font-medium text-white">
-                        Email Address
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {session?.user?.email ?? "—"}
-                      </p>
-                    </div>
-                  </div>
-                  {!emailEditing && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-white/10 text-slate-300"
-                      onClick={() => setEmailEditing(true)}
-                    >
-                      Change
-                    </Button>
-                  )}
+          {/* Email */}
+          <div className="rounded-xl border border-white/[0.06] bg-[#1e2235] overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.05]">
+              <Mail className="h-4 w-4 text-[#8b92a8]" />
+              <h2 className="text-sm font-semibold text-white">Email Address</h2>
+            </div>
+            <div className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-white">{session?.user?.email ?? "—"}</p>
+                  <p className="text-xs text-[#8b92a8] mt-0.5">Your sign-in email</p>
                 </div>
-                {emailEditing && (
-                  <div className="mt-3 space-y-3 pl-8">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-slate-400">New Email</Label>
-                      <Input
-                        type="email"
-                        value={newEmail}
-                        onChange={(e) => setNewEmail(e.target.value)}
-                        placeholder="new@example.com"
-                        className="border-white/10 bg-white/5 text-white max-w-sm"
-                        autoFocus
-                      />
-                    </div>
-                    {emailError && <p className="text-xs text-red-400">{emailError}</p>}
-                    {emailSuccess && <p className="text-xs text-green-400">Email updated!</p>}
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={handleEmailChange}
-                        disabled={emailLoading || !newEmail.trim()}
-                        className="bg-[#00c98d] text-white hover:bg-[#00e0a0] disabled:opacity-40"
-                      >
-                        {emailLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Update Email"}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-white/10 text-slate-300"
-                        onClick={() => { setEmailEditing(false); setNewEmail(""); setEmailError(null); }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
+                {!emailEditing && (
+                  <button
+                    onClick={() => setEmailEditing(true)}
+                    className="rounded-lg border border-white/[0.07] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#8b92a8] hover:text-white hover:bg-white/[0.06] transition-colors"
+                  >
+                    Change
+                  </button>
                 )}
               </div>
-
-              {/* Password */}
-              <div className="rounded-lg border border-white/5 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Lock className="h-5 w-5 text-slate-400" />
-                    <div>
-                      <p className="text-sm font-medium text-white">Password</p>
-                      <p className="text-xs text-slate-500">
-                        Change your account password
-                      </p>
-                    </div>
+              {emailEditing && (
+                <div className="mt-4 space-y-3 border-t border-white/[0.05] pt-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[#8b92a8]">New Email</Label>
+                    <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)}
+                      placeholder="new@example.com" className="border-white/10 bg-[#171b29] text-white max-w-sm" autoFocus />
                   </div>
-                  {!passwordEditing && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-white/10 text-slate-300"
-                      onClick={() => setPasswordEditing(true)}
-                    >
-                      Change
+                  {emailError && <p className="text-xs text-red-400">{emailError}</p>}
+                  {emailSuccess && <p className="text-xs text-[#00c98d]">Email updated!</p>}
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleEmailChange} disabled={emailLoading || !newEmail.trim()}
+                      className="bg-[#00c98d] text-white hover:bg-[#00e0a0] hover:text-white disabled:opacity-40">
+                      {emailLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Update Email"}
                     </Button>
-                  )}
-                </div>
-                {passwordEditing && (
-                  <div className="mt-3 space-y-3 pl-8">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-slate-400">Current Password</Label>
-                      <Input
-                        type="password"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="border-white/10 bg-white/5 text-white max-w-sm"
-                        autoFocus
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-slate-400">New Password</Label>
-                      <Input
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        className="border-white/10 bg-white/5 text-white max-w-sm"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-slate-400">Confirm New Password</Label>
-                      <Input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="border-white/10 bg-white/5 text-white max-w-sm"
-                      />
-                    </div>
-                    {passwordError && <p className="text-xs text-red-400">{passwordError}</p>}
-                    {passwordSuccess && <p className="text-xs text-green-400">Password changed!</p>}
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={handlePasswordChange}
-                        disabled={passwordLoading || !currentPassword || !newPassword || !confirmPassword}
-                        className="bg-[#00c98d] text-white hover:bg-[#00e0a0] disabled:opacity-40"
-                      >
-                        {passwordLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Update Password"}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-white/10 text-slate-300"
-                        onClick={() => {
-                          setPasswordEditing(false);
-                          setCurrentPassword("");
-                          setNewPassword("");
-                          setConfirmPassword("");
-                          setPasswordError(null);
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
+                    <button onClick={() => { setEmailEditing(false); setNewEmail(""); setEmailError(null); }}
+                      className="rounded-lg border border-white/[0.07] px-3 py-1 text-xs font-medium text-[#8b92a8] hover:text-white transition-colors">
+                      Cancel
+                    </button>
                   </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Password */}
+          <div className="rounded-xl border border-white/[0.06] bg-[#1e2235] overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.05]">
+              <Lock className="h-4 w-4 text-[#8b92a8]" />
+              <h2 className="text-sm font-semibold text-white">Password</h2>
+            </div>
+            <div className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-white">••••••••••••</p>
+                  <p className="text-xs text-[#8b92a8] mt-0.5">Change your sign-in password</p>
+                </div>
+                {!passwordEditing && (
+                  <button onClick={() => setPasswordEditing(true)}
+                    className="rounded-lg border border-white/[0.07] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-[#8b92a8] hover:text-white hover:bg-white/[0.06] transition-colors">
+                    Change
+                  </button>
                 )}
               </div>
-            </CardContent>
-          </Card>
+              {passwordEditing && (
+                <div className="mt-4 space-y-3 border-t border-white/[0.05] pt-4">
+                  {[
+                    { label: "Current Password", value: currentPassword, set: setCurrentPassword, auto: true },
+                    { label: "New Password", value: newPassword, set: setNewPassword, auto: false },
+                    { label: "Confirm New Password", value: confirmPassword, set: setConfirmPassword, auto: false },
+                  ].map(({ label, value, set, auto }) => (
+                    <div key={label} className="space-y-1.5">
+                      <Label className="text-xs text-[#8b92a8]">{label}</Label>
+                      <Input type="password" value={value} onChange={(e) => set(e.target.value)}
+                        className="border-white/10 bg-[#171b29] text-white max-w-sm" autoFocus={auto} />
+                    </div>
+                  ))}
+                  {passwordError && <p className="text-xs text-red-400">{passwordError}</p>}
+                  {passwordSuccess && <p className="text-xs text-[#00c98d]">Password changed!</p>}
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handlePasswordChange}
+                      disabled={passwordLoading || !currentPassword || !newPassword || !confirmPassword}
+                      className="bg-[#00c98d] text-white hover:bg-[#00e0a0] hover:text-white disabled:opacity-40">
+                      {passwordLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Update Password"}
+                    </Button>
+                    <button onClick={() => { setPasswordEditing(false); setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); setPasswordError(null); }}
+                      className="rounded-lg border border-white/[0.07] px-3 py-1 text-xs font-medium text-[#8b92a8] hover:text-white transition-colors">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </TabsContent>
 
-        <TabsContent value="security" className="mt-6 space-y-6">
-          {/* Two-Factor Authentication */}
-          <Card className="border-white/5 bg-white/[0.02]">
-            <CardHeader className="p-5 pb-0">
-              <h2 className="text-base font-semibold text-white flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-[#00c98d]" />
-                Two-Factor Authentication
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Add an extra layer of security. When enabled, you&apos;ll receive a code via email each time you sign in.
-              </p>
-            </CardHeader>
-            <CardContent className="p-5">
-              <div className="rounded-lg border border-white/5 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {twoFAEnabled ? (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-500/10">
-                        <ShieldCheck className="h-4 w-4 text-green-400" />
-                      </div>
-                    ) : (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5">
-                        <ShieldOff className="h-4 w-4 text-slate-400" />
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-medium text-white">
-                        Email 2FA is {twoFAEnabled ? "enabled" : "disabled"}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {twoFAEnabled
-                          ? "A code will be sent to your email on each login"
-                          : "Enable to require a code on every sign-in"}
-                      </p>
-                    </div>
+        {/* ── SECURITY TAB ── */}
+        <TabsContent value="security" className="mt-5 space-y-4">
+
+          {/* 2FA */}
+          <div className="rounded-xl border border-white/[0.06] bg-[#1e2235] overflow-hidden">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.05]">
+              <ShieldCheck className="h-4 w-4 text-[#00c98d]" />
+              <div>
+                <h2 className="text-sm font-semibold text-white">Two-Factor Authentication</h2>
+                <p className="text-xs text-[#8b92a8]">Receive a code via email on every sign-in</p>
+              </div>
+            </div>
+            <div className="p-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-9 w-9 items-center justify-center rounded-full ${twoFAEnabled ? "bg-green-500/10" : "bg-white/[0.04]"}`}>
+                    {twoFAEnabled
+                      ? <ShieldCheck className="h-4 w-4 text-green-400" />
+                      : <ShieldOff className="h-4 w-4 text-[#8b92a8]" />}
                   </div>
-                  {!twoFAEnabling && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={twoFAEnabled
+                  <div>
+                    <p className="text-sm font-medium text-white">
+                      {twoFAEnabled ? "Enabled" : "Disabled"}
+                    </p>
+                    <p className="text-xs text-[#8b92a8]">
+                      {twoFAEnabled ? "Your account is protected with 2FA" : "Enable for extra security"}
+                    </p>
+                  </div>
+                </div>
+                {!twoFAEnabling && (
+                  <button
+                    onClick={() => { setTwoFAEnabling(true); setTwoFAError(null); setTwoFAPassword(""); }}
+                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+                      twoFAEnabled
                         ? "border-red-500/20 text-red-400 hover:bg-red-500/10"
                         : "border-[#00c98d]/20 text-[#00c98d] hover:bg-[#00c98d]/10"
-                      }
-                      onClick={() => { setTwoFAEnabling(true); setTwoFAError(null); setTwoFAPassword(""); }}
-                    >
-                      {twoFAEnabled ? "Disable" : "Enable"}
-                    </Button>
-                  )}
-                </div>
-                {twoFAEnabling && (
-                  <div className="mt-4 space-y-3 pl-12">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-slate-400">Confirm your password</Label>
-                      <Input
-                        type="password"
-                        value={twoFAPassword}
-                        onChange={(e) => setTwoFAPassword(e.target.value)}
-                        placeholder="Enter your password"
-                        className="border-white/10 bg-white/5 text-white max-w-sm"
-                        autoFocus
-                      />
-                    </div>
-                    {twoFAError && <p className="text-xs text-red-400">{twoFAError}</p>}
-                    {twoFASuccess && <p className="text-xs text-green-400">2FA {twoFAEnabled ? "enabled" : "disabled"} successfully!</p>}
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={twoFAEnabled ? handleDisable2FA : handleEnable2FA}
-                        disabled={twoFALoading || !twoFAPassword}
-                        className={twoFAEnabled
-                          ? "bg-red-500 text-white hover:bg-red-600 disabled:opacity-40"
-                          : "bg-[#00c98d] text-white hover:bg-[#00e0a0] disabled:opacity-40"
-                        }
-                      >
-                        {twoFALoading ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : twoFAEnabled ? (
-                          "Disable 2FA"
-                        ) : (
-                          "Enable 2FA"
-                        )}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-white/10 text-slate-300"
-                        onClick={() => { setTwoFAEnabling(false); setTwoFAPassword(""); setTwoFAError(null); }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
+                    }`}
+                  >
+                    {twoFAEnabled ? "Disable" : "Enable"}
+                  </button>
                 )}
               </div>
-            </CardContent>
-          </Card>
+              {twoFAEnabling && (
+                <div className="mt-4 space-y-3 border-t border-white/[0.05] pt-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[#8b92a8]">Confirm your password</Label>
+                    <Input type="password" value={twoFAPassword} onChange={(e) => setTwoFAPassword(e.target.value)}
+                      placeholder="Enter your password" className="border-white/10 bg-[#171b29] text-white max-w-sm" autoFocus />
+                  </div>
+                  {twoFAError && <p className="text-xs text-red-400">{twoFAError}</p>}
+                  {twoFASuccess && <p className="text-xs text-[#00c98d]">2FA {twoFAEnabled ? "enabled" : "disabled"}!</p>}
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={twoFAEnabled ? handleDisable2FA : handleEnable2FA}
+                      disabled={twoFALoading || !twoFAPassword}
+                      className={twoFAEnabled ? "bg-red-500 text-white hover:bg-red-600 disabled:opacity-40" : "bg-[#00c98d] text-white hover:bg-[#00e0a0] hover:text-white disabled:opacity-40"}>
+                      {twoFALoading ? <Loader2 className="h-3 w-3 animate-spin" /> : twoFAEnabled ? "Disable 2FA" : "Enable 2FA"}
+                    </Button>
+                    <button onClick={() => { setTwoFAEnabling(false); setTwoFAPassword(""); setTwoFAError(null); }}
+                      className="rounded-lg border border-white/[0.07] px-3 py-1 text-xs font-medium text-[#8b92a8] hover:text-white transition-colors">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Active Sessions */}
-          <Card className="border-white/5 bg-white/[0.02]">
-            <CardHeader className="p-5 pb-0">
-              <h2 className="text-base font-semibold text-white">Active Sessions</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Manage your active sessions across devices. Revoking a session will log it out.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-3 p-5">
+          <div className="rounded-xl border border-white/[0.06] bg-[#1e2235] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05]">
+              <div>
+                <h2 className="text-sm font-semibold text-white">Active Sessions</h2>
+                <p className="text-xs text-[#8b92a8] mt-0.5">Revoking a session will immediately log it out</p>
+              </div>
+            </div>
+            <div className="divide-y divide-white/[0.04]">
               {sessionsLoading ? (
-                <div className="flex items-center justify-center py-8">
+                <div className="flex items-center justify-center py-10">
                   <Loader2 className="h-5 w-5 animate-spin text-[#00c98d]" />
                 </div>
               ) : sessions.length === 0 ? (
-                <p className="text-sm text-slate-400 py-4 text-center">No sessions found</p>
+                <p className="text-sm text-[#8b92a8] py-8 text-center">No sessions found</p>
               ) : (
                 sessions.map((s) => {
                   const { browser, os } = parseUA(s.userAgent);
                   const isCurrent = s.token === session?.session?.token;
                   const isMobile = os === "Android" || os === "iOS";
-
                   return (
-                    <div
-                      key={s.id}
-                      className={`flex items-center justify-between rounded-lg border p-3 ${
-                        isCurrent ? "border-[#00c98d]/20 bg-[#00c98d]/[0.03]" : "border-white/5"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {isMobile ? (
-                          <Smartphone className="h-4 w-4 text-slate-400" />
-                        ) : (
-                          <Monitor className="h-4 w-4 text-slate-400" />
-                        )}
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm text-white">
-                              {browser} on {os}
-                            </p>
+                    <div key={s.id} className={`flex items-center justify-between px-5 py-3.5 ${isCurrent ? "bg-[#00c98d]/[0.03]" : ""}`}>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isCurrent ? "bg-[#00c98d]/10" : "bg-white/[0.04]"}`}>
+                          {isMobile
+                            ? <Smartphone className={`h-4 w-4 ${isCurrent ? "text-[#00c98d]" : "text-[#8b92a8]"}`} />
+                            : <Monitor className={`h-4 w-4 ${isCurrent ? "text-[#00c98d]" : "text-[#8b92a8]"}`} />}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-medium text-white">{browser} on {os}</p>
                             {isCurrent && (
-                              <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-[10px] font-semibold text-green-400 border border-green-500/20">
-                                Current
-                              </span>
+                              <span className="rounded-full bg-[#00c98d]/10 px-2 py-0.5 text-[10px] font-semibold text-[#00c98d] border border-[#00c98d]/20">Current</span>
                             )}
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-slate-500">
+                          <div className="flex items-center gap-2 text-[11px] text-[#8b92a8] mt-0.5 flex-wrap">
                             {s.ipAddress && (
                               <span className="flex items-center gap-1">
-                                <Globe className="h-3 w-3" />
-                                {s.ipAddress}
+                                <Globe className="h-3 w-3 shrink-0" />
+                                <code className="font-mono text-[10px]">{s.ipAddress}</code>
                               </span>
                             )}
-                            <span>Created {formatDate(s.createdAt)}</span>
+                            <span>{formatDate(s.createdAt)}</span>
                           </div>
                         </div>
                       </div>
                       {!isCurrent && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-red-500/20 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                        <button
                           disabled={revokingId === s.token}
                           onClick={() => handleRevokeSession(s.token)}
+                          className="ml-3 shrink-0 flex items-center gap-1.5 rounded-lg border border-red-500/20 px-2.5 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-40"
                         >
-                          {revokingId === s.token ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : (
-                            <><LogOut className="mr-1.5 h-3 w-3" /> Revoke</>
-                          )}
-                        </Button>
+                          {revokingId === s.token ? <Loader2 className="h-3 w-3 animate-spin" /> : <><LogOut className="h-3 w-3" /> Revoke</>}
+                        </button>
                       )}
                     </div>
                   );
                 })
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Danger Zone */}
-          <Card className="border-red-500/10 bg-red-500/[0.02]">
-            <CardHeader className="p-5 pb-0">
-              <h2 className="text-base font-semibold text-red-400 flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
-                Danger Zone
-              </h2>
-            </CardHeader>
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between rounded-lg border border-red-500/10 p-4">
-                <div>
-                  <p className="text-sm font-medium text-white">Revoke All Other Sessions</p>
-                  <p className="text-xs text-slate-500">
-                    Log out all devices except this one
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-red-500/20 text-red-400 hover:bg-red-500/10"
-                  onClick={async () => {
-                    try {
-                      await authClient.revokeSessions();
-                      fetchSessions();
-                    } catch { /* skip */ }
-                  }}
-                >
-                  Revoke All
-                </Button>
+          <div className="rounded-xl border border-red-500/10 bg-red-500/[0.02] overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-4 border-b border-red-500/10">
+              <AlertTriangle className="h-4 w-4 text-red-400" />
+              <h2 className="text-sm font-semibold text-red-400">Danger Zone</h2>
+            </div>
+            <div className="p-5 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-white">Revoke All Other Sessions</p>
+                <p className="text-xs text-[#8b92a8] mt-0.5">Log out all devices except this one</p>
               </div>
-            </CardContent>
-          </Card>
+              <button
+                onClick={async () => { try { await authClient.revokeSessions(); fetchSessions(); } catch { /* skip */ } }}
+                className="shrink-0 rounded-lg border border-red-500/20 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+              >
+                Revoke All
+              </button>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
