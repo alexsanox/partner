@@ -36,8 +36,8 @@ export default function CareersPage() {
             <h2 className="mt-6 text-2xl font-bold text-white">No Open Positions Right Now</h2>
             <p className="mt-3 text-[#a8b0c4] leading-relaxed">
               We don&apos;t have any open roles at the moment, but we&apos;re always interested in hearing from talented people. Send your CV and a note to{" "}
-              <a href="mailto:careers@partnerhosting.com" className="text-[#00c98d] hover:underline">
-                careers@partnerhosting.com
+              <a href="mailto:careers@pobble.host" className="text-[#00c98d] hover:underline">
+                careers@pobble.host
               </a>
               .
             </p>

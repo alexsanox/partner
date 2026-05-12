@@ -46,7 +46,7 @@ export default function PrivacyPage() {
               },
               {
                 title: "7. Your Rights",
-                body: "You have the right to access, correct, or delete your personal data at any time. To exercise these rights, contact us at privacy@partnerhosting.com. We will respond within 30 days.",
+                body: "You have the right to access, correct, or delete your personal data at any time. To exercise these rights, contact us at privacy@pobble.host. We will respond within 30 days.",
               },
               {
                 title: "8. Security",
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
               },
               {
                 title: "9. Contact",
-                body: "For privacy-related inquiries, contact us at privacy@partnerhosting.com.",
+                body: "For privacy-related inquiries, contact us at privacy@pobble.host.",
               },
             ].map((s) => (
               <div key={s.title}>

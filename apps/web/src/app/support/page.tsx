@@ -47,7 +47,7 @@ export default function SupportPage() {
                 title: "Email Support",
                 desc: "Send a detailed ticket and we'll respond within 2 hours on average.",
                 action: "Send Email",
-                href: "mailto:support@partnerhosting.com",
+                href: "mailto:support@pobble.host",
                 primary: false,
               },
               {

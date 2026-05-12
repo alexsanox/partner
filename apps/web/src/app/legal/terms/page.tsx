@@ -54,7 +54,7 @@ export default function TermsPage() {
               },
               {
                 title: "9. Contact",
-                body: "For questions regarding these terms, contact us at legal@partnerhosting.com.",
+                body: "For questions regarding these terms, contact us at legal@pobble.host.",
               },
             ].map((s) => (
               <div key={s.title}>

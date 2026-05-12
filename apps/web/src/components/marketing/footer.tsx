@@ -124,11 +124,11 @@ export function Footer() {
 
             {/* Support email */}
             <a
-              href="mailto:support@partnerhosting.com"
+              href="mailto:support@pobble.host"
               className="mt-3 flex items-center gap-2 text-sm text-[#8b92a8] hover:text-[#00c98d] transition-colors"
             >
               <Mail className="h-3.5 w-3.5 shrink-0" />
-              support@partnerhosting.com
+              support@pobble.host
             </a>
           </div>
 

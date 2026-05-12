@@ -41,7 +41,7 @@ export default function SLAPage() {
             },
             {
               title: "4. Claiming Credits",
-              body: "To claim a service credit, contact support@partnerhosting.com within 7 days of the end of the affected month. Include your account email, affected server ID, and the date/time of the outage. Credits are applied to the next invoice and are not redeemable for cash.",
+              body: "To claim a service credit, contact support@pobble.host within 7 days of the end of the affected month. Include your account email, affected server ID, and the date/time of the outage. Credits are applied to the next invoice and are not redeemable for cash.",
             },
             {
               title: "5. Support Response Times",
