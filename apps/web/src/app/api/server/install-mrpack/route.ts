@@ -1,8 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-server";
 import { prisma } from "@/lib/db";
-import { createDirectory, getFileUploadUrl, sendPowerAction } from "@/lib/pelican";
+import { createDirectory, sendPowerAction } from "@/lib/pelican";
 import AdmZip from "adm-zip";
+
+const PELICAN_URL = process.env.PELICAN_URL!;
+const PELICAN_CLIENT_KEY = process.env.PELICAN_CLIENT_KEY!;
+
+async function writeFileToPelican(serverId: string, path: string, data: ArrayBuffer) {
+  const res = await fetch(
+    `${PELICAN_URL}/api/client/servers/${serverId}/files/write?file=${encodeURIComponent(path)}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${PELICAN_CLIENT_KEY}`,
+        "Content-Type": "application/octet-stream",
+      },
+      body: data,
+    }
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Write failed (${res.status}): ${text.slice(0, 200)}`);
+  }
+}
 
 export const maxDuration = 300;
 
@@ -92,19 +113,7 @@ export async function POST(req: NextRequest) {
         if (!modRes.ok) throw new Error(`Download failed: ${modRes.status}`);
         const modBuffer = await modRes.arrayBuffer();
 
-        // Fresh signed URL per file
-        const uploadUrl = await getFileUploadUrl(serverId);
-        const sep = uploadUrl.includes("?") ? "&" : "?";
-        const uploadWithDir = `${uploadUrl}${sep}directory=${encodeURIComponent(targetDir)}`;
-        const form = new FormData();
-        form.append("files", new Blob([modBuffer]), fileName);
-
-        const uploadRes = await fetch(uploadWithDir, { method: "POST", body: form });
-        if (!uploadRes.ok) {
-          const text = await uploadRes.text();
-          console.error(`[install-mrpack] upload failed for ${fileName}:`, text.slice(0, 300));
-          throw new Error(`Upload failed (${uploadRes.status}): ${text.slice(0, 200)}`);
-        }
+        await writeFileToPelican(serverId, `${targetDir}/${fileName}`, modBuffer);
 
         results.push({ name: fileName, ok: true });
       } catch (err) {
@@ -128,18 +137,8 @@ export async function POST(req: NextRequest) {
           try { await createDirectory(serverId, "/", dirParts.join("/")); } catch { /* exists */ }
         }
 
-        const uploadUrl = await getFileUploadUrl(serverId);
-        const sep = uploadUrl.includes("?") ? "&" : "?";
-        const uploadWithDir = `${uploadUrl}${sep}directory=${encodeURIComponent(dir)}`;
-        const form = new FormData();
-        form.append("files", new Blob([new Uint8Array(entry.getData())]), fileName);
-
-        const uploadRes = await fetch(uploadWithDir, { method: "POST", body: form });
-        if (uploadRes.ok) {
-          results.push({ name: `overrides/${relativePath}`, ok: true });
-        } else {
-          throw new Error(await uploadRes.text());
-        }
+        await writeFileToPelican(serverId, `${dir}/${fileName}`, new Uint8Array(entry.getData()).buffer as ArrayBuffer);
+        results.push({ name: `overrides/${relativePath}`, ok: true });
       } catch (err) {
         results.push({ name: `overrides/${relativePath}`, ok: false, error: err instanceof Error ? err.message : "Unknown" });
       }

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Download, Star, RefreshCw, Package, ArrowLeft, Copy, Check, ExternalLink, ServerCrash, Zap } from "lucide-react";
+import { Search, Download, Star, RefreshCw, Package, ArrowLeft, Copy, Check, ExternalLink, ServerCrash, Zap, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 
@@ -343,6 +343,31 @@ export function ServerStore({ serverId }: { serverId: string }) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [serverLoaders, setServerLoaders] = useState<string[]>([]);
   const [gameVersion, setGameVersion] = useState<string | null>(null);
+  const [mrpackInstalling, setMrpackInstalling] = useState(false);
+  const mrpackRef = useRef<HTMLInputElement>(null);
+
+  async function handleMrpackUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    setMrpackInstalling(true);
+    try {
+      const form = new FormData();
+      form.append("serverId", serverId);
+      form.append("mrpack", file);
+      const res = await fetch("/api/server/install-mrpack", { method: "POST", body: form });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`${data.modpack}: ${data.installed} mods installed${data.failed > 0 ? `, ${data.failed} failed` : ""}`);
+      } else {
+        toast.error(data.error ?? "Modpack install failed");
+      }
+    } catch {
+      toast.error("Network error during modpack install");
+    } finally {
+      setMrpackInstalling(false);
+    }
+  }
 
   // Detect server loader from Pelican variables
   useEffect(() => {
@@ -395,6 +420,21 @@ export function ServerStore({ serverId }: { serverId: string }) {
 
   return (
     <div className="space-y-4">
+      {/* Mrpack install */}
+      {serverLoaders.some((l) => ["fabric","forge","neoforge","quilt"].includes(l)) && (
+        <div className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-3">
+          <div>
+            <p className="text-[13px] font-semibold text-white">Install Modpack</p>
+            <p className="text-[11px] text-[#8b92a8]">Upload a .mrpack file to install all mods at once</p>
+          </div>
+          <label className={`flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[12px] font-medium cursor-pointer hover:bg-white/10 transition-colors ${mrpackInstalling ? "opacity-50 pointer-events-none" : ""}`}>
+            {mrpackInstalling ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+            {mrpackInstalling ? "Installing..." : "Upload .mrpack"}
+            <input ref={mrpackRef} type="file" accept=".mrpack" className="hidden" onChange={handleMrpackUpload} />
+          </label>
+        </div>
+      )}
+
       {/* Loader badge */}
       {serverLoaders.length > 0 && (
         <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2">
