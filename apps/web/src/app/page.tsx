@@ -11,14 +11,14 @@ import Link from "next/link";
 import { Globe } from "lucide-react";
 
 const mapLocations = [
-  { city: "Frankfurt",   country: "Germany",        flag: "🇩🇪", region: "Europe",        ping: "~8ms",  status: "Online", x: 483, y: 92  },
-  { city: "London",      country: "United Kingdom", flag: "🇬🇧", region: "Europe",        ping: "~12ms", status: "Online", x: 446, y: 82  },
-  { city: "New York",    country: "United States",  flag: "🇺🇸", region: "North America", ping: "~18ms", status: "Online", x: 168, y: 138 },
-  { city: "Dallas",      country: "United States",  flag: "🇺🇸", region: "North America", ping: "~22ms", status: "Online", x: 152, y: 175 },
-  { city: "Los Angeles", country: "United States",  flag: "🇺🇸", region: "North America", ping: "~28ms", status: "Online", x: 118, y: 165 },
-  { city: "Singapore",   country: "Singapore",      flag: "🇸🇬", region: "Asia Pacific",  ping: "~15ms", status: "Online", x: 692, y: 192 },
-  { city: "Sydney",      country: "Australia",      flag: "🇦🇺", region: "Asia Pacific",  ping: "~20ms", status: "Online", x: 790, y: 355 },
-  { city: "Tokyo",       country: "Japan",          flag: "🇯🇵", region: "Asia Pacific",  ping: "~10ms", status: "Online", x: 782, y: 118 },
+  { city: "Frankfurt",   country: "Germany",        flag: "🇩🇪", region: "Europe",        ping: "~8ms",  status: "Online", lng:  8.68,   lat: 50.12 },
+  { city: "London",      country: "United Kingdom", flag: "🇬🇧", region: "Europe",        ping: "~12ms", status: "Online", lng: -0.12,   lat: 51.51 },
+  { city: "New York",    country: "United States",  flag: "🇺🇸", region: "North America", ping: "~18ms", status: "Online", lng: -74.00,  lat: 40.71 },
+  { city: "Dallas",      country: "United States",  flag: "🇺🇸", region: "North America", ping: "~22ms", status: "Online", lng: -96.80,  lat: 32.78 },
+  { city: "Los Angeles", country: "United States",  flag: "🇺🇸", region: "North America", ping: "~28ms", status: "Online", lng: -118.24, lat: 34.05 },
+  { city: "Singapore",   country: "Singapore",      flag: "🇸🇬", region: "Asia Pacific",  ping: "~15ms", status: "Online", lng: 103.82,  lat:  1.35 },
+  { city: "Sydney",      country: "Australia",      flag: "🇦🇺", region: "Asia Pacific",  ping: "~20ms", status: "Online", lng: 151.21,  lat: -33.87 },
+  { city: "Tokyo",       country: "Japan",          flag: "🇯🇵", region: "Asia Pacific",  ping: "~10ms", status: "Online", lng: 139.69,  lat:  35.69 },
 ];
 
 export default function Home() {
