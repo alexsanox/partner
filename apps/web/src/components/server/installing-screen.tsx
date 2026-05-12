@@ -7,9 +7,11 @@ import { Server, Loader2, CheckCircle } from "lucide-react";
 interface InstallingScreenProps {
   serverId: string;
   serverName: string;
+  mode?: "installing" | "rebuilding";
 }
 
-export function InstallingScreen({ serverId, serverName }: InstallingScreenProps) {
+export function InstallingScreen({ serverId, serverName, mode = "installing" }: InstallingScreenProps) {
+  const isRebuilding = mode === "rebuilding";
   const router = useRouter();
   const [status, setStatus] = useState<"installing" | "done">("installing");
   const [dots, setDots] = useState("");
@@ -75,11 +77,12 @@ export function InstallingScreen({ serverId, serverName }: InstallingScreenProps
       {status === "installing" ? (
         <>
           <p className="text-[15px] text-[#5b8cff] font-semibold mb-1">
-            Installing{dots}
+            {isRebuilding ? "Rebuilding" : "Installing"}{dots}
           </p>
           <p className="text-sm text-[#8b92a8] max-w-md text-center leading-relaxed">
-            Your server is being set up. This usually takes 1–3 minutes.
-            This page will automatically refresh when it&apos;s ready.
+            {isRebuilding
+              ? "Your server is being rebuilt with the new version. This usually takes 1–3 minutes. This page will automatically refresh when it\u2019s ready."
+              : "Your server is being set up. This usually takes 1–3 minutes. This page will automatically refresh when it\u2019s ready."}
           </p>
 
           {/* Progress bar animation */}
@@ -98,7 +101,7 @@ export function InstallingScreen({ serverId, serverName }: InstallingScreenProps
       ) : (
         <>
           <p className="text-[15px] text-green-400 font-semibold mb-1">
-            Installation complete!
+            {isRebuilding ? "Rebuild complete!" : "Installation complete!"}
           </p>
           <p className="text-sm text-[#8b92a8]">
             Redirecting to your server...

@@ -11,6 +11,7 @@ import { BackupManager } from "./backup-manager";
 import { ServerProperties } from "./server-properties";
 import { PlayerManager } from "./player-manager";
 import { ServerStore } from "./server-store";
+import { InstallingScreen } from "./installing-screen";
 
 interface ServerTabsProps {
   serverId: string;
@@ -69,6 +70,7 @@ export function ServerTabs({
   eggVersion,
 }: ServerTabsProps) {
   const [activeTab, setActiveTab] = useState("overview");
+  const [rebuilding, setRebuilding] = useState(false);
   const [liveStats, setLiveStats] = useState<ResourceStats | null>(null);
   const [playerCount, setPlayerCount] = useState<{ online: number; max: number } | null>(null);
   const [liveState, setLiveState] = useState(currentState);
@@ -90,6 +92,10 @@ export function ServerTabs({
     offline: { dot: "bg-[#8b92a8]", label: "Offline", text: "text-[#8b92a8]" },
   };
   const status = stateColors[liveState] ?? stateColors.offline;
+
+  if (rebuilding) {
+    return <InstallingScreen serverId={serverId} serverName={serverName} mode="rebuilding" />;
+  }
 
   return (
     <div className="space-y-6">
@@ -222,6 +228,7 @@ export function ServerTabs({
           variables={variables}
           sftpDetails={sftpDetails}
           allocation={allocation}
+          onRebuilding={() => setRebuilding(true)}
         />
       )}
     </div>

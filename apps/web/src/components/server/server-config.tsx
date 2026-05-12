@@ -23,6 +23,7 @@ interface ServerConfigProps {
   variables: StartupVariable[];
   sftpDetails: { ip: string; alias: string | null; port: number };
   allocation: { id: number; ip: string; ip_alias: string | null; port: number } | null;
+  onRebuilding?: () => void;
 }
 
 export function ServerConfig({
@@ -32,6 +33,7 @@ export function ServerConfig({
   variables,
   sftpDetails,
   allocation,
+  onRebuilding,
 }: ServerConfigProps) {
   const { confirm } = useConfirm();
   const safeVars = variables ?? [];
@@ -135,6 +137,7 @@ export function ServerConfig({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "reinstall" }),
       });
+      onRebuilding?.();
     } catch {
       // ignore
     } finally {
