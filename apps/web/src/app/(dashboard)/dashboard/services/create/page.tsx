@@ -57,12 +57,13 @@ function formatMemory(mb: number) {
 }
 
 // ── Embedded Payment Form ────────────────────────────────────────────
-function PaymentForm({ plan, billingCycle, getPrice, getSavings, onSuccess }: {
+function PaymentForm({ plan, billingCycle, getPrice, getSavings, onSuccess, setupIntentId }: {
   plan: Plan;
   billingCycle: BillingCycle;
   getPrice: (p: Plan, c: BillingCycle) => number;
   getSavings: (p: Plan, c: BillingCycle) => number;
   onSuccess: () => void;
+  setupIntentId: string | null;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -79,7 +80,9 @@ function PaymentForm({ plan, billingCycle, getPrice, getSavings, onSuccess }: {
     const { error } = await stripe.confirmSetup({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/dashboard/services?checkout=success`,
+        return_url: setupIntentId
+          ? `${window.location.origin}/dashboard/setup?session=${setupIntentId}`
+          : `${window.location.origin}/dashboard/services?checkout=success`,
       },
       redirect: "if_required",
     });
@@ -169,6 +172,7 @@ export default function CreateServerPage() {
   const [serverName, setServerName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [setupIntentId, setSetupIntentId] = useState<string | null>(null);
   const [creatingSubscription, setCreatingSubscription] = useState(false);
 
   useEffect(() => {
@@ -229,6 +233,7 @@ export default function CreateServerPage() {
       }
 
       setClientSecret(data.clientSecret);
+      setSetupIntentId(data.setupIntentId ?? null);
       setStep("payment");
     } catch {
       setError("Network error. Please try again.");
@@ -238,7 +243,11 @@ export default function CreateServerPage() {
   };
 
   const handlePaymentSuccess = () => {
-    router.push("/dashboard/services?checkout=success");
+    if (setupIntentId) {
+      router.push(`/dashboard/setup?session=${setupIntentId}`);
+    } else {
+      router.push("/dashboard/services?checkout=success");
+    }
   };
 
   const stepLabels = ["Choose Server", "Configure", "Payment"];
@@ -576,6 +585,7 @@ export default function CreateServerPage() {
               getPrice={getPrice}
               getSavings={getSavings}
               onSuccess={handlePaymentSuccess}
+              setupIntentId={setupIntentId}
             />
           </Elements>
 

@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
-import { createServer, getNodes, getNodeAllocations, createAllocation, getEgg } from "@/lib/pelican";
 import {
   sendPaymentSuccessEmail,
-  sendServerReadyEmail,
   sendPaymentFailedEmail,
   sendSubscriptionCancelledEmail,
   sendUpcomingRenewalEmail,
@@ -20,71 +18,6 @@ function formatDate(ts: number) {
   return new Date(ts * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-// ── Provision server on Pelican ──────────────────────────────────────
-async function provisionServer(
-  serverName: string,
-  plan: { eggId: number | null; ramMb: number; diskMb: number; cpuPercent: number; databaseLimit: number; backupSlots: number },
-) {
-  const eggId = plan.eggId ?? 1; // Fall back to egg 1 (Minecraft) if not set
-  const egg = await getEgg(eggId);
-  const dockerImages = Object.values(egg.docker_images);
-  const dockerImage = dockerImages[dockerImages.length - 1] || dockerImages[0];
-
-  const environment: Record<string, string> = {};
-  if (egg.relationships?.variables?.data) {
-    for (const v of egg.relationships.variables.data) {
-      environment[v.attributes.env_variable] = v.attributes.default_value;
-    }
-  }
-  environment["EULA"] = "TRUE";
-
-  const nodesRes = await getNodes();
-  const nodes = nodesRes.data.map((n) => n.attributes);
-  const node = nodes.find((n) => !n.maintenance_mode);
-  if (!node) throw new Error("No available node");
-
-  const allocRes = await getNodeAllocations(node.id);
-  const allAllocs = allocRes.data.map((a) => a.attributes);
-  const nodeIp = allAllocs[0]?.ip || "0.0.0.0";
-  const usedPorts = allAllocs.map((a) => a.port);
-  const nextPort = usedPorts.length > 0 ? Math.max(...usedPorts) + 1 : 25565;
-
-  await createAllocation(node.id, nodeIp, [String(nextPort)]);
-
-  const updatedAllocRes = await getNodeAllocations(node.id);
-  const newAlloc = updatedAllocRes.data.find(
-    (a) => a.attributes.port === nextPort && !a.attributes.assigned
-  );
-  if (!newAlloc) throw new Error("Allocation not found after creation");
-
-  const result = await createServer({
-    name: serverName,
-    user: 1,
-    egg: eggId,
-    docker_image: dockerImage,
-    startup: egg.startup,
-    environment,
-    limits: {
-      memory: plan.ramMb,
-      swap: 0,
-      disk: plan.diskMb,
-      io: 500,
-      cpu: plan.cpuPercent,
-    },
-    feature_limits: {
-      databases: plan.databaseLimit,
-      backups: plan.backupSlots,
-    },
-    allocation: { default: newAlloc.attributes.id },
-  });
-
-  return {
-    externalServerId: result.attributes.identifier,
-    externalServerUuid: result.attributes.uuid,
-    ipAddress: nodeIp,
-    port: nextPort,
-  };
-}
 
 // ── Handle successful payment for a subscription ─────────────────────
 async function handleSubscriptionPaid(subscriptionId: string) {
@@ -125,39 +58,17 @@ async function handleSubscriptionPaid(subscriptionId: string) {
     }).catch((e) => console.error("[stripe-webhook] Payment email failed:", e));
   }
 
-  // Provision server
-  let serverData: Awaited<ReturnType<typeof provisionServer>> | null = null;
-  try {
-    serverData = await provisionServer(serverName, plan);
-  } catch (err) {
-    console.error("[stripe-webhook] Provisioning failed:", err);
-  }
-
-  // Create service record
+  // Create a PENDING stub service — actual provisioning happens in the setup wizard
   await prisma.service.create({
     data: {
       userId,
       planId,
       orderId: order.id,
       name: serverName,
-      status: serverData ? "ACTIVE" : "FAILED",
-      externalServerId: serverData?.externalServerId ?? null,
-      externalServerUuid: serverData?.externalServerUuid ?? null,
-      ipAddress: serverData?.ipAddress ?? null,
-      port: serverData?.port ?? null,
+      status: "PENDING",
       stripeSubscriptionId: subscriptionId,
     },
   });
-
-  // Send server ready email
-  if (user?.email && serverData) {
-    sendServerReadyEmail(user.email, {
-      serverName,
-      planName: plan.name,
-      ip: serverData.ipAddress,
-      port: serverData.port,
-    }).catch((e) => console.error("[stripe-webhook] Server ready email failed:", e));
-  }
 }
 
 // ── Webhook handler ──────────────────────────────────────────────────
