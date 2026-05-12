@@ -26,6 +26,7 @@ enum BillingCycle {
 enum OrderStatus {
   PENDING
   PAID
+  PROVISIONED
   FAILED
   REFUNDED
   CANCELLED
