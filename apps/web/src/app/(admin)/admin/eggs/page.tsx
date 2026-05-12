@@ -70,10 +70,6 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
         const parsed = yaml.load(ev.target?.result as string) as Record<string, unknown>;
         if (parsed.name) setName(parsed.name as string);
         if (parsed.description) setDescription(parsed.description as string);
-        // Startup: prefer startup_commands.Default, fall back to startup
-        const sc = parsed.startup_commands as Record<string, string> | undefined;
-        const startupCmd = sc?.Default ?? sc?.default ?? (parsed.startup as string | undefined);
-        if (startupCmd) setStartup(startupCmd);
         // Docker images
         if (parsed.docker_images && typeof parsed.docker_images === "object") {
           setDockerRows(
