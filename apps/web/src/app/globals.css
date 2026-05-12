@@ -97,6 +97,10 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Smooth scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
