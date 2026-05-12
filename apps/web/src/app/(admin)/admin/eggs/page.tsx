@@ -86,7 +86,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
               description: String(v.description ?? ""),
               user_viewable: Boolean(v.user_viewable ?? true),
               user_editable: Boolean(v.user_editable ?? true),
-              rules: Array.isArray(v.rules) ? (v.rules as string[]).join("|") : String(v.rules ?? "nullable|string"),
+              rules: Array.isArray(v.rules) ? (v.rules as string[]).join("|").replace(/\|+/g, "|") : String(v.rules ?? "nullable|string"),
             }))
           );
         }
@@ -118,23 +118,29 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
     dockerRows.forEach((r) => { docker_images[r.label] = r.image; });
 
     const eggJson = {
-      _comment: "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL",
-      meta: { version: "PLCN_v3" },
+      _comment: "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+      meta: { version: "PTDL_v2", update_url: null },
       exported_at: new Date().toISOString(),
       name,
+      author: "admin@example.com",
       description,
-      tags: [],
-      features: ["eula", "java_version", "pid_limit"],
+      features: null,
       docker_images,
-      file_denylist: {},
+      file_denylist: [],
       startup,
       config: {
-        files: {},
-        startup: { done: ")! For help, type " },
-        logs: {},
+        files: "{}",
+        startup: JSON.stringify({ done: [")! For help, type "] }),
+        logs: "{}",
         stop: "stop",
       },
-      scripts: { installation: { script: "#!/bin/ash\necho 'No install script'", container: "ghcr.io/pelican-eggs/installers:alpine", entrypoint: "ash" } },
+      scripts: {
+        installation: {
+          script: "#!/bin/ash\n# Installation Script\ncd /mnt/server\necho 'Install complete'",
+          container: "ghcr.io/pelican-eggs/installers:alpine",
+          entrypoint: "ash",
+        },
+      },
       variables: variables.map((v, i) => ({
         name: v.name,
         description: v.description,
@@ -143,6 +149,7 @@ function CreateEggModal({ onClose, onCreated }: { onClose: () => void; onCreated
         user_viewable: v.user_viewable,
         user_editable: v.user_editable,
         rules: v.rules,
+        field_type: "text",
         sort: i + 1,
       })),
     };
