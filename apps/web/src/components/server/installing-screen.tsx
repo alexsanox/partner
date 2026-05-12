@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Server, Loader2, CheckCircle } from "lucide-react";
 
 interface InstallingScreenProps {
@@ -12,7 +11,6 @@ interface InstallingScreenProps {
 
 export function InstallingScreen({ serverId, serverName, mode = "installing" }: InstallingScreenProps) {
   const isRebuilding = mode === "rebuilding";
-  const router = useRouter();
   const [status, setStatus] = useState<"installing" | "done">("installing");
   const [dots, setDots] = useState("");
 
@@ -24,20 +22,23 @@ export function InstallingScreen({ serverId, serverName, mode = "installing" }: 
     return () => clearInterval(interval);
   }, []);
 
-  // Poll server status every 5 seconds
+  // Poll server status — for rebuilds, wait for is_installing to go true then false
   useEffect(() => {
     let cancelled = false;
+    let sawInstalling = mode !== "rebuilding"; // for normal install, already installing
 
     const poll = async () => {
       try {
         const res = await fetch(`/api/pelican/servers/${serverId}/status`);
         if (res.ok) {
           const data = await res.json();
-          if (!data.is_installing) {
+          if (data.is_installing) {
+            sawInstalling = true;
+          } else if (sawInstalling) {
+            // Was installing, now done
             setStatus("done");
-            // Wait a moment then redirect
             setTimeout(() => {
-              if (!cancelled) router.refresh();
+              if (!cancelled) window.location.reload();
             }, 1500);
             return;
           }
@@ -46,13 +47,13 @@ export function InstallingScreen({ serverId, serverName, mode = "installing" }: 
         // ignore, keep polling
       }
       if (!cancelled) {
-        setTimeout(poll, 5000);
+        setTimeout(poll, 3000);
       }
     };
 
     poll();
     return () => { cancelled = true; };
-  }, [serverId, router]);
+  }, [serverId, mode]);
 
   return (
     <div className="flex flex-col items-center justify-center py-24">
