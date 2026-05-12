@@ -421,8 +421,7 @@ export function ServerStore({ serverId }: { serverId: string }) {
   return (
     <div className="space-y-4">
       {/* Mrpack install */}
-      {serverLoaders.some((l) => ["fabric","forge","neoforge","quilt"].includes(l)) && (
-        <div className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-3">
+      <div className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-[#1a1e2e] px-4 py-3">
           <div>
             <p className="text-[13px] font-semibold text-white">Install Modpack</p>
             <p className="text-[11px] text-[#8b92a8]">Upload a .mrpack file to install all mods at once</p>
@@ -433,7 +432,6 @@ export function ServerStore({ serverId }: { serverId: string }) {
             <input ref={mrpackRef} type="file" accept=".mrpack" className="hidden" onChange={handleMrpackUpload} />
           </label>
         </div>
-      )}
 
       {/* Loader badge */}
       {serverLoaders.length > 0 && (

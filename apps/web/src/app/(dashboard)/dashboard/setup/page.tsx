@@ -137,8 +137,10 @@ function SetupWizard() {
           const modRes = await fetch("/api/server/install-mrpack", { method: "POST", body: form });
           const modData = await modRes.json();
           if (modRes.ok) setModResult({ installed: modData.installed, failed: modData.failed, modpack: modData.modpack, failures: modData.failures });
-          else console.error("[mrpack install error]", modData);
-        } catch { /* non-fatal */ } finally {
+          else setModResult({ installed: 0, failed: 0, modpack: `Install failed: ${modData.error ?? modRes.status}`, failures: [] });
+        } catch (err) {
+          setModResult({ installed: 0, failed: 0, modpack: `Install error: ${err instanceof Error ? err.message : "Unknown"}`, failures: [] });
+        } finally {
           setInstallingMods(false);
         }
       }
