@@ -76,7 +76,7 @@ function PaymentForm({ plan, billingCycle, getPrice, getSavings, onSuccess }: {
     setProcessing(true);
     setPayError(null);
 
-    const { error } = await stripe.confirmPayment({
+    const { error } = await stripe.confirmSetup({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/dashboard/services?checkout=success`,

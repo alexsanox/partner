@@ -186,6 +186,61 @@ export async function POST(req: NextRequest) {
         break;
       }
 
+      // SetupIntent succeeded — create subscription and provision server
+      case "setup_intent.succeeded": {
+        const setupIntent = event.data.object as Stripe.SetupIntent;
+        const { userId, planId, serverName, billingCycle, amountCents, interval, intervalCount, planName } = setupIntent.metadata ?? {};
+        if (!userId || !planId || !serverName) break;
+
+        const paymentMethodId = typeof setupIntent.payment_method === "string"
+          ? setupIntent.payment_method
+          : setupIntent.payment_method?.id;
+        if (!paymentMethodId) break;
+
+        const customerId = typeof setupIntent.customer === "string"
+          ? setupIntent.customer
+          : setupIntent.customer?.id;
+        if (!customerId) break;
+
+        // Set as default payment method
+        await stripe.customers.update(customerId, {
+          invoice_settings: { default_payment_method: paymentMethodId },
+        });
+
+        // Create the price
+        const price = await stripe.prices.create({
+          currency: "usd",
+          unit_amount: parseInt(amountCents ?? "0"),
+          recurring: {
+            interval: (interval ?? "month") as "month" | "year",
+            interval_count: parseInt(intervalCount ?? "1"),
+          },
+          product_data: { name: `${planName ?? "Server"} - ${serverName}` },
+        });
+
+        // Create the subscription
+        const subscription = await stripe.subscriptions.create({
+          customer: customerId,
+          items: [{ price: price.id }],
+          default_payment_method: paymentMethodId,
+          metadata: { userId, planId, serverName, billingCycle: billingCycle ?? "MONTHLY" },
+        });
+
+        // Update the pending order with the subscription ID
+        const order = await prisma.order.findFirst({
+          where: { stripeSessionId: setupIntent.id, status: "PENDING" },
+        });
+        if (order) {
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { stripeSubscriptionId: subscription.id },
+          });
+        }
+
+        // Provision server (invoice.paid will fire and handle provisioning)
+        break;
+      }
+
       // Checkout session flow (backward compat)
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;

@@ -61,58 +61,29 @@ export async function POST(req: NextRequest) {
       customerId = customer.id;
     }
 
-    // Create a Stripe price
-    const price = await stripe.prices.create({
-      currency: "usd",
-      unit_amount: amountCents,
-      recurring: { interval, interval_count: intervalCount },
-      product_data: {
-        name: `${plan.name} Server - ${serverName}`,
-      },
-    });
-
-    // Create subscription in incomplete state
-    const subscription = await stripe.subscriptions.create({
+    // Create a SetupIntent to collect card details, then create subscription after payment
+    // This is the correct modern Stripe flow for subscriptions with deferred payment
+    const setupIntent = await stripe.setupIntents.create({
       customer: customerId,
-      items: [{ price: price.id }],
-      payment_behavior: "default_incomplete",
-      payment_settings: {
-        save_default_payment_method: "on_subscription",
-        payment_method_types: ["card"],
-      },
+      payment_method_types: ["card"],
+      usage: "off_session",
       metadata: {
         userId: session.user.id,
         planId: plan.id,
         serverName,
         billingCycle,
+        amountCents: amountCents.toString(),
+        interval,
+        intervalCount: intervalCount.toString(),
+        planName: plan.name,
       },
     });
 
-    // Retrieve the invoice with payment_intent expanded
-    // (Stripe no longer embeds payment_intent on subscription create response)
-    const invoiceId = typeof subscription.latest_invoice === "string"
-      ? subscription.latest_invoice
-      : (subscription.latest_invoice as { id: string } | null)?.id;
-
-    if (!invoiceId) {
-      throw new Error("No invoice created for subscription");
+    if (!setupIntent.client_secret) {
+      throw new Error("Failed to create payment setup");
     }
 
-    const invoice = await stripe.invoices.retrieve(invoiceId, {
-      expand: ["payment_intent"],
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pi = (invoice as any).payment_intent as { client_secret?: string | null } | string | null;
-    const clientSecret = pi && typeof pi === "object" ? pi.client_secret : null;
-
-    if (!clientSecret) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      console.error("[checkout] No client secret. Invoice status:", invoice.status, "PI:", JSON.stringify((invoice as any).payment_intent));
-      throw new Error("Payment setup failed. Please try again.");
-    }
-
-    // Create pending order in DB
+    // Create pending order in DB (subscriptionId will be filled in by webhook after card confirmed)
     await prisma.order.create({
       data: {
         userId: session.user.id,
@@ -120,13 +91,13 @@ export async function POST(req: NextRequest) {
         status: "PENDING",
         billingCycle,
         amountCents,
-        stripeSubscriptionId: subscription.id,
+        stripeSessionId: setupIntent.id,
       },
     });
 
     return NextResponse.json({
-      clientSecret,
-      subscriptionId: subscription.id,
+      clientSecret: setupIntent.client_secret,
+      setupIntentId: setupIntent.id,
     });
   } catch (err) {
     console.error("[checkout]", err);
