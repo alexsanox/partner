@@ -67,7 +67,7 @@ function SetupWizard() {
   const [mrpackFile, setMrpackFile] = useState<File | null>(null);
   const [mrpackMcVersion, setMrpackMcVersion] = useState<string | null>(null);
   const [installingMods, setInstallingMods] = useState(false);
-  const [modResult, setModResult] = useState<{ installed: number; failed: number; modpack: string } | null>(null);
+  const [modResult, setModResult] = useState<{ installed: number; failed: number; modpack: string; failures?: { name: string; error?: string }[] } | null>(null);
   const mrpackInputRef = useRef<HTMLInputElement>(null);
 
   const supportsMrpack = ["fabric", "forge"].includes(selectedType);
@@ -136,7 +136,8 @@ function SetupWizard() {
           form.append("mrpack", mrpackFile);
           const modRes = await fetch("/api/server/install-mrpack", { method: "POST", body: form });
           const modData = await modRes.json();
-          if (modRes.ok) setModResult({ installed: modData.installed, failed: modData.failed, modpack: modData.modpack });
+          if (modRes.ok) setModResult({ installed: modData.installed, failed: modData.failed, modpack: modData.modpack, failures: modData.failures });
+          else console.error("[mrpack install error]", modData);
         } catch { /* non-fatal */ } finally {
           setInstallingMods(false);
         }

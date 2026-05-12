@@ -4,10 +4,6 @@ import { prisma } from "@/lib/db";
 import { createDirectory, getFileUploadUrl, sendPowerAction } from "@/lib/pelican";
 import AdmZip from "adm-zip";
 
-export const config = {
-  api: { bodyParser: false },
-};
-
 export const maxDuration = 300;
 
 interface MrpackFile {
@@ -98,14 +94,16 @@ export async function POST(req: NextRequest) {
 
         // Fresh signed URL per file
         const uploadUrl = await getFileUploadUrl(serverId);
-        const uploadWithDir = `${uploadUrl}&directory=${encodeURIComponent(targetDir)}`;
+        const sep = uploadUrl.includes("?") ? "&" : "?";
+        const uploadWithDir = `${uploadUrl}${sep}directory=${encodeURIComponent(targetDir)}`;
         const form = new FormData();
         form.append("files", new Blob([modBuffer]), fileName);
 
         const uploadRes = await fetch(uploadWithDir, { method: "POST", body: form });
         if (!uploadRes.ok) {
           const text = await uploadRes.text();
-          throw new Error(`Upload failed: ${text.slice(0, 200)}`);
+          console.error(`[install-mrpack] upload failed for ${fileName}:`, text.slice(0, 300));
+          throw new Error(`Upload failed (${uploadRes.status}): ${text.slice(0, 200)}`);
         }
 
         results.push({ name: fileName, ok: true });
@@ -131,7 +129,8 @@ export async function POST(req: NextRequest) {
         }
 
         const uploadUrl = await getFileUploadUrl(serverId);
-        const uploadWithDir = `${uploadUrl}&directory=${encodeURIComponent(dir)}`;
+        const sep = uploadUrl.includes("?") ? "&" : "?";
+        const uploadWithDir = `${uploadUrl}${sep}directory=${encodeURIComponent(dir)}`;
         const form = new FormData();
         form.append("files", new Blob([new Uint8Array(entry.getData())]), fileName);
 
