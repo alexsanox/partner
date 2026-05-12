@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ComposableMap, Geographies, Geography, Marker, useMap } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, Marker, useMapContext } from "react-simple-maps";
 import { Zap, Shield, Globe } from "lucide-react";
 
 export interface MapLocation {
@@ -29,7 +29,7 @@ const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
 
 /* Renders curved SVG arcs between node pairs using the live projection */
 function Beams({ visible }: { visible: MapLocation[] }) {
-  const { projection } = useMap();
+  const { projection } = useMapContext();
   if (!projection) return null;
 
   const paths: string[] = [];
