@@ -14,6 +14,9 @@ export const r2 = new S3Client({
     accessKeyId: R2_ACCESS_KEY_ID,
     secretAccessKey: R2_SECRET_ACCESS_KEY,
   },
+  // R2 does not support SDK-injected checksums
+  requestChecksumCalculation: "WHEN_REQUIRED",
+  responseChecksumValidation: "WHEN_REQUIRED",
 });
 
 export async function getUploadUrl(key: string, contentType: string, expiresIn = 300) {
@@ -22,7 +25,11 @@ export async function getUploadUrl(key: string, contentType: string, expiresIn =
     Key: key,
     ContentType: contentType,
   });
-  return getSignedUrl(r2, command, { expiresIn });
+  return getSignedUrl(r2, command, {
+    expiresIn,
+    // Strip checksum query params R2 rejects
+    unhoistableHeaders: new Set(["x-amz-checksum-crc32", "x-amz-sdk-checksum-algorithm"]),
+  });
 }
 
 export async function deleteObject(key: string) {
