@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Loader2,
@@ -162,8 +162,10 @@ function PaymentForm({ plan, billingCycle, getPrice, getSavings, onSuccess, setu
 }
 
 // ── Main Page ────────────────────────────────────────────────────────
-export default function CreateServerPage() {
+function CreateServerPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const preselectedPlanId = searchParams.get("planId");
   const [step, setStep] = useState<"plan" | "config" | "payment">("plan");
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
@@ -178,12 +180,16 @@ export default function CreateServerPage() {
   useEffect(() => {
     fetch("/api/plans")
       .then((r) => r.json())
-      .then((data) => {
+      .then((data: Plan[]) => {
         setPlans(data);
+        if (preselectedPlanId) {
+          const found = data.find((p) => p.id === preselectedPlanId);
+          if (found) { setSelectedPlan(found); setStep("config"); }
+        }
         setLoadingPlans(false);
       })
       .catch(() => setLoadingPlans(false));
-  }, []);
+  }, [preselectedPlanId]);
 
   const getPrice = useCallback((plan: Plan, cycle: BillingCycle) => {
     switch (cycle) {
@@ -599,5 +605,13 @@ export default function CreateServerPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CreateServerPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-[#8b92a8]" /></div>}>
+      <CreateServerPageInner />
+    </Suspense>
   );
 }
