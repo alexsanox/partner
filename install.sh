@@ -118,7 +118,7 @@ bun install
 
 info "Running database migrations..."
 cd "$APP_DIR"
-bunx prisma db push --schema=packages/db/prisma/schema.prisma
+./node_modules/.bin/prisma db push --schema=packages/db/prisma/schema.prisma
 
 info "Building app..."
 cd "$APP_DIR/apps/web"
