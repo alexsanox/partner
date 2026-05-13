@@ -36,7 +36,7 @@ function addSecurityHeaders(res: NextResponse): NextResponse {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://challenges.cloudflare.com https://api.resend.com https://cdn.jsdelivr.net https://api.stripe.com",
+      "connect-src 'self' https://challenges.cloudflare.com https://api.resend.com https://cdn.jsdelivr.net https://api.stripe.com https://api.modrinth.com",
       "frame-src https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com",
       "object-src 'none'",
       "base-uri 'self'",
