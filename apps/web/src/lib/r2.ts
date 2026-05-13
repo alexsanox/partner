@@ -24,6 +24,7 @@ export async function getUploadUrl(key: string, contentType: string, expiresIn =
     Bucket: S3_BUCKET,
     Key: key,
     ContentType: contentType,
+    ACL: "public-read",
   });
   return getSignedUrl(s3, command, {
     expiresIn,
