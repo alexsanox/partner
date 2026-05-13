@@ -52,6 +52,7 @@ process.stdin.on("data", (data) => {
 process.stdin.on("end", () => { ws.close(); process.exit(0); });
 process.stdin.on("error", () => { ws.close(); process.exit(0); });
 
-process.on("SIGTERM", () => ws.close());
-process.on("SIGINT", () => ws.close());
-process.on("SIGHUP", () => ws.close());
+function shutdown() { ws.close(); setTimeout(() => process.exit(0), 2000).unref(); }
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
+process.on("SIGHUP", shutdown);
