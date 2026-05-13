@@ -120,16 +120,17 @@ export default function AdminBlogPage() {
   async function uploadImage(file: File) {
     setUploading(true);
     try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, contentType: file.type, sizeBytes: file.size, folder: "blog" }),
-      });
-      const { uploadUrl, publicUrl } = await res.json();
-      await fetch(uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
-      setForm((f) => ({ ...f, coverImage: publicUrl }));
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "blog");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Upload failed");
+      setForm((f) => ({ ...f, coverImage: data.publicUrl }));
       toast.success("Image uploaded!");
-    } catch { toast.error("Upload failed"); }
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Upload failed");
+    }
     setUploading(false);
   }
 
