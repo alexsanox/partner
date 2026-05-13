@@ -1,54 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Redis } from "@upstash/redis";
+import { Ratelimit } from "@upstash/ratelimit";
 
 const ADMIN_HOSTNAME = "admin.novally.tech";
 const MAIN_HOSTNAME = "novally.tech";
 
-// ── In-memory rate limiter (per-IP, resets on restart) ─────────────
-// For production at scale, swap the map for Redis (ioredis/upstash).
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+// ── Upstash Redis rate limiters ────────────────────────────────────
+// Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN in .env
+let redis: Redis | null = null;
+let authLimiter: Ratelimit | null = null;
+let strictLimiter: Ratelimit | null = null;
+let apiLimiter: Ratelimit | null = null;
 
-function rateLimit(
-  ip: string,
-  key: string,
-  limit: number,
-  windowMs: number
-): boolean {
-  const id = `${ip}:${key}`;
-  const now = Date.now();
-  const entry = rateLimitStore.get(id);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitStore.set(id, { count: 1, resetAt: now + windowMs });
-    return true; // allowed
+function getRedis() {
+  if (!redis && process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+    // 5 requests per minute for login/register
+    authLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, "1 m"),
+      prefix: "rl:auth",
+    });
+    // 3 requests per minute for password reset / verification
+    strictLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(3, "1 m"),
+      prefix: "rl:strict",
+    });
+    // 120 requests per minute for general API
+    apiLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(120, "1 m"),
+      prefix: "rl:api",
+    });
   }
-
-  if (entry.count >= limit) return false; // blocked
-
-  entry.count++;
-  return true;
+  return { authLimiter, strictLimiter, apiLimiter };
 }
 
-// Clean up stale entries every ~100 requests to avoid memory leak
-let cleanupCounter = 0;
-function maybeCleanup() {
-  if (++cleanupCounter < 100) return;
-  cleanupCounter = 0;
-  const now = Date.now();
-  for (const [key, val] of rateLimitStore) {
-    if (now > val.resetAt) rateLimitStore.delete(key);
-  }
-}
+type LimiterKey = "auth" | "strict" | "api" | null;
 
-// ── Rate limit rules ───────────────────────────────────────────────
-const RATE_RULES: { pattern: RegExp; limit: number; windowMs: number }[] = [
-  { pattern: /^\/api\/auth\/sign-in/,          limit: 5,  windowMs: 60_000  },
-  { pattern: /^\/api\/auth\/sign-up/,           limit: 5,  windowMs: 60_000  },
-  { pattern: /^\/api\/auth\/forgot-password/,   limit: 3,  windowMs: 60_000  },
-  { pattern: /^\/api\/auth\/reset-password/,    limit: 5,  windowMs: 60_000  },
-  { pattern: /^\/api\/auth\/send-verification/, limit: 3,  windowMs: 60_000  },
-  { pattern: /^\/api\/webhooks\//,              limit: 30, windowMs: 60_000  },
-  { pattern: /^\/api\//,                        limit: 120, windowMs: 60_000 },
-];
+function getLimiterForPath(pathname: string): LimiterKey {
+  if (/^\/api\/auth\/(sign-in|sign-up)/.test(pathname))        return "auth";
+  if (/^\/api\/auth\/(forgot|reset|send-verification)/.test(pathname)) return "strict";
+  if (/^\/api\//.test(pathname))                                return "api";
+  return null;
+}
 
 // ── Security headers ───────────────────────────────────────────────
 function addSecurityHeaders(res: NextResponse): NextResponse {
@@ -56,10 +55,7 @@ function addSecurityHeaders(res: NextResponse): NextResponse {
   res.headers.set("X-Content-Type-Options", "nosniff");
   res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  res.headers.set(
-    "Strict-Transport-Security",
-    "max-age=63072000; includeSubDomains; preload"
-  );
+  res.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
   res.headers.set(
     "Content-Security-Policy",
     [
@@ -77,60 +73,57 @@ function addSecurityHeaders(res: NextResponse): NextResponse {
   return res;
 }
 
-export function middleware(req: NextRequest) {
-  const { pathname, hostname } = req.nextUrl;
-  maybeCleanup();
+function tooManyRequests(retryAfter = "60"): NextResponse {
+  return new NextResponse(
+    JSON.stringify({ error: "Too many requests. Please try again later." }),
+    {
+      status: 429,
+      headers: { "Content-Type": "application/json", "Retry-After": retryAfter },
+    }
+  );
+}
+
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const hostname = req.headers.get("host")?.split(":")[0] ?? "";
 
   // ── Admin subdomain routing ────────────────────────────────────
-  // admin.novally.tech/* → rewrite to /admin/*
   if (hostname === ADMIN_HOSTNAME) {
-    // Block non-admin paths on this subdomain
     const url = req.nextUrl.clone();
     if (!pathname.startsWith("/admin")) {
       url.pathname = `/admin${pathname === "/" ? "" : pathname}`;
-      const res = NextResponse.rewrite(url);
-      return addSecurityHeaders(res);
+      return addSecurityHeaders(NextResponse.rewrite(url));
     }
-    const res = NextResponse.next();
-    return addSecurityHeaders(res);
+    return addSecurityHeaders(NextResponse.next());
   }
 
-  // On main domain, block direct access to /admin routes
-  if (
-    (hostname === MAIN_HOSTNAME || hostname === "localhost") &&
-    pathname.startsWith("/admin") &&
-    hostname !== "localhost" // allow localhost for dev
-  ) {
+  // Redirect /admin on main domain → admin subdomain (not in dev)
+  if (hostname === MAIN_HOSTNAME && pathname.startsWith("/admin")) {
     return NextResponse.redirect(new URL("https://admin.novally.tech", req.url));
   }
 
-  // ── Rate limiting ──────────────────────────────────────────────
-  const ip =
-    req.headers.get("cf-connecting-ip") ||
-    req.headers.get("x-real-ip") ||
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    "unknown";
+  // ── Rate limiting via Upstash Redis ───────────────────────────
+  const limiterKey = getLimiterForPath(pathname);
+  if (limiterKey) {
+    const { authLimiter: al, strictLimiter: sl, apiLimiter: gl } = getRedis();
+    const limiter = limiterKey === "auth" ? al : limiterKey === "strict" ? sl : gl;
 
-  for (const rule of RATE_RULES) {
-    if (rule.pattern.test(pathname)) {
-      if (!rateLimit(ip, pathname.split("?")[0], rule.limit, rule.windowMs)) {
-        return new NextResponse(
-          JSON.stringify({ error: "Too many requests. Please try again later." }),
-          {
-            status: 429,
-            headers: {
-              "Content-Type": "application/json",
-              "Retry-After": "60",
-            },
-          }
-        );
+    if (limiter) {
+      const ip =
+        req.headers.get("cf-connecting-ip") ??
+        req.headers.get("x-real-ip") ??
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        "global";
+
+      const { success, reset } = await limiter.limit(ip);
+      if (!success) {
+        const retryAfter = Math.ceil((reset - Date.now()) / 1000).toString();
+        return tooManyRequests(retryAfter);
       }
-      break;
     }
   }
 
-  const res = NextResponse.next();
-  return addSecurityHeaders(res);
+  return addSecurityHeaders(NextResponse.next());
 }
 
 export const config = {
