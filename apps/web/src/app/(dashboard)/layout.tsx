@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { getSession } from "@/lib/auth-server";
 import { ImpersonationBanner } from "@/components/admin/impersonation-banner";
+import { Footer } from "@/components/marketing/footer";
 
 export default async function DashboardLayout({
   children,
@@ -24,6 +25,7 @@ export default async function DashboardLayout({
         {isImpersonating && <ImpersonationBanner userName={session.user.name} />}
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-7xl px-4 py-6 pt-20 md:px-6 md:py-8 md:pt-8">{children}</div>
+          <Footer />
         </main>
       </div>
     </div>

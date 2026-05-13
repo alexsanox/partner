@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/sidebar";
 import { getSession } from "@/lib/auth-server";
+import { Footer } from "@/components/marketing/footer";
 
 export default async function AdminLayout({
   children,
@@ -22,6 +23,7 @@ export default async function AdminLayout({
       <AdminSidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-7xl px-4 py-6 pt-20 md:px-6 md:py-8 md:pt-8">{children}</div>
+        <Footer />
       </main>
     </div>
   );
