@@ -96,18 +96,25 @@ else
 fi
 
 # ── 7. Write .env ──────────────────────────────────────────────────
-info "Writing environment file..."
-AUTH_SECRET=$(openssl rand -base64 32)
-
-cat > "$APP_DIR/apps/web/.env" <<EOF
+ENV_FILE="$APP_DIR/apps/web/.env"
+if [ -f "$ENV_FILE" ]; then
+  info ".env already exists, skipping overwrite. Updating DATABASE_URL only..."
+  # Update DATABASE_URL in case DB password changed
+  sed -i "s|^DATABASE_URL=.*|DATABASE_URL=${DATABASE_URL}|" "$ENV_FILE"
+  # Add REDIS_URL if missing
+  grep -q "^REDIS_URL=" "$ENV_FILE" || echo "REDIS_URL=redis://localhost:6379" >> "$ENV_FILE"
+else
+  info "Writing new environment file..."
+  AUTH_SECRET=$(openssl rand -base64 32)
+  cat > "$ENV_FILE" <<EOF
 DATABASE_URL=${DATABASE_URL}
 BETTER_AUTH_SECRET=${AUTH_SECRET}
 BETTER_AUTH_URL=https://${DOMAIN}
 NEXT_PUBLIC_APP_URL=https://${DOMAIN}
 REDIS_URL=redis://localhost:6379
 EOF
-
-warn "Edit $APP_DIR/apps/web/.env to add RESEND_API_KEY, STRIPE keys, etc."
+  warn "Edit $ENV_FILE to add RESEND_API_KEY, STRIPE keys, etc."
+fi
 
 # ── 8. Install dependencies & build ───────────────────────────────
 info "Installing dependencies..."
