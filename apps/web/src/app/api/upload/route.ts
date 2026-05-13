@@ -4,6 +4,8 @@ import { s3, getPublicUrl } from "@/lib/r2";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomBytes } from "crypto";
 
+export const maxDuration = 60;
+
 const ALLOWED_TYPES = [
   "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",
   "video/mp4", "video/webm",

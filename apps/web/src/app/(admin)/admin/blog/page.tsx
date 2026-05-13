@@ -39,7 +39,7 @@ export default function AdminBlogPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadingCount, setUploadingCount] = useState(0);
   const [attachments, setAttachments] = useState<{ name: string; url: string; type: string }[]>([]);
   const [copied, setCopied] = useState<string | null>(null);
   const [preview, setPreview] = useState(false);
@@ -124,7 +124,7 @@ export default function AdminBlogPage() {
   }
 
   async function uploadAttachment(file: File) {
-    setUploadingFile(true);
+    setUploadingCount((n) => n + 1);
     try {
       const fd = new FormData();
       fd.append("file", file);
@@ -136,8 +136,9 @@ export default function AdminBlogPage() {
       toast.success(`${file.name} uploaded!`);
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploadingCount((n) => n - 1);
     }
-    setUploadingFile(false);
   }
 
   function copyUrl(url: string) {
@@ -238,11 +239,11 @@ export default function AdminBlogPage() {
               <button
                 type="button"
                 onClick={() => attachRef.current?.click()}
-                disabled={uploadingFile}
+                disabled={uploadingCount > 0}
                 className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 py-1.5 text-xs text-[#8b92a8] hover:text-white hover:border-[#00c98d]/40 transition-colors disabled:opacity-50"
               >
-                {uploadingFile ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Paperclip className="h-3.5 w-3.5" />}
-                Attach File
+                {uploadingCount > 0 ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Paperclip className="h-3.5 w-3.5" />}
+                {uploadingCount > 0 ? `Uploading${uploadingCount > 1 ? ` (${uploadingCount})` : "…"}` : "Attach File"}
               </button>
             </div>
             {attachments.length === 0 ? (
