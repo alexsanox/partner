@@ -9,11 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
+import { Turnstile } from "@/components/ui/turnstile";
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -23,6 +25,12 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError("Please complete the CAPTCHA.");
+      setIsLoading(false);
+      return;
+    }
 
     const res = await signIn.email({
       email,
@@ -94,6 +102,10 @@ export default function LoginPage() {
               className="border-white/10 bg-white/5 text-white placeholder:text-slate-500 focus-visible:ring-[#00c98d]"
             />
           </div>
+          <Turnstile
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken(null)}
+          />
           <Button
             type="submit"
             className="w-full bg-[#00c98d] text-white hover:bg-[#00e0a0]"
