@@ -14,6 +14,7 @@ import { useSession } from "@/lib/auth-client";
 
 const navLinks = [
   { href: "/#features", label: "Features" },
+  { href: "/store", label: "Store" },
   { href: "/#pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
   { href: "/support", label: "Support" },

@@ -6,6 +6,7 @@ const footerSections = [
   {
     title: "Hosting",
     links: [
+      { label: "Store", href: "/store" },
       { label: "Minecraft Hosting", href: "/#pricing" },
       { label: "Features", href: "/#features" },
       { label: "Server Locations", href: "/locations" },
