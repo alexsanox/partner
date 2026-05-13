@@ -23,7 +23,7 @@ function getIp(req: NextRequest): string {
 
 // ── Security headers ───────────────────────────────────────────────
 function addSecurityHeaders(res: NextResponse): NextResponse {
-  res.headers.set("X-Frame-Options", "DENY");
+  res.headers.set("X-Frame-Options", "SAMEORIGIN");
   res.headers.set("X-Content-Type-Options", "nosniff");
   res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
@@ -32,12 +32,12 @@ function addSecurityHeaders(res: NextResponse): NextResponse {
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://js.stripe.com https://dahlia.stripe.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://challenges.cloudflare.com https://api.resend.com https://cdn.jsdelivr.net",
-      "frame-src https://challenges.cloudflare.com",
+      "connect-src 'self' https://challenges.cloudflare.com https://api.resend.com https://cdn.jsdelivr.net https://api.stripe.com",
+      "frame-src https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com",
       "object-src 'none'",
       "base-uri 'self'",
     ].join("; ")
