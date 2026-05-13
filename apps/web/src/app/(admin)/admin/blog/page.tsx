@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Loader2, X, Upload, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Loader2, X, Upload, ImageIcon, Paperclip, Copy, Check, Link } from "lucide-react";
 import { toast } from "sonner";
 
 interface BlogPost {
@@ -38,7 +38,11 @@ export default function AdminBlogPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [attachments, setAttachments] = useState<{ name: string; url: string; type: string }[]>([]);
+  const [copied, setCopied] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const attachRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -117,6 +121,36 @@ export default function AdminBlogPage() {
     setDeleting(null);
   }
 
+  async function uploadAttachment(file: File) {
+    setUploadingFile(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "blog/attachments");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Upload failed");
+      setAttachments((a) => [...a, { name: file.name, url: data.publicUrl, type: file.type }]);
+      toast.success(`${file.name} uploaded!`);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Upload failed");
+    }
+    setUploadingFile(false);
+  }
+
+  function copyUrl(url: string) {
+    navigator.clipboard.writeText(url);
+    setCopied(url);
+    setTimeout(() => setCopied(null), 2000);
+  }
+
+  function insertIntoContent(url: string, name: string, type: string) {
+    const isImage = type.startsWith("image/");
+    const md = isImage ? `![${name}](${url})` : `[${name}](${url})`;
+    setForm((f) => ({ ...f, content: f.content + "\n" + md }));
+    toast.success("Inserted into content!");
+  }
+
   async function uploadImage(file: File) {
     setUploading(true);
     try {
@@ -176,6 +210,14 @@ export default function AdminBlogPage() {
               className="hidden"
               onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }}
             />
+            <input
+              ref={attachRef}
+              type="file"
+              accept="image/*,.svg,.json,.mp4,.webm,.jar,.zip,.7z,.rar"
+              multiple
+              className="hidden"
+              onChange={(e) => { Array.from(e.target.files ?? []).forEach(uploadAttachment); e.target.value=""; }}
+            />
             <div className="mt-2 flex items-center gap-2">
               <span className="text-[10px] text-[#8b92a8]">Or paste URL:</span>
               <input
@@ -185,6 +227,43 @@ export default function AdminBlogPage() {
                 className="flex-1 rounded-lg border border-white/[0.08] bg-[#111520] px-3 py-1.5 text-xs text-white placeholder:text-[#8b92a8] outline-none focus:border-[#00c98d]/40"
               />
             </div>
+          </div>
+
+          {/* Attachments */}
+          <div className="rounded-xl border border-white/[0.06] bg-[#1a1e2e] p-5">
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-xs font-semibold text-[#8b92a8] uppercase tracking-wide">Attachments</label>
+              <button
+                type="button"
+                onClick={() => attachRef.current?.click()}
+                disabled={uploadingFile}
+                className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 py-1.5 text-xs text-[#8b92a8] hover:text-white hover:border-[#00c98d]/40 transition-colors disabled:opacity-50"
+              >
+                {uploadingFile ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Paperclip className="h-3.5 w-3.5" />}
+                Attach File
+              </button>
+            </div>
+            {attachments.length === 0 ? (
+              <p className="text-xs text-[#8b92a8] text-center py-4">No attachments yet — click Attach File to upload</p>
+            ) : (
+              <div className="space-y-2">
+                {attachments.map((a) => (
+                  <div key={a.url} className="flex items-center gap-3 rounded-lg bg-[#111520] px-3 py-2">
+                    <Paperclip className="h-3.5 w-3.5 text-[#8b92a8] shrink-0" />
+                    <span className="flex-1 truncate text-xs text-white">{a.name}</span>
+                    <button onClick={() => insertIntoContent(a.url, a.name, a.type)} title="Insert into content" className="text-[#8b92a8] hover:text-[#00c98d] transition-colors">
+                      <Link className="h-3.5 w-3.5" />
+                    </button>
+                    <button onClick={() => copyUrl(a.url)} title="Copy URL" className="text-[#8b92a8] hover:text-white transition-colors">
+                      {copied === a.url ? <Check className="h-3.5 w-3.5 text-[#00c98d]" /> : <Copy className="h-3.5 w-3.5" />}
+                    </button>
+                    <button onClick={() => setAttachments((arr) => arr.filter((x) => x.url !== a.url))} className="text-[#8b92a8] hover:text-red-400 transition-colors">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Title */}
