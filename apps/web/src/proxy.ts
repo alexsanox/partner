@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { rateLimit } from "@/lib/rate-limit";
 
 // ── Rate limit rules ───────────────────────────────────────────────
 // [limit per window, windowSecs]
@@ -50,26 +50,18 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const ip = getIp(req);
 
-  // ── /admin — strict rate limit + extra headers ─────────────────
-  if (pathname.startsWith("/admin")) {
-    const { success, reset } = await rateLimit(`rl:admin:${ip}`, 60, 60);
-    if (!success) return rateLimitResponse(reset);
-  }
-
-  // ── Rate limiting on auth endpoints ───────────────────────────
+  // ── Rate limiting on auth endpoints (soft throttle — no hard block) ──
   if (pathname.startsWith(AUTH_PREFIX)) {
-    const segments = pathname.slice(AUTH_PREFIX.length).split("/");
-    // /api/auth/sign-in/email → segments[0] = "sign-in"
-    const action = segments[0];
+    const action = pathname.slice(AUTH_PREFIX.length).split("/")[0];
     const rule = LIMITS[action];
     if (rule) {
       const key = `rl:auth:${action}:${ip}`;
-      const { success, reset, remaining } = await rateLimit(key, rule[0], rule[1]);
-      if (!success) return rateLimitResponse(reset);
-      // Attach remaining hints so clients can back off gracefully
-      const res = NextResponse.next();
-      res.headers.set("X-RateLimit-Remaining", String(remaining));
-      return addSecurityHeaders(res);
+      const { success, remaining } = await rateLimit(key, rule[0], rule[1]);
+      if (!success) {
+        // Soft throttle: add increasing delay instead of hard 429
+        const delay = Math.min(remaining === 0 ? 3000 : 1000, 5000);
+        await new Promise((r) => setTimeout(r, delay));
+      }
     }
   }
 
