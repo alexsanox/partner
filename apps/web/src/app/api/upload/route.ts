@@ -31,8 +31,22 @@ export async function POST(req: NextRequest) {
     const ext = filename.split(".").pop() ?? "bin";
     const key = `${folder}/${session.user.id}/${randomBytes(8).toString("hex")}.${ext}`;
 
-    const uploadUrl = await getUploadUrl(key, contentType);
+    let uploadUrl = await getUploadUrl(key, contentType);
     const publicUrl = getPublicUrl(key);
+
+    // If the endpoint is localhost/internal, rewrite the presigned URL host
+    // to the public-facing S3 URL so the browser can reach it
+    const s3Endpoint = process.env.AWS_ENDPOINT_URL_S3 ?? "";
+    const s3Public = process.env.S3_PUBLIC_URL ?? "";
+    if (s3Endpoint && s3Public && (s3Endpoint.includes("localhost") || s3Endpoint.includes("127.0.0.1"))) {
+      // Replace internal endpoint with public URL in the presigned URL
+      const internalUrl = new URL(uploadUrl);
+      const publicBase = new URL(s3Public);
+      internalUrl.protocol = publicBase.protocol;
+      internalUrl.host = publicBase.host;
+      // strip the bucket prefix from path since public URL already includes it via /s3/ proxy
+      uploadUrl = internalUrl.toString();
+    }
 
     return NextResponse.json({ uploadUrl, publicUrl, key });
   } catch (err) {
