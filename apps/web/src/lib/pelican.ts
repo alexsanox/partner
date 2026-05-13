@@ -186,6 +186,15 @@ export async function deleteServer(id: number) {
   return pelicanFetch<void>(`/servers/${id}`, { method: "DELETE" });
 }
 
+export async function updateServerBuild(id: number, config: {
+  memory: number;
+  cpu: number;
+  disk: number;
+  backup_limit?: number;
+}) {
+  return pelicanFetch<void>(`/servers/${id}/build`, { method: "PATCH", body: config });
+}
+
 export async function getNodeAllocations(nodeId: number, page = 1) {
   return pelicanFetch<PaginatedResponse<{ id: number; ip: string; port: number; assigned: boolean }>>(
     `/nodes/${nodeId}/allocations?page=${page}&per_page=100`

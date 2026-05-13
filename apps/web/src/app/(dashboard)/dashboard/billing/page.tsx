@@ -9,7 +9,7 @@ import { requireAuth } from "@/lib/auth-server";
 import { prisma } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import Link from "next/link";
-import { CancelButton } from "@/components/billing/subscription-actions";
+import { CancelButton, UpgradeButton } from "@/components/billing/subscription-actions";
 import { UpdatePaymentMethod } from "@/components/billing/update-payment-method";
 
 function formatDate(date: Date | number) {
@@ -270,7 +270,22 @@ export default async function BillingPage() {
                         )}
                       </div>
                       {service.stripeSubscriptionId && service.status === "ACTIVE" && (
-                        <CancelButton serviceId={service.id} cancelling={isCancelling} />
+                        <div className="flex items-center gap-2">
+                          <UpgradeButton
+                            serviceId={service.id}
+                            currentPlanId={service.planId}
+                            currentPriceMonthly={service.plan.priceMonthly}
+                            availablePlans={allPlans.map((p: typeof allPlans[number]) => ({
+                              id: p.id,
+                              name: p.name,
+                              priceMonthly: p.priceMonthly,
+                              ramMb: p.ramMb,
+                              cpuPercent: p.cpuPercent,
+                              diskMb: p.diskMb,
+                            }))}
+                          />
+                          <CancelButton serviceId={service.id} cancelling={isCancelling} />
+                        </div>
                       )}
                     </div>
                   </div>
