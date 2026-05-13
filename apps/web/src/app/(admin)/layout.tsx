@@ -9,14 +9,12 @@ export default async function AdminLayout({
 }) {
   const session = await getSession();
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-
   if (!session) {
-    redirect(`${appUrl}/login`);
+    redirect("/login");
   }
 
   if (session.user.role !== "admin") {
-    redirect(`${appUrl}/dashboard`);
+    redirect("/dashboard");
   }
 
   return (

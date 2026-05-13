@@ -47,20 +47,34 @@ function addSecurityHeaders(res: NextResponse): NextResponse {
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const ip = getIp(req);
+
+  // ── /admin — strict rate limit + extra headers ─────────────────
+  if (pathname.startsWith("/admin")) {
+    const { success, reset } = await rateLimit(`rl:admin:${ip}`, 30, 60);
+    if (!success) return rateLimitResponse(reset);
+  }
 
   // ── Rate limiting on auth endpoints ───────────────────────────
   if (pathname.startsWith(AUTH_PREFIX)) {
     const action = pathname.slice(AUTH_PREFIX.length).split("/")[0];
     const rule = LIMITS[action];
     if (rule) {
-      const ip = getIp(req);
       const key = `rl:auth:${action}:${ip}`;
       const { success, reset } = await rateLimit(key, rule[0], rule[1]);
       if (!success) return rateLimitResponse(reset);
     }
   }
 
-  return addSecurityHeaders(NextResponse.next());
+  const res = NextResponse.next();
+
+  // Extra security headers for admin routes
+  if (pathname.startsWith("/admin")) {
+    res.headers.set("X-Robots-Tag", "noindex, nofollow");
+    res.headers.set("Cache-Control", "no-store");
+  }
+
+  return addSecurityHeaders(res);
 }
 
 export const config = {
