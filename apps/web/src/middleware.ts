@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const ADMIN_HOSTNAME = "admin.novally.tech";
-const MAIN_HOSTNAME = "novally.tech";
-
 // ── Security headers ───────────────────────────────────────────────
 function addSecurityHeaders(res: NextResponse): NextResponse {
   res.headers.set("X-Frame-Options", "DENY");
@@ -27,25 +24,8 @@ function addSecurityHeaders(res: NextResponse): NextResponse {
   return res;
 }
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  const hostname = req.headers.get("host")?.split(":")[0] ?? "";
-
-  // ── Admin subdomain routing ────────────────────────────────────
-  if (hostname === ADMIN_HOSTNAME) {
-    const url = req.nextUrl.clone();
-    if (!pathname.startsWith("/admin")) {
-      url.pathname = `/admin${pathname === "/" ? "" : pathname}`;
-      return addSecurityHeaders(NextResponse.rewrite(url));
-    }
-    return addSecurityHeaders(NextResponse.next());
-  }
-
-  // Redirect /admin on main domain → admin subdomain (not in dev)
-  if (hostname === MAIN_HOSTNAME && pathname.startsWith("/admin")) {
-    return NextResponse.redirect(new URL("https://admin.novally.tech", req.url));
-  }
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function middleware(_req: NextRequest) {
   return addSecurityHeaders(NextResponse.next());
 }
 
