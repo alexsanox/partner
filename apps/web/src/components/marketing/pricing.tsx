@@ -79,7 +79,6 @@ const plans = [
       "5 Backup Slots",
       "DDoS Protection",
       "Priority Support",
-      "3 MySQL Databases",
       "Custom Domain",
     ],
   },

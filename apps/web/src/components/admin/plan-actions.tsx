@@ -34,7 +34,6 @@ interface PlanData {
   diskMb: number;
   playerSlots: number;
   backupSlots: number;
-  databaseLimit: number;
   priceMonthly: number;
   features: string[];
   isActive: boolean;
@@ -57,7 +56,6 @@ export function PlanActions({ plan }: { plan: PlanData }) {
     diskMb: plan.diskMb,
     playerSlots: plan.playerSlots,
     backupSlots: plan.backupSlots,
-    databaseLimit: plan.databaseLimit,
     priceMonthly: plan.priceMonthly / 100,
     features: plan.features.join(", "),
     sortOrder: plan.sortOrder,
@@ -107,7 +105,6 @@ export function PlanActions({ plan }: { plan: PlanData }) {
             diskMb: Number(form.diskMb),
             playerSlots: Number(form.playerSlots),
             backupSlots: Number(form.backupSlots),
-            databaseLimit: Number(form.databaseLimit),
             priceMonthly: Math.round(Number(form.priceMonthly) * 100),
             features,
             sortOrder: Number(form.sortOrder),
@@ -142,7 +139,6 @@ export function PlanActions({ plan }: { plan: PlanData }) {
     { key: "diskMb", label: "Disk", type: "number", suffix: "MB" },
     { key: "playerSlots", label: "Player Slots", type: "number" },
     { key: "backupSlots", label: "Backup Slots", type: "number" },
-    { key: "databaseLimit", label: "Databases", type: "number" },
     { key: "priceMonthly", label: "Price", type: "number", suffix: "$" },
     { key: "sortOrder", label: "Sort Order", type: "number" },
     { key: "features", label: "Features (comma-separated)", type: "text" },

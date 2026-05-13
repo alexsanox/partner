@@ -166,7 +166,6 @@ export default async function AdminPlansPage() {
                           diskMb: plan.diskMb,
                           playerSlots: plan.playerSlots,
                           backupSlots: plan.backupSlots,
-                          databaseLimit: plan.databaseLimit,
                           priceMonthly: plan.priceMonthly,
                           features: plan.features,
                           isActive: plan.isActive,
@@ -228,9 +227,6 @@ export default async function AdminPlansPage() {
                     </div>
                     <div className="flex items-center gap-2 text-[#8b92a8]">
                       <span className="text-white">{plan.backupSlots}</span> backups
-                    </div>
-                    <div className="flex items-center gap-2 text-[#8b92a8]">
-                      <span className="text-white">{plan.databaseLimit}</span> databases
                     </div>
                   </div>
                   {plan.features.length > 0 && (

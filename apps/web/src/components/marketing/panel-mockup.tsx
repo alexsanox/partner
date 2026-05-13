@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 
-const TABS = ["Console", "Files", "Backups", "Settings", "Players", "Databases"];
+const TABS = ["Console", "Files", "Backups", "Settings", "Players"];
 
 const CONSOLE_LINES = [
   { text: "[Server] Starting Minecraft server version 1.21.4...", color: "text-[#00c98d]", delay: 0 },
@@ -246,25 +246,6 @@ export function PanelMockup() {
             </div>
           )}
 
-          {/* Databases */}
-          {activeTab === 5 && (
-            <div className="p-4 space-y-3">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-[#8b92a8]">1 database</span>
-                <button className="rounded-lg bg-[#00c98d]/15 px-3 py-1 text-[11px] font-bold text-[#00c98d] hover:bg-[#00c98d]/25 transition-colors">
-                  + Create Database
-                </button>
-              </div>
-              <div className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-4 py-3 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-[#4dd9ae]">s1_myserver</span>
-                  <span className="text-[10px] rounded-full bg-green-400/10 px-2 py-0.5 text-green-400">Active</span>
-                </div>
-                <div className="text-[10px] text-[#8b92a8] font-mono">Host: mysql.partnerhosting.com:3306</div>
-                <div className="text-[10px] text-[#8b92a8] font-mono">User: u1_myserver</div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

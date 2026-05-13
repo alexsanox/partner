@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Terminal, FolderOpen, Settings, LayoutDashboard, Copy, Check, Archive, SlidersHorizontal, Users, Server, Gamepad2, Box, ShoppingBag, Database } from "lucide-react";
+import { Terminal, FolderOpen, Settings, LayoutDashboard, Copy, Check, Archive, SlidersHorizontal, Users, Server, Gamepad2, Box, ShoppingBag } from "lucide-react";
 import { ServerConsole } from "./server-console";
 import { PowerControls } from "./power-controls";
 import { ResourceUsage, type ResourceStats } from "./resource-usage";
@@ -12,7 +12,6 @@ import { ServerProperties } from "./server-properties";
 import { PlayerManager } from "./player-manager";
 import { ServerStore } from "./server-store";
 import { InstallingScreen } from "./installing-screen";
-import { DatabaseManager } from "./database-manager";
 
 interface ServerTabsProps {
   serverId: string;
@@ -51,7 +50,6 @@ const tabs = [
   { key: "mods", label: "Mods & Plugins", icon: ShoppingBag },
   { key: "backups", label: "Backups", icon: Archive },
   { key: "players", label: "Players", icon: Users },
-  { key: "databases", label: "Databases", icon: Database },
   { key: "settings", label: "Settings", icon: SlidersHorizontal },
   { key: "config", label: "Config", icon: Settings },
 ];
@@ -220,9 +218,6 @@ export function ServerTabs({
 
       {/* Mods & Plugins Store */}
       {activeTab === "mods" && <ServerStore serverId={serverId} />}
-
-      {/* Databases */}
-      {activeTab === "databases" && <DatabaseManager serverId={serverId} />}
 
       {/* Config */}
       {activeTab === "config" && (
