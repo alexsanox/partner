@@ -63,6 +63,8 @@ export async function POST(req: NextRequest) {
 
     // Create a SetupIntent to collect card details, then create subscription after payment
     // This is the correct modern Stripe flow for subscriptions with deferred payment
+    const refCode = req.cookies.get("ref")?.value ?? null;
+
     const setupIntent = await stripe.setupIntents.create({
       customer: customerId,
       payment_method_types: ["card"],
@@ -76,6 +78,7 @@ export async function POST(req: NextRequest) {
         interval,
         intervalCount: intervalCount.toString(),
         planName: plan.name,
+        ...(refCode ? { refCode } : {}),
       },
     });
 

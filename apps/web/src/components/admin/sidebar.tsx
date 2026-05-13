@@ -23,6 +23,7 @@ import {
   ArrowLeft,
   Menu,
   X,
+  HandCoins,
 } from "lucide-react";
 
 const navItems = [
@@ -33,6 +34,7 @@ const navItems = [
   { href: "/admin/billing", icon: CreditCard, label: "Billing" },
   { href: "/admin/plans", icon: PackageOpen, label: "Plans" },
   { href: "/admin/eggs", icon: Egg, label: "Eggs" },
+  { href: "/admin/affiliates", icon: HandCoins, label: "Affiliates" },
   { href: "/admin/tickets", icon: MessageSquare, label: "Tickets" },
   { href: "/admin/provisioning", icon: Activity, label: "Provisioning" },
   { href: "/admin/settings", icon: Settings, label: "Settings" },

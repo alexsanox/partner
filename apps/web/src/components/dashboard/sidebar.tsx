@@ -16,6 +16,7 @@ import {
   HelpCircle,
   Menu,
   X,
+  HandCoins,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
   { href: "/dashboard/services", icon: Server, label: "My Servers" },
   { href: "/dashboard/billing", icon: CreditCard, label: "Billing" },
+  { href: "/dashboard/affiliate", icon: HandCoins, label: "Affiliates" },
   { href: "/dashboard/support", icon: LifeBuoy, label: "Support" },
   { href: "/dashboard/settings", icon: Settings, label: "Settings" },
 ];

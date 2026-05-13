@@ -90,6 +90,7 @@ model User {
   banReason        String?
   banExpires       DateTime?
   twoFactorEnabled Boolean   @default(false)
+  referredByCode   String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -99,6 +100,7 @@ model User {
   services    Service[]
   tickets     SupportTicket[]
   twoFactors  TwoFactor[]
+  affiliate   AffiliateProfile?
 
   @@map("users")
 }
@@ -221,7 +223,8 @@ model Order {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
-  service Service?
+  service    Service?
+  commission AffiliateCommission?
 
   @@index([userId])
   @@index([stripeSessionId])
@@ -344,4 +347,78 @@ model NewsletterSubscriber {
   active      Boolean  @default(true)
 
   @@map("newsletter_subscribers")
+}
+
+// ─── Affiliates ──────────────────────────────────────────────────────────────
+
+enum AffiliatePayoutStatus {
+  PENDING
+  APPROVED
+  PAID
+  REJECTED
+}
+
+model AffiliateProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code          String   @unique
+  commissionPct Int      @default(20)   // percentage e.g. 20 = 20%
+  totalClicks   Int      @default(0)
+  totalEarnings Int      @default(0)    // cents
+  pendingEarnings Int    @default(0)    // cents not yet paid out
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  clicks      AffiliateClick[]
+  commissions AffiliateCommission[]
+  payouts     AffiliatePayout[]
+
+  @@index([code])
+  @@map("affiliate_profiles")
+}
+
+model AffiliateClick {
+  id          String   @id @default(cuid())
+  affiliateId String
+  affiliate   AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  ip          String?
+  userAgent   String?
+  referrer    String?
+  converted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([affiliateId])
+  @@map("affiliate_clicks")
+}
+
+model AffiliateCommission {
+  id          String   @id @default(cuid())
+  affiliateId String
+  affiliate   AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id])
+  amountCents Int
+  paid        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([affiliateId])
+  @@map("affiliate_commissions")
+}
+
+model AffiliatePayout {
+  id          String               @id @default(cuid())
+  affiliateId String
+  affiliate   AffiliateProfile     @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  amountCents Int
+  status      AffiliatePayoutStatus @default(PENDING)
+  method      String               @default("paypal")
+  details     String?              // e.g. PayPal email
+  note        String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([affiliateId])
+  @@map("affiliate_payouts")
 }

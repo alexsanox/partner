@@ -69,6 +69,39 @@ async function handleSubscriptionPaid(subscriptionId: string) {
       stripeSubscriptionId: subscriptionId,
     },
   });
+
+  // Credit affiliate commission if user was referred
+  try {
+    const referredUser = await prisma.user.findUnique({ where: { id: userId }, select: { referredByCode: true } });
+    const refCode = referredUser?.referredByCode ?? sub.metadata?.refCode;
+    if (refCode) {
+      const affiliate = await prisma.affiliateProfile.findUnique({ where: { code: refCode, isActive: true } });
+      if (affiliate && affiliate.userId !== userId) {
+        const commission = Math.round(order.amountCents * affiliate.commissionPct / 100);
+        await prisma.affiliateCommission.create({
+          data: { affiliateId: affiliate.id, orderId: order.id, amountCents: commission },
+        });
+        await prisma.affiliateProfile.update({
+          where: { id: affiliate.id },
+          data: {
+            totalEarnings: { increment: commission },
+            pendingEarnings: { increment: commission },
+          },
+        });
+        // Mark the click as converted
+        await prisma.affiliateClick.updateMany({
+          where: { affiliateId: affiliate.id, converted: false },
+          data: { converted: true },
+        });
+        // Store referral on user for future recurring commissions
+        if (!referredUser?.referredByCode) {
+          await prisma.user.update({ where: { id: userId }, data: { referredByCode: refCode } });
+        }
+      }
+    }
+  } catch (e) {
+    console.error("[stripe-webhook] Affiliate commission failed:", e);
+  }
 }
 
 // ── Webhook handler ──────────────────────────────────────────────────
