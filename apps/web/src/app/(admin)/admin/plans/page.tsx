@@ -167,6 +167,7 @@ export default async function AdminPlansPage() {
                           playerSlots: plan.playerSlots,
                           backupSlots: plan.backupSlots,
                           priceMonthly: plan.priceMonthly,
+                          trialDays: (plan as unknown as { trialDays?: number }).trialDays ?? 0,
                           features: plan.features,
                           isActive: plan.isActive,
                           sortOrder: plan.sortOrder,

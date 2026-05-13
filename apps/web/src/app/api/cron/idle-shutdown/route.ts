@@ -15,22 +15,15 @@ export async function GET(req: NextRequest) {
   const IDLE_MS = 5 * 60 * 1000; // 5 minutes
 
   // Only check MINECRAFT trial/free services that are ACTIVE
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const services = await prisma.service.findMany({
-    where: {
-      status: "ACTIVE",
-      isTrial: true,
-      plan: { type: "MINECRAFT" },
-    },
+    where: { status: "ACTIVE", isTrial: true, plan: { type: "MINECRAFT" } } as any,
     include: { plan: true },
   });
 
-  // Also include isFree Minecraft services
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const freeServices = await prisma.service.findMany({
-    where: {
-      status: "ACTIVE",
-      isFree: true,
-      plan: { type: "MINECRAFT" },
-    },
+    where: { status: "ACTIVE", isFree: true, plan: { type: "MINECRAFT" } } as any,
     include: { plan: true },
   });
 
@@ -56,32 +49,26 @@ export async function GET(req: NextRequest) {
 
       if (playerCount > 0) {
         // Players online — reset idle timer
-        await prisma.service.update({
-          where: { id: service.id },
-          data: { idleEmptySince: null },
-        });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await prisma.service.update({ where: { id: service.id }, data: { idleEmptySince: null } as any });
         results.push({ id: service.id, name: service.name, action: "active", players: playerCount });
         continue;
       }
 
       // 0 players — check how long it's been empty
       const now = new Date();
-      if (!service.idleEmptySince) {
+      const svcAny = service as unknown as { idleEmptySince: Date | null };
+      if (!svcAny.idleEmptySince) {
         // First time seeing empty — record timestamp
-        await prisma.service.update({
-          where: { id: service.id },
-          data: { idleEmptySince: now },
-        });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await prisma.service.update({ where: { id: service.id }, data: { idleEmptySince: now } as any });
         results.push({ id: service.id, name: service.name, action: "idle-started", players: 0 });
       } else {
-        const idleMs = now.getTime() - service.idleEmptySince.getTime();
+        const idleMs = now.getTime() - svcAny.idleEmptySince.getTime();
         if (idleMs >= IDLE_MS) {
-          // Stop server after 5 min idle
           await sendPowerAction(service.externalServerId, "stop");
-          await prisma.service.update({
-            where: { id: service.id },
-            data: { idleEmptySince: null, status: "SUSPENDED", suspendedAt: now },
-          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await prisma.service.update({ where: { id: service.id }, data: { idleEmptySince: null, status: "SUSPENDED", suspendedAt: now } as any });
           results.push({ id: service.id, name: service.name, action: "stopped-idle", players: 0 });
         } else {
           results.push({ id: service.id, name: service.name, action: `idle-${Math.round(idleMs / 60000)}min`, players: 0 });

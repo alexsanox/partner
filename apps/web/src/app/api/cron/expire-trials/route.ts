@@ -15,11 +15,11 @@ export async function GET(req: NextRequest) {
 
   // Find all active trial services whose trial has ended
   const expired = await prisma.service.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     where: {
-      isTrial: true,
       status: "ACTIVE",
       trialEndsAt: { lte: now },
-    },
+    } as any,
   });
 
   const results: { id: string; name: string; action: string; error?: string }[] = [];

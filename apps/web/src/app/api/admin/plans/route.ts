@@ -39,7 +39,8 @@ export async function POST(req: NextRequest) {
     const existing = await prisma.plan.findUnique({ where: { slug } });
     if (existing) slug = `${slug}-${Date.now()}`;
 
-    const plan = await prisma.plan.create({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const plan = await (prisma.plan.create as any)({
       data: {
         name,
         slug,

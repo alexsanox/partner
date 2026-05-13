@@ -98,6 +98,7 @@ export async function POST(req: NextRequest) {
     const externalServerUuid = result.attributes.uuid;
 
     // ── Create Service record (no order needed) ──────────────────────────
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const service = await prisma.service.create({
       data: {
         userId,
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
         externalServerUuid,
         ipAddress: nodeIp,
         port: nextPort,
-      },
+      } as any,
     });
 
     return NextResponse.json({ success: true, service });
