@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Loader2, X, Upload, ImageIcon, Paperclip, Copy, Check, Link } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Loader2, X, Upload, ImageIcon, Paperclip, Copy, Check, Link, Code } from "lucide-react";
+import { marked } from "marked";
 import { toast } from "sonner";
 
 interface BlogPost {
@@ -41,6 +42,7 @@ export default function AdminBlogPage() {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [attachments, setAttachments] = useState<{ name: string; url: string; type: string }[]>([]);
   const [copied, setCopied] = useState<string | null>(null);
+  const [preview, setPreview] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const attachRef = useRef<HTMLInputElement>(null);
 
@@ -291,14 +293,35 @@ export default function AdminBlogPage() {
 
           {/* Content */}
           <div>
-            <label className="block text-xs font-semibold text-[#8b92a8] mb-1.5 uppercase tracking-wide">Content * (Markdown)</label>
-            <textarea
-              value={form.content}
-              onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-              placeholder="Write your post in Markdown...&#10;&#10;## Heading&#10;**bold** *italic*&#10;&#10;![Alt text](image-url)"
-              rows={20}
-              className="w-full rounded-xl border border-white/[0.08] bg-[#1a1e2e] px-4 py-3 text-sm text-white font-mono placeholder:text-[#8b92a8] outline-none focus:border-[#00c98d]/40 resize-y"
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-[#8b92a8] uppercase tracking-wide">Content * (Markdown)</label>
+              <button
+                type="button"
+                onClick={() => setPreview((p) => !p)}
+                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1 text-xs font-medium transition-colors ${
+                  preview
+                    ? "border-[#00c98d]/40 bg-[#00c98d]/10 text-[#00c98d]"
+                    : "border-white/[0.08] text-[#8b92a8] hover:text-white"
+                }`}
+              >
+                {preview ? <Code className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                {preview ? "Edit" : "Preview"}
+              </button>
+            </div>
+            {preview ? (
+              <div
+                className="prose w-full min-h-[480px] rounded-xl border border-white/[0.08] bg-[#1a1e2e] px-4 py-3 overflow-auto"
+                dangerouslySetInnerHTML={{ __html: marked(form.content || "*Nothing to preview yet...*") as string }}
+              />
+            ) : (
+              <textarea
+                value={form.content}
+                onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+                placeholder="Write your post in Markdown...&#10;&#10;## Heading&#10;**bold** *italic*&#10;&#10;![Alt text](image-url)"
+                rows={20}
+                className="w-full rounded-xl border border-white/[0.08] bg-[#1a1e2e] px-4 py-3 text-sm text-white font-mono placeholder:text-[#8b92a8] outline-none focus:border-[#00c98d]/40 resize-y"
+              />
+            )}
           </div>
 
           {/* Meta row */}
