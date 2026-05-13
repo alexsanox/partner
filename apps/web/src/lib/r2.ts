@@ -14,6 +14,8 @@ export const r2 = new S3Client({
     accessKeyId: R2_ACCESS_KEY_ID,
     secretAccessKey: R2_SECRET_ACCESS_KEY,
   },
+  // R2 requires path-style URLs (bucket in path, not subdomain)
+  forcePathStyle: true,
   // R2 does not support SDK-injected checksums
   requestChecksumCalculation: "WHEN_REQUIRED",
   responseChecksumValidation: "WHEN_REQUIRED",
