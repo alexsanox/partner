@@ -13,7 +13,7 @@ error()   { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 # ── Config ─────────────────────────────────────────────────────────
 APP_PORT=6785
-APP_DIR="/root/partner"
+APP_DIR="/opt/pobble"
 DOMAIN="novally.tech"
 ADMIN_DOMAIN="admin.novally.tech"
 DB_NAME="pobble"
@@ -65,10 +65,20 @@ fi
 
 # ── 5. PostgreSQL setup ────────────────────────────────────────────
 info "Setting up PostgreSQL..."
-DB_PASS=$(openssl rand -base64 24 | tr -d '/+=' | head -c 32)
-
-sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${DB_USER}'" | grep -q 1 || \
+# If user already exists, read password from existing .env to avoid resetting it
+if sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${DB_USER}'" | grep -q 1; then
+  info "DB user '${DB_USER}' already exists, reading password from existing .env..."
+  EXISTING_ENV="${APP_DIR}/apps/web/.env"
+  if [ -f "$EXISTING_ENV" ]; then
+    DB_PASS=$(grep '^DATABASE_URL=' "$EXISTING_ENV" | sed 's|.*://[^:]*:\([^@]*\)@.*|\1|')
+  else
+    DB_PASS=$(openssl rand -base64 24 | tr -d '/+=' | head -c 32)
+    warn "Could not read existing password, generated a new one. Update DATABASE_URL manually if needed."
+  fi
+else
+  DB_PASS=$(openssl rand -base64 24 | tr -d '/+=' | head -c 32)
   sudo -u postgres psql -c "CREATE USER ${DB_USER} WITH PASSWORD '${DB_PASS}';"
+fi
 
 sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname='${DB_NAME}'" | grep -q 1 || \
   sudo -u postgres psql -c "CREATE DATABASE ${DB_NAME} OWNER ${DB_USER};"
@@ -107,10 +117,11 @@ cd "$APP_DIR"
 bun install
 
 info "Running database migrations..."
-cd "$APP_DIR/apps/web"
-bunx prisma db push
+cd "$APP_DIR"
+bunx prisma db push --schema=packages/db/prisma/schema.prisma
 
 info "Building app..."
+cd "$APP_DIR/apps/web"
 bun run build
 
 # ── 9. Systemd service ─────────────────────────────────────────────
