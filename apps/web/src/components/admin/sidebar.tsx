@@ -53,18 +53,23 @@ function AdminSidebarContent({
   return (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className="flex h-14 items-center justify-between px-3 border-b border-white/[0.07]">
-        <Link href="/admin" className="flex items-center gap-2" onClick={onNavClick}>
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center">
-            <Shield className="h-5 w-5 text-[#00c98d]" />
-          </div>
-          {!collapsed && (
+      <div className={`flex h-14 items-center border-b border-white/[0.07] px-3 ${collapsed ? "justify-center" : "justify-between"}`}>
+        {!collapsed && (
+          <Link href="/admin" className="flex items-center gap-2" onClick={onNavClick}>
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center">
+              <Shield className="h-5 w-5 text-[#00c98d]" />
+            </div>
             <span className="text-sm font-bold tracking-wide text-white uppercase">Admin</span>
-          )}
-        </Link>
+          </Link>
+        )}
+        {collapsed && (
+          <Link href="/admin" onClick={onNavClick}>
+            <Shield className="h-5 w-5 text-[#00c98d]" />
+          </Link>
+        )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden md:flex rounded p-1 text-[#8b92a8] hover:text-white transition-colors"
+          className="hidden md:flex rounded p-1 text-[#8b92a8] hover:text-white transition-colors shrink-0"
         >
           {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
         </button>

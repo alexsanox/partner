@@ -44,18 +44,23 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className="flex h-14 items-center justify-between px-3 border-b border-white/[0.07]">
-        <Link href="/" className="flex items-center gap-2" onClick={onNavClick}>
-          <Image src="/logo.webp" alt="Pobble" width={28} height={28} className="rounded-md shrink-0" />
-          {!collapsed && (
+      <div className={`flex h-14 items-center border-b border-white/[0.07] px-3 ${collapsed ? "justify-center" : "justify-between"}`}>
+        {!collapsed && (
+          <Link href="/" className="flex items-center gap-2" onClick={onNavClick}>
+            <Image src="/logo.webp" alt="Pobble" width={28} height={28} className="rounded-md shrink-0" />
             <span className="text-sm font-bold tracking-wide text-white">
               Pobble<span className="text-[#00c98d]">Host</span>
             </span>
-          )}
-        </Link>
+          </Link>
+        )}
+        {collapsed && (
+          <Link href="/" onClick={onNavClick}>
+            <Image src="/logo.webp" alt="Pobble" width={28} height={28} className="rounded-md shrink-0" />
+          </Link>
+        )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden md:flex rounded p-1 text-[#8b92a8] hover:text-white transition-colors"
+          className="hidden md:flex rounded p-1 text-[#8b92a8] hover:text-white transition-colors shrink-0"
         >
           {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
         </button>
