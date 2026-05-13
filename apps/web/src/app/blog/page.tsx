@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = { title: "Blog | PobbleHost" };
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 function tagColor(tag: string) {
   const map: Record<string, string> = {

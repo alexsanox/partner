@@ -10,6 +10,14 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@prisma/client", "@prisma/adapter-pg", "pg", "ws", "adm-zip", "ioredis"],
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "*.t3.storage.dev" },
+      { protocol: "https", hostname: "t3.storage.dev" },
+      { protocol: "https", hostname: "*.r2.dev" },
+      { protocol: "https", hostname: "cdn.novally.tech" },
+    ],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "100mb",
