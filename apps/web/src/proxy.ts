@@ -1,4 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+
+// ── Rate limit rules ───────────────────────────────────────────────
+const LIMITS: Record<string, [limit: number, windowSecs: number]> = {
+  "sign-in":                 [5,  60],
+  "sign-up":                 [5,  60],
+  "forget-password":         [3,  60],
+  "reset-password":          [5,  60],
+  "send-verification-email": [3,  60],
+};
+
+const AUTH_PREFIX = "/api/auth/";
+
+function getIp(req: NextRequest): string {
+  return (
+    req.headers.get("cf-connecting-ip") ??
+    req.headers.get("x-real-ip") ??
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "global"
+  );
+}
 
 // ── Security headers ───────────────────────────────────────────────
 function addSecurityHeaders(res: NextResponse): NextResponse {
@@ -24,8 +45,21 @@ function addSecurityHeaders(res: NextResponse): NextResponse {
   return res;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function middleware(_req: NextRequest) {
+export async function proxy(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // ── Rate limiting on auth endpoints ───────────────────────────
+  if (pathname.startsWith(AUTH_PREFIX)) {
+    const action = pathname.slice(AUTH_PREFIX.length).split("/")[0];
+    const rule = LIMITS[action];
+    if (rule) {
+      const ip = getIp(req);
+      const key = `rl:auth:${action}:${ip}`;
+      const { success, reset } = await rateLimit(key, rule[0], rule[1]);
+      if (!success) return rateLimitResponse(reset);
+    }
+  }
+
   return addSecurityHeaders(NextResponse.next());
 }
 
