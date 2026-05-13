@@ -118,7 +118,9 @@ bun install
 
 info "Running database migrations..."
 cd "$APP_DIR"
-./node_modules/.bin/prisma db push --schema=packages/db/prisma/schema.prisma
+PRISMA_BIN=$(find . -path "*/node_modules/.bin/prisma" -not -path "*/.next/*" | head -1)
+[ -z "$PRISMA_BIN" ] && error "Could not find prisma binary. Run 'bun install' first."
+"$PRISMA_BIN" db push --schema=packages/db/prisma/schema.prisma
 
 info "Building app..."
 cd "$APP_DIR/apps/web"
