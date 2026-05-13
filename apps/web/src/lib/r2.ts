@@ -15,6 +15,8 @@ export const s3 = new S3Client({
     secretAccessKey: S3_SECRET_ACCESS_KEY,
   },
   ...(S3_ENDPOINT && { endpoint: S3_ENDPOINT }),
+  requestChecksumCalculation: "WHEN_REQUIRED",
+  responseChecksumValidation: "WHEN_REQUIRED",
 });
 
 export async function getUploadUrl(key: string, contentType: string, expiresIn = 300) {
@@ -23,7 +25,10 @@ export async function getUploadUrl(key: string, contentType: string, expiresIn =
     Key: key,
     ContentType: contentType,
   });
-  return getSignedUrl(s3, command, { expiresIn });
+  return getSignedUrl(s3, command, {
+    expiresIn,
+    unhoistableHeaders: new Set(["x-amz-checksum-crc32", "x-amz-sdk-checksum-algorithm"]),
+  });
 }
 
 export async function deleteObject(key: string) {
