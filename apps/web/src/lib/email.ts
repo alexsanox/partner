@@ -44,10 +44,10 @@ ${opts.preheader ? `<div style="display:none;max-height:0;overflow:hidden;">${op
       <!-- Main card -->
       <tr><td style="background-color:#161b27;border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;">
         <!-- Gradient header strip -->
-        <div style="height:4px;background:linear-gradient(90deg,${accent},#7c3aed,#ec4899);"></div>
+        <div style="height:4px;background:linear-gradient(90deg,#00a86b,#00c98d,#4dd9ae);"></div>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
           <tr><td style="padding:36px 36px 0;">
-            ${opts.icon ? `<div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,${accent}22,${accent}11);text-align:center;line-height:52px;font-size:26px;margin-bottom:20px;">${opts.icon}</div>` : ""}
+            ${opts.icon ? `<div style="width:52px;height:52px;border-radius:14px;background:rgba(0,201,141,0.10);border:1px solid rgba(0,201,141,0.18);text-align:center;line-height:52px;font-size:26px;margin-bottom:20px;">${opts.icon}</div>` : ""}
             <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:${opts.headingColor || "#ffffff"};letter-spacing:-0.3px;line-height:1.3;">${opts.heading}</h1>
           </td></tr>
           <tr><td style="padding:12px 36px 32px;">
@@ -168,15 +168,17 @@ export async function sendVerificationEmail(email: string, url: string) {
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: "Verify your email address",
+    subject: "Confirm your email address — PobbleHost",
     html: layout({
-      preheader: "Please verify your email to activate your account.",
-      icon: "&#9993;",
-      heading: "Verify Your Email",
+      preheader: "One click and you're in. Verify your email to activate your PobbleHost account.",
+      icon: "&#9989;",
+      heading: "You're almost there!",
       body:
-        p("Thanks for signing up! Click the button below to verify your email address and get started.") +
-        p(`<span style="color:#6b7490;font-size:13px;">This link will expire in 24 hours. If you didn't create an account, you can safely ignore this email.</span>`),
-      cta: { label: "Verify Email Address &rarr;", url },
+        p("Thanks for creating a <strong style=\"color:#ffffff;\">PobbleHost</strong> account. Just click the button below to verify your email address and unlock your dashboard.") +
+        `<div style="background:rgba(0,201,141,0.06);border:1px solid rgba(0,201,141,0.15);border-radius:12px;padding:16px 20px;margin:0 0 20px;">
+          <p style="margin:0;font-size:13px;color:#00c98d;">&#128274; This link expires in <strong>24 hours</strong>. If you didn\'t sign up, you can safely ignore this email.</p>
+        </div>`,
+      cta: { label: "Verify My Email Address", url },
     }),
   });
 }
@@ -251,7 +253,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
         `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
           <tr><td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
             <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-              <td style="width:36px;height:36px;background-color:rgba(91,140,255,0.1);border-radius:10px;text-align:center;vertical-align:middle;font-size:16px;">&#127918;</td>
+              <td style="width:36px;height:36px;background-color:rgba(0,201,141,0.1);border-radius:10px;text-align:center;vertical-align:middle;font-size:16px;">&#127918;</td>
               <td style="padding-left:14px;">
                 <p style="margin:0;font-size:14px;font-weight:600;color:#e2e8f0;">Create a Server</p>
                 <p style="margin:2px 0 0;font-size:12px;color:#6b7490;">Launch your Minecraft server in under 60 seconds</p>
@@ -260,7 +262,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
           </td></tr>
           <tr><td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
             <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-              <td style="width:36px;height:36px;background-color:rgba(124,58,237,0.1);border-radius:10px;text-align:center;vertical-align:middle;font-size:16px;">&#9881;</td>
+              <td style="width:36px;height:36px;background-color:rgba(0,201,141,0.08);border-radius:10px;text-align:center;vertical-align:middle;font-size:16px;">&#9881;</td>
               <td style="padding-left:14px;">
                 <p style="margin:0;font-size:14px;font-weight:600;color:#e2e8f0;">Customize Settings</p>
                 <p style="margin:2px 0 0;font-size:12px;color:#6b7490;">Configure mods, plugins, and server properties</p>
@@ -269,7 +271,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
           </td></tr>
           <tr><td style="padding:12px 0;">
             <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-              <td style="width:36px;height:36px;background-color:rgba(236,72,153,0.1);border-radius:10px;text-align:center;vertical-align:middle;font-size:16px;">&#128172;</td>
+              <td style="width:36px;height:36px;background-color:rgba(0,201,141,0.06);border-radius:10px;text-align:center;vertical-align:middle;font-size:16px;">&#128172;</td>
               <td style="padding-left:14px;">
                 <p style="margin:0;font-size:14px;font-weight:600;color:#e2e8f0;">Get Support</p>
                 <p style="margin:2px 0 0;font-size:12px;color:#6b7490;">Our team is here 24/7 if you need help</p>
@@ -319,10 +321,10 @@ export async function sendServerReadyEmail(email: string, data: { serverName: st
         detailTable([
           ["Server", data.serverName],
           ["Plan", data.planName],
-          ["Connect Address", `<code style="font-family:'SF Mono',monospace;background-color:rgba(91,140,255,0.1);padding:3px 8px;border-radius:6px;font-size:13px;">${data.ip}:${data.port}</code>`, "#00c98d"],
+          ["Connect Address", `<code style="font-family:'SF Mono',monospace;background-color:rgba(0,201,141,0.1);padding:3px 8px;border-radius:6px;font-size:13px;">${data.ip}:${data.port}</code>`, "#00c98d"],
         ]) +
-        `<div style="background-color:rgba(91,140,255,0.06);border:1px solid rgba(91,140,255,0.15);border-radius:12px;padding:16px 20px;margin:0 0 20px;">
-          <p style="margin:0;font-size:13px;color:#7ca3ff;">&#128161; <strong>Quick Tip:</strong> Add the server address to your Minecraft multiplayer list to join instantly.</p>
+        `<div style="background-color:rgba(0,201,141,0.06);border:1px solid rgba(0,201,141,0.15);border-radius:12px;padding:16px 20px;margin:0 0 20px;">
+          <p style="margin:0;font-size:13px;color:#00c98d;">&#128161; <strong>Quick Tip:</strong> Add the server address to your Minecraft multiplayer list to join instantly.</p>
         </div>`,
       cta: { label: "Manage Server &rarr;", url: `${APP_URL()}/dashboard/services` },
     }),
