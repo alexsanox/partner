@@ -15,6 +15,8 @@ export const s3 = new S3Client({
     secretAccessKey: S3_SECRET_ACCESS_KEY,
   },
   ...(S3_ENDPOINT && { endpoint: S3_ENDPOINT }),
+  // Required for MinIO and most S3-compatible stores
+  forcePathStyle: true,
   requestChecksumCalculation: "WHEN_REQUIRED",
   responseChecksumValidation: "WHEN_REQUIRED",
 });
@@ -24,7 +26,6 @@ export async function getUploadUrl(key: string, contentType: string, expiresIn =
     Bucket: S3_BUCKET,
     Key: key,
     ContentType: contentType,
-    ACL: "public-read",
   });
   return getSignedUrl(s3, command, {
     expiresIn,
