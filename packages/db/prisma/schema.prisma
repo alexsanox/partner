@@ -101,6 +101,7 @@ model User {
   tickets     SupportTicket[]
   twoFactors  TwoFactor[]
   affiliate   AffiliateProfile?
+  blogPosts   BlogPost[]
 
   @@map("users")
 }
@@ -421,4 +422,27 @@ model AffiliatePayout {
 
   @@index([affiliateId])
   @@map("affiliate_payouts")
+}
+
+// ─── Blog ─────────────────────────────────────────────────────────────────────
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String?
+  content     String    @db.Text
+  coverImage  String?
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  tags        String[]  @default([])
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  readMinutes Int       @default(5)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([published, publishedAt])
+  @@map("blog_posts")
 }

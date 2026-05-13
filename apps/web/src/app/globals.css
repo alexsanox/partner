@@ -116,3 +116,39 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.15);
 }
+
+/* ── Blog Prose ──────────────────────────────────────────────────────── */
+.prose-blog { color: #a8b0c4; line-height: 1.8; }
+.prose-blog h1, .prose-blog h2, .prose-blog h3, .prose-blog h4 {
+  color: #ffffff; font-weight: 800; line-height: 1.3; margin-top: 2rem; margin-bottom: 0.75rem;
+}
+.prose-blog h1 { font-size: 2rem; }
+.prose-blog h2 { font-size: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.5rem; }
+.prose-blog h3 { font-size: 1.2rem; color: #e2e8f0; }
+.prose-blog p { margin-bottom: 1.25rem; }
+.prose-blog a { color: #00c98d; text-decoration: underline; text-underline-offset: 3px; }
+.prose-blog a:hover { color: #4dd9ae; }
+.prose-blog strong { color: #ffffff; font-weight: 700; }
+.prose-blog em { color: #c8cfe0; }
+.prose-blog ul, .prose-blog ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
+.prose-blog li { margin-bottom: 0.4rem; }
+.prose-blog ul li { list-style: disc; }
+.prose-blog ol li { list-style: decimal; }
+.prose-blog blockquote {
+  border-left: 3px solid #00c98d; margin: 1.5rem 0; padding: 0.75rem 1.25rem;
+  background: rgba(0,201,141,0.05); border-radius: 0 0.5rem 0.5rem 0; color: #c8cfe0;
+}
+.prose-blog code:not(pre code) {
+  background: rgba(255,255,255,0.08); border-radius: 4px; padding: 0.15em 0.4em;
+  font-size: 0.875em; color: #00c98d; font-family: monospace;
+}
+.prose-blog pre {
+  background: #111520; border: 1px solid rgba(255,255,255,0.08); border-radius: 0.75rem;
+  padding: 1.25rem; overflow-x: auto; margin-bottom: 1.5rem;
+}
+.prose-blog pre code { color: #e2e8f0; font-size: 0.875rem; background: none; padding: 0; }
+.prose-blog img { border-radius: 0.75rem; max-width: 100%; margin: 1.5rem auto; display: block; }
+.prose-blog hr { border-color: rgba(255,255,255,0.08); margin: 2rem 0; }
+.prose-blog table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+.prose-blog th { background: rgba(255,255,255,0.05); color: #fff; font-weight: 700; padding: 0.6rem 1rem; text-align: left; border: 1px solid rgba(255,255,255,0.08); }
+.prose-blog td { padding: 0.6rem 1rem; border: 1px solid rgba(255,255,255,0.06); }
