@@ -34,18 +34,25 @@ export async function POST(req: NextRequest) {
     let uploadUrl = await getUploadUrl(key, contentType);
     const publicUrl = getPublicUrl(key);
 
-    // If the endpoint is localhost/internal, rewrite the presigned URL host
-    // to the public-facing S3 URL so the browser can reach it
+    // If the endpoint is localhost/internal, rewrite the presigned URL
+    // to the public-facing URL so the browser can reach it (no CORS needed)
     const s3Endpoint = process.env.AWS_ENDPOINT_URL_S3 ?? "";
     const s3Public = process.env.S3_PUBLIC_URL ?? "";
     if (s3Endpoint && s3Public && (s3Endpoint.includes("localhost") || s3Endpoint.includes("127.0.0.1"))) {
-      // Replace internal endpoint with public URL in the presigned URL
+      // s3Public = https://novally.tech/s3
+      // uploadUrl = http://localhost:1481/pobble/blog/...?sig=...
+      // result   = https://novally.tech/s3/blog/...?sig=...
       const internalUrl = new URL(uploadUrl);
-      const publicBase = new URL(s3Public);
-      internalUrl.protocol = publicBase.protocol;
-      internalUrl.host = publicBase.host;
-      // strip the bucket prefix from path since public URL already includes it via /s3/ proxy
-      uploadUrl = internalUrl.toString();
+      const publicBase = new URL(s3Public); // https://novally.tech/s3
+      const bucket = process.env.S3_BUCKET ?? "";
+      // Remove leading /bucket from path
+      const pathWithoutBucket = internalUrl.pathname.startsWith(`/${bucket}`)
+        ? internalUrl.pathname.slice(bucket.length + 1)
+        : internalUrl.pathname;
+      const rewritten = new URL(publicBase.toString());
+      rewritten.pathname = publicBase.pathname.replace(/\/$/, "") + pathWithoutBucket;
+      rewritten.search = internalUrl.search;
+      uploadUrl = rewritten.toString();
     }
 
     return NextResponse.json({ uploadUrl, publicUrl, key });
