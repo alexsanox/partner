@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 // ── Rate limit rules ───────────────────────────────────────────────
+// [limit per window, windowSecs]
 const LIMITS: Record<string, [limit: number, windowSecs: number]> = {
-  "sign-in":                 [5,  60],
-  "sign-up":                 [5,  60],
-  "forget-password":         [3,  60],
-  "reset-password":          [5,  60],
-  "send-verification-email": [3,  60],
+  "sign-in":                 [10, 300],  // 10 attempts per 5 min
+  "sign-up":                 [8,  300],  // 8 registrations per 5 min
+  "forget-password":         [5,  300],  // 5 resets per 5 min
+  "reset-password":          [8,  300],
+  "send-verification-email": [5,  300],
 };
 
 const AUTH_PREFIX = "/api/auth/";
@@ -51,18 +52,24 @@ export async function proxy(req: NextRequest) {
 
   // ── /admin — strict rate limit + extra headers ─────────────────
   if (pathname.startsWith("/admin")) {
-    const { success, reset } = await rateLimit(`rl:admin:${ip}`, 30, 60);
+    const { success, reset } = await rateLimit(`rl:admin:${ip}`, 60, 60);
     if (!success) return rateLimitResponse(reset);
   }
 
   // ── Rate limiting on auth endpoints ───────────────────────────
   if (pathname.startsWith(AUTH_PREFIX)) {
-    const action = pathname.slice(AUTH_PREFIX.length).split("/")[0];
+    const segments = pathname.slice(AUTH_PREFIX.length).split("/");
+    // /api/auth/sign-in/email → segments[0] = "sign-in"
+    const action = segments[0];
     const rule = LIMITS[action];
     if (rule) {
       const key = `rl:auth:${action}:${ip}`;
-      const { success, reset } = await rateLimit(key, rule[0], rule[1]);
+      const { success, reset, remaining } = await rateLimit(key, rule[0], rule[1]);
       if (!success) return rateLimitResponse(reset);
+      // Attach remaining hints so clients can back off gracefully
+      const res = NextResponse.next();
+      res.headers.set("X-RateLimit-Remaining", String(remaining));
+      return addSecurityHeaders(res);
     }
   }
 
