@@ -31,7 +31,7 @@ const defaultForm = {
   playerSlots: 20,
   backupSlots: 1,
   databaseLimit: 0,
-  priceMonthly: 500,
+  priceMonthly: 5,
   features: "",
   sortOrder: 0,
 };
@@ -75,7 +75,7 @@ export function CreatePlanButton() {
           playerSlots: Number(form.playerSlots),
           backupSlots: Number(form.backupSlots),
           databaseLimit: Number(form.databaseLimit),
-          priceMonthly: Number(form.priceMonthly),
+          priceMonthly: Math.round(Number(form.priceMonthly) * 100),
           features,
           sortOrder: Number(form.sortOrder),
         }),
@@ -111,7 +111,7 @@ export function CreatePlanButton() {
     { key: "playerSlots", label: "Player Slots", type: "number" },
     { key: "backupSlots", label: "Backup Slots", type: "number" },
     { key: "databaseLimit", label: "Databases", type: "number" },
-    { key: "priceMonthly", label: "Price (cents)", type: "number" },
+    { key: "priceMonthly", label: "Price", type: "number", suffix: "$" },
     { key: "sortOrder", label: "Sort Order", type: "number" },
     { key: "features", label: "Features (comma-separated)", type: "text" },
   ];
