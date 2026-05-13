@@ -162,7 +162,7 @@ export function Features() {
         </div>
 
         {/* Detail features row */}
-        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-16 grid gap-4 grid-cols-2 lg:grid-cols-4">
           {detailFeatures.map((f) => (
             <div key={f.title} className="rounded-xl border border-white/[0.06] bg-[#131720] p-6 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#00c98d]/10">

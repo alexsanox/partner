@@ -55,15 +55,15 @@ export function HeroAnimated() {
         <div className="mx-auto max-w-4xl text-center">
           {/* Badge */}
           <div
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#00c98d]/30 bg-[#00c98d]/10 px-4 py-1.5 opacity-0 animate-[fadeDown_0.6s_0.1s_ease_forwards]"
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#00c98d]/30 bg-[#00c98d]/10 px-3 py-1.5 opacity-0 animate-[fadeDown_0.6s_0.1s_ease_forwards]"
           >
-            <Zap className="h-3.5 w-3.5 text-[#00c98d]" />
-            <span className="text-sm font-semibold text-[#00c98d]">Instant Setup — Live in Under 60 Seconds</span>
+            <Zap className="h-3.5 w-3.5 shrink-0 text-[#00c98d]" />
+            <span className="text-xs sm:text-sm font-semibold text-[#00c98d]">Instant Setup — Live in Under 60 Seconds</span>
           </div>
 
           {/* Headline with typewriter */}
           <h1
-            className="text-5xl font-black tracking-tight text-white sm:text-6xl lg:text-[80px] lg:leading-[1.05] opacity-0 animate-[fadeDown_0.6s_0.25s_ease_forwards]"
+            className="text-4xl font-black tracking-tight text-white sm:text-6xl lg:text-[80px] lg:leading-[1.05] opacity-0 animate-[fadeDown_0.6s_0.25s_ease_forwards]"
           >
             <span className="bg-gradient-to-r from-[#00c98d] via-[#4dd9ae] to-[#00e0a0] bg-clip-text text-transparent">
               {mounted ? displayed : WORDS[0]}
@@ -84,22 +84,22 @@ export function HeroAnimated() {
           </p>
 
           <div
-            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row opacity-0 animate-[fadeDown_0.6s_0.55s_ease_forwards]"
+            className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center opacity-0 animate-[fadeDown_0.6s_0.55s_ease_forwards] px-2 sm:px-0"
           >
-            <Link href="/#pricing">
+            <Link href="/#pricing" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="h-12 bg-[#00c98d] px-10 text-base font-bold text-white shadow-lg shadow-[#00c98d]/30 hover:bg-[#00e0a0] hover:text-white hover:shadow-[#00c98d]/40 transition-all"
+                className="w-full h-12 bg-[#00c98d] px-10 text-base font-bold text-white shadow-lg shadow-[#00c98d]/30 hover:bg-[#00e0a0] hover:text-white hover:shadow-[#00c98d]/40 transition-all"
               >
                 <Gamepad2 className="mr-2 h-5 w-5" />
                 View Plans
               </Button>
             </Link>
-            <Link href="/#features">
+            <Link href="/#features" className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="lg"
-                className="h-12 border-white/15 bg-white/[0.04] px-10 text-base text-white hover:bg-white/[0.08] hover:text-white hover:border-white/25 transition-all"
+                className="w-full h-12 border-white/15 bg-white/[0.04] px-10 text-base text-white hover:bg-white/[0.08] hover:text-white hover:border-white/25 transition-all"
               >
                 View All Features <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

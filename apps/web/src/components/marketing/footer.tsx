@@ -116,9 +116,9 @@ export function Footer() {
 
       {/* Main footer */}
       <div className="mx-auto max-w-7xl px-4 pt-14 pb-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-6">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-6">
           {/* Brand col — spans 2 */}
-          <div className="col-span-2">
+          <div className="col-span-2 sm:col-span-3 md:col-span-2">
             <Link href="/" className="flex items-center gap-2.5">
               <Image src="/logo.webp" alt="PobbleHost" width={34} height={34} className="rounded-lg" />
               <span className="text-base font-bold text-white">

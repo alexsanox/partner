@@ -110,7 +110,7 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
             <div
               key={plan.slug}
@@ -150,7 +150,7 @@ export function Pricing() {
 
                 {/* Price */}
                 <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-5xl font-black tracking-tight text-white">
+                  <span className="text-4xl sm:text-5xl font-black tracking-tight text-white">
                     ${plan.price}
                   </span>
                   <span className="text-base text-[#8b92a8]">/mo</span>

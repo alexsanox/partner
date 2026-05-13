@@ -79,8 +79,8 @@ export function WorldMap({ locations }: WorldMapProps) {
   return (
     <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#080c14]">
       {/* Region filter tabs */}
-      <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3">
-        <div className="flex gap-1">
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-3 py-3 sm:px-5">
+        <div className="flex gap-1 overflow-x-auto">
           {REGIONS.map((r) => (
             <button
               key={r}
@@ -262,7 +262,7 @@ export function WorldMap({ locations }: WorldMapProps) {
       </div>
 
       {/* Stats bar */}
-      <div className="grid grid-cols-3 divide-x divide-white/[0.06] border-t border-white/[0.06]">
+      <div className="grid grid-cols-1 divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0 divide-white/[0.06] border-t border-white/[0.06]">
         {[
           { icon: Globe,  label: "Locations",  value: `${locations.length} nodes` },
           { icon: Zap,    label: "Avg Latency", value: "< 20ms" },

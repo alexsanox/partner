@@ -33,7 +33,7 @@ export default function Home() {
         {/* Server Locations */}
         <section className="bg-[#0d1117] py-20 sm:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+            <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
               <div>
                 <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#00c98d]/30 bg-[#00c98d]/10 px-3.5 py-1.5">
                   <Globe className="h-3.5 w-3.5 text-[#00c98d]" />
