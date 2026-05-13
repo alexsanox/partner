@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "t3.storage.dev" },
       { protocol: "https", hostname: "*.r2.dev" },
       { protocol: "https", hostname: "cdn.novally.tech" },
+      { protocol: "https", hostname: "media.novally.tech" },
     ],
   },
   experimental: {
