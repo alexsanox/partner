@@ -5,11 +5,19 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomBytes } from "crypto";
 
 const ALLOWED_TYPES = [
-  "image/jpeg", "image/png", "image/webp", "image/gif",
+  "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",
   "video/mp4", "video/webm",
+  "application/json",
+  "application/java-archive",
+  "application/zip",
+  "application/x-zip-compressed",
+  "application/x-7z-compressed",
+  "application/x-rar-compressed",
+  "application/vnd.rar",
+  "application/octet-stream",
 ];
 
-const MAX_SIZE_MB = 50;
+const MAX_SIZE_MB = 500;
 const S3_BUCKET = process.env.S3_BUCKET!;
 
 export async function POST(req: NextRequest) {
