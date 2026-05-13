@@ -21,6 +21,8 @@ import {
   ChevronRight,
   LogOut,
   ArrowLeft,
+  Menu,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -36,55 +38,51 @@ const navItems = [
   { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 
-export function AdminSidebar() {
+function AdminSidebarContent({
+  collapsed,
+  setCollapsed,
+  onNavClick,
+}: {
+  collapsed: boolean;
+  setCollapsed: (v: boolean) => void;
+  onNavClick?: () => void;
+}) {
   const pathname = usePathname();
   const router = useRouter();
-  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <aside
-      className={cn(
-        "flex h-screen flex-col border-r border-white/[0.07] bg-[#171b29] transition-all duration-200",
-        collapsed ? "w-[52px]" : "w-[220px]"
-      )}
-    >
+    <div className="flex h-full flex-col">
       {/* Logo */}
       <div className="flex h-14 items-center justify-between px-3 border-b border-white/[0.07]">
-        <Link href="/admin" className="flex items-center gap-2">
+        <Link href="/admin" className="flex items-center gap-2" onClick={onNavClick}>
           <div className="flex h-7 w-7 shrink-0 items-center justify-center">
             <Shield className="h-5 w-5 text-[#00c98d]" />
           </div>
           {!collapsed && (
-            <span className="text-sm font-bold tracking-wide text-white uppercase">
-              Admin
-            </span>
+            <span className="text-sm font-bold tracking-wide text-white uppercase">Admin</span>
           )}
         </Link>
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="rounded p-1 text-[#8b92a8] hover:text-white transition-colors"
+          className="hidden md:flex rounded p-1 text-[#8b92a8] hover:text-white transition-colors"
         >
-          {collapsed ? (
-            <ChevronRight className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronLeft className="h-3.5 w-3.5" />
-          )}
+          {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
         </button>
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 py-3 px-2 space-y-0.5">
+      <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href !== "/admin" && pathname.startsWith(item.href));
-
           return (
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavClick}
               className={cn(
-                "group relative flex items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium transition-all duration-150",
+                "group relative flex items-center gap-3 rounded-md px-3 py-2.5 text-[13px] font-medium transition-all duration-150",
                 isActive
                   ? "bg-[#232839] text-white"
                   : "text-[#8b92a8] hover:bg-[#1e2336] hover:text-[#c8cdd8]"
@@ -104,6 +102,7 @@ export function AdminSidebar() {
       <div className="border-t border-white/[0.07] p-2 space-y-0.5">
         <Link
           href="/dashboard"
+          onClick={onNavClick}
           className="flex items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium text-[#8b92a8] transition-colors hover:bg-[#1e2336] hover:text-white"
         >
           <ArrowLeft className="h-[18px] w-[18px] shrink-0" />
@@ -111,15 +110,65 @@ export function AdminSidebar() {
         </Link>
         <button
           className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium text-[#8b92a8] transition-colors hover:bg-[#1e2336] hover:text-white"
-          onClick={async () => {
-            await signOut();
-            router.push("/");
-          }}
+          onClick={async () => { await signOut(); router.push("/"); }}
         >
           <LogOut className="h-[18px] w-[18px] shrink-0" />
           {!collapsed && <span>Sign Out</span>}
         </button>
       </div>
-    </aside>
+    </div>
+  );
+}
+
+export function AdminSidebar() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside
+        className={cn(
+          "hidden md:flex h-screen flex-col border-r border-white/[0.07] bg-[#171b29] transition-all duration-200",
+          collapsed ? "w-[52px]" : "w-[220px]"
+        )}
+      >
+        <AdminSidebarContent collapsed={collapsed} setCollapsed={setCollapsed} />
+      </aside>
+
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex h-14 items-center justify-between border-b border-white/[0.07] bg-[#171b29] px-4">
+        <div className="flex items-center gap-2">
+          <Shield className="h-5 w-5 text-[#00c98d]" />
+          <span className="text-sm font-bold tracking-wide text-white uppercase">Admin</span>
+        </div>
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="rounded-lg p-2 text-[#8b92a8] hover:bg-white/[0.05] hover:text-white"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <aside className="relative z-10 flex w-[260px] flex-col bg-[#171b29] border-r border-white/[0.07]">
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="absolute right-3 top-3 rounded-lg p-1.5 text-[#8b92a8] hover:text-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <AdminSidebarContent
+              collapsed={false}
+              setCollapsed={() => {}}
+              onNavClick={() => setMobileOpen(false)}
+            />
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

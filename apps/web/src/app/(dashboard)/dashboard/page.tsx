@@ -57,7 +57,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
           <p className="mt-1 text-sm text-slate-400">
@@ -65,7 +65,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <Link href="/dashboard/services/create">
-          <Button className="bg-[#00c98d] text-white hover:bg-[#00e0a0]">
+          <Button className="w-full sm:w-auto bg-[#00c98d] text-white hover:bg-[#00e0a0]">
             <Plus className="mr-2 h-4 w-4" />
             New Server
           </Button>

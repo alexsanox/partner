@@ -23,7 +23,7 @@ export default async function DashboardLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         {isImpersonating && <ImpersonationBanner userName={session.user.name} />}
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-7xl px-6 py-8">{children}</div>
+          <div className="mx-auto max-w-7xl px-4 py-6 pt-20 md:px-6 md:py-8 md:pt-8">{children}</div>
         </main>
       </div>
     </div>
