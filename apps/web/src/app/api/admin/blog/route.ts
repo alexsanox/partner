@@ -1,6 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth-server";
 import { prisma } from "@/lib/db";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM = process.env.EMAIL_FROM || "noreply@pobble.host";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || "https://novally.tech";
+
+async function sendNewPostEmail(post: { title: string; slug: string; excerpt: string | null; coverImage: string | null }) {
+  const subscribers = await prisma.newsletterSubscriber.findMany({ select: { email: true } });
+  if (!subscribers.length) return;
+
+  const postUrl = `${APP_URL}/blog/${post.slug}`;
+  const html = `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#0f1219;font-family:'Segoe UI',system-ui,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0f1219;"><tr><td align="center" style="padding:40px 16px;">
+<table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+  <tr><td style="padding-bottom:24px;"><span style="font-size:22px;font-weight:800;color:#fff;">Pobble<span style="color:#00c98d;">Host</span></span></td></tr>
+  ${post.coverImage ? `<tr><td style="padding-bottom:20px;"><img src="${post.coverImage}" width="520" style="width:100%;border-radius:12px;display:block;" alt="Cover"/></td></tr>` : ""}
+  <tr><td style="background:#1a1e2e;border-radius:16px;padding:32px;">
+    <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#00c98d;text-transform:uppercase;letter-spacing:1px;">New Post</p>
+    <h1 style="margin:0 0 16px;font-size:24px;font-weight:800;color:#fff;line-height:1.3;">${post.title}</h1>
+    ${post.excerpt ? `<p style="margin:0 0 24px;font-size:15px;color:#8b92a8;line-height:1.6;">${post.excerpt}</p>` : ""}
+    <a href="${postUrl}" style="display:inline-block;background:#00c98d;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:10px;text-decoration:none;">Read Post →</a>
+  </td></tr>
+  <tr><td style="padding-top:24px;text-align:center;font-size:12px;color:#8b92a8;">
+    You're receiving this because you subscribed to PobbleHost updates.<br/>
+    <a href="${APP_URL}/api/newsletter/unsubscribe?email={{EMAIL}}" style="color:#8b92a8;">Unsubscribe</a>
+  </td></tr>
+</table></td></tr></table></body></html>`;
+
+  await Promise.allSettled(
+    subscribers.map((s) =>
+      resend.emails.send({
+        from: FROM,
+        to: s.email,
+        subject: `New Post: ${post.title}`,
+        html: html.replace("{{EMAIL}}", encodeURIComponent(s.email)),
+      })
+    )
+  );
+}
 
 async function requireAdmin() {
   const session = await getSession();
@@ -58,6 +97,10 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  if (published) {
+    sendNewPostEmail(post).catch(console.error);
+  }
+
   return NextResponse.json(post, { status: 201 });
 }
 
@@ -86,6 +129,11 @@ export async function PATCH(req: NextRequest) {
       }),
     },
   });
+
+  // Send newsletter if being published for the first time
+  if (published && !existing.published) {
+    sendNewPostEmail(post).catch(console.error);
+  }
 
   return NextResponse.json(post);
 }
