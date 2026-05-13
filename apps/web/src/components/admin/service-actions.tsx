@@ -41,6 +41,8 @@ export function ServiceActions({ serviceId, serviceName, currentStatus }: Servic
       if (!res.ok) {
         const data = await res.json();
         toast.error(data.error || "Action failed");
+      } else {
+        toast.success(action === "delete" ? "Service deleted" : action === "suspend" ? "Service suspended" : action === "unsuspend" ? "Service unsuspended" : "Service cancelled");
       }
       router.refresh();
     } catch {

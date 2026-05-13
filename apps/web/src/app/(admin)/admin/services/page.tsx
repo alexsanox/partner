@@ -34,6 +34,7 @@ async function getServiceStats() {
 
 async function getServices() {
   return prisma.service.findMany({
+    where: { deletedAt: null },
     orderBy: { createdAt: "desc" },
     take: 30,
     include: {
