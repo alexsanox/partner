@@ -62,16 +62,11 @@ function AdminSidebarContent({
             <span className="text-sm font-bold tracking-wide text-white uppercase">Admin</span>
           </Link>
         )}
-        {collapsed && (
-          <Link href="/admin" onClick={onNavClick}>
-            <Shield className="h-5 w-5 text-[#00c98d]" />
-          </Link>
-        )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden md:flex rounded p-1 text-[#8b92a8] hover:text-white transition-colors shrink-0"
+          className="hidden md:flex rounded p-1.5 text-[#8b92a8] hover:bg-white/[0.05] hover:text-white transition-colors shrink-0"
         >
-          {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
 

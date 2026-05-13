@@ -53,16 +53,11 @@ function SidebarContent({
             </span>
           </Link>
         )}
-        {collapsed && (
-          <Link href="/" onClick={onNavClick}>
-            <Image src="/logo.webp" alt="Pobble" width={28} height={28} className="rounded-md shrink-0" />
-          </Link>
-        )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden md:flex rounded p-1 text-[#8b92a8] hover:text-white transition-colors shrink-0"
+          className="hidden md:flex rounded p-1.5 text-[#8b92a8] hover:bg-white/[0.05] hover:text-white transition-colors shrink-0"
         >
-          {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
 
