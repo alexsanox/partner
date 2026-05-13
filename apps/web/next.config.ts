@@ -9,7 +9,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@prisma/client", "@prisma/adapter-pg", "pg", "ws", "adm-zip"],
+  serverExternalPackages: ["@prisma/client", "@prisma/adapter-pg", "pg", "ws", "adm-zip", "ioredis"],
   experimental: {
     serverActions: {
       bodySizeLimit: "100mb",
