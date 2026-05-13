@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       name, type, eggId, description, ramMb, cpuPercent, diskMb,
-      playerSlots, backupSlots, databaseLimit, priceMonthly, features, sortOrder,
+      playerSlots, backupSlots, databaseLimit, priceMonthly, trialDays, features, sortOrder,
     } = body;
 
     if (!name || !priceMonthly || !ramMb || !cpuPercent || !diskMb) {
@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
         backupSlots: Number(backupSlots || 1),
         databaseLimit: Number(databaseLimit || 0),
         priceMonthly: Number(priceMonthly),
+        trialDays: Number(trialDays || 0),
         features: features || [],
         sortOrder: Number(sortOrder || 0),
       },
@@ -91,7 +92,7 @@ export async function PATCH(req: NextRequest) {
           ramMb: true, cpuPercent: true,
           diskMb: true, playerSlots: true, backupSlots: true, databaseLimit: true,
           priceMonthly: true, priceQuarterly: true, priceAnnual: true,
-          features: true, sortOrder: true, isActive: true,
+          trialDays: true, features: true, sortOrder: true, isActive: true,
         };
         const updateData: Record<string, unknown> = {};
         for (const [key, value] of Object.entries(data)) {

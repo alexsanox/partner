@@ -35,6 +35,7 @@ interface PlanData {
   playerSlots: number;
   backupSlots: number;
   priceMonthly: number;
+  trialDays: number;
   features: string[];
   isActive: boolean;
   sortOrder: number;
@@ -57,6 +58,7 @@ export function PlanActions({ plan }: { plan: PlanData }) {
     playerSlots: plan.playerSlots,
     backupSlots: plan.backupSlots,
     priceMonthly: plan.priceMonthly / 100,
+    trialDays: plan.trialDays ?? 0,
     features: plan.features.join(", "),
     sortOrder: plan.sortOrder,
   });
@@ -106,6 +108,7 @@ export function PlanActions({ plan }: { plan: PlanData }) {
             playerSlots: Number(form.playerSlots),
             backupSlots: Number(form.backupSlots),
             priceMonthly: Math.round(Number(form.priceMonthly) * 100),
+            trialDays: Number(form.trialDays),
             features,
             sortOrder: Number(form.sortOrder),
           },
@@ -140,6 +143,7 @@ export function PlanActions({ plan }: { plan: PlanData }) {
     { key: "playerSlots", label: "Player Slots", type: "number" },
     { key: "backupSlots", label: "Backup Slots", type: "number" },
     { key: "priceMonthly", label: "Price", type: "number", suffix: "$" },
+    { key: "trialDays", label: "Free Trial", type: "number", suffix: "days" },
     { key: "sortOrder", label: "Sort Order", type: "number" },
     { key: "features", label: "Features (comma-separated)", type: "text" },
   ];

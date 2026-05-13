@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
 import { ServiceActions } from "@/components/admin/service-actions";
+import { CreateFreeServiceButton } from "@/components/admin/create-free-service";
 
 const dbStatusConfig: Record<string, { label: string; className: string }> = {
   ACTIVE: { label: "Active", className: "bg-green-500/10 text-green-400 border-green-500/20" },
@@ -50,11 +51,14 @@ export default async function AdminServicesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Service Management</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          View and manage all provisioned services ({stats.total} total)
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Service Management</h1>
+          <p className="mt-1 text-sm text-slate-400">
+            View and manage all provisioned services ({stats.total} total)
+          </p>
+        </div>
+        <CreateFreeServiceButton />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-5">
@@ -84,6 +88,7 @@ export default async function AdminServicesPage() {
                 <TableHead className="text-slate-400">Plan</TableHead>
                 <TableHead className="text-slate-400">Node</TableHead>
                 <TableHead className="text-slate-400">IP</TableHead>
+                <TableHead className="text-slate-400">Type</TableHead>
                 <TableHead className="text-slate-400">Status</TableHead>
                 <TableHead className="text-slate-400">Created</TableHead>
                 <TableHead className="text-right text-slate-400">Actions</TableHead>
@@ -125,6 +130,19 @@ export default async function AdminServicesPage() {
                       </TableCell>
                       <TableCell className="font-mono text-xs text-slate-400">
                         {svc.ipAddress ? `${svc.ipAddress}:${svc.port}` : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          {(svc as { isTrial?: boolean; isFree?: boolean }).isTrial && (
+                            <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400 text-[10px] w-fit">Trial</Badge>
+                          )}
+                          {(svc as { isFree?: boolean }).isFree && (
+                            <Badge variant="outline" className="border-[#00c98d]/30 bg-[#00c98d]/10 text-[#00c98d] text-[10px] w-fit">Free</Badge>
+                          )}
+                          {!(svc as { isTrial?: boolean; isFree?: boolean }).isTrial && !(svc as { isFree?: boolean }).isFree && (
+                            <Badge variant="outline" className="border-white/10 text-slate-400 text-[10px] w-fit">Paid</Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={statusCfg.className}>

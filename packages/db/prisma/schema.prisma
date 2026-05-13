@@ -194,6 +194,7 @@ model Plan {
   features    String[]     // JSON list of feature strings
   sortOrder   Int          @default(0)
   isActive    Boolean      @default(true)
+  trialDays   Int          @default(0)   // 0 = no trial
   stripePriceIdMonthly  String?
   stripePriceIdQuarterly String?
   stripePriceIdAnnual   String?
@@ -239,8 +240,8 @@ model Service {
   user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   planId               String
   plan                 Plan          @relation(fields: [planId], references: [id])
-  orderId              String        @unique
-  order                Order         @relation(fields: [orderId], references: [id])
+  orderId              String?       @unique
+  order                Order?        @relation(fields: [orderId], references: [id])
   nodeId               String?
   node                 Node?         @relation(fields: [nodeId], references: [id])
   status               ServiceStatus @default(PENDING)
@@ -250,6 +251,10 @@ model Service {
   ipAddress            String?
   port                 Int?
   stripeSubscriptionId String?
+  isTrial              Boolean       @default(false)
+  trialEndsAt          DateTime?     // set when isTrial=true
+  isFree               Boolean       @default(false)
+  idleEmptySince       DateTime?     // set when 0 players; cleared when players join
   expiresAt            DateTime?
   suspendedAt          DateTime?
   cancelledAt          DateTime?

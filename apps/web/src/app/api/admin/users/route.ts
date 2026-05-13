@@ -10,6 +10,28 @@ async function requireAdmin() {
   return session;
 }
 
+export async function GET(req: NextRequest) {
+  const session = await requireAdmin();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+
+  const search = req.nextUrl.searchParams.get("search") ?? "";
+  const limit = Number(req.nextUrl.searchParams.get("limit") ?? "100");
+
+  const users = await prisma.user.findMany({
+    where: search ? {
+      OR: [
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+      ],
+    } : undefined,
+    select: { id: true, name: true, email: true, role: true, createdAt: true },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  return NextResponse.json(users);
+}
+
 export async function PATCH(req: NextRequest) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
